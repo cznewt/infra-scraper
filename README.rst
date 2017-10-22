@@ -20,9 +20,9 @@ To bootstrap development environment run following commands:
 
     git clone git@github.com:cznewt/infra-scraper.git
     cd infra-scraper
-	virtualenv venv
-	source venv/bin/activate
-	pip install -r requirements.txt
+    virtualenv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
 
 
 Configuration
@@ -39,29 +39,29 @@ scraper.
 
 .. code-block:: yaml
 
-	---
-	apiVersion: v1
-	clusters:
-	- cluster:
-	    certificate-authority-data: |
-	      cacert
-	    server: https://kubernetes.api:443
-	  name: kubernetes-cluster
-	contexts:
-	- context:
-	    cluster: kubernetes-cluster
-	    user: kubernetes-cluster-admin
-	  name: kubernetes-cluster
-	current-context: kubernetes-cluster
-	kind: Config
-	preferences: {}
-	users:
-	- name: kubernetes-cluster-admin
-	  user:
-	    client-certificate-data: |
-	      clientcert
-	    client-key-data: |
-	      clientkey
+    ---
+    apiVersion: v1
+    clusters:
+    - cluster:
+        certificate-authority-data: |
+          cacert
+        server: https://kubernetes.api:443
+      name: kubernetes-cluster
+    contexts:
+    - context:
+        cluster: kubernetes-cluster
+        user: kubernetes-cluster-admin
+      name: kubernetes-cluster
+    current-context: kubernetes-cluster
+    kind: Config
+    preferences: {}
+    users:
+    - name: kubernetes-cluster-admin
+      user:
+        client-certificate-data: |
+          clientcert
+        client-key-data: |
+          clientkey
 
 Openstack
 ---------
@@ -71,23 +71,23 @@ Example configuration for keystone v2 and keystone v3 clouds in
 
 .. code-block:: yaml
 
-	clouds:
-	  keystone2:
-	    region_name: RegionOne
-	    auth:
-	      username: 'admin'
-	      password: 'password'
-	      project_name: 'admin'
-	      auth_url: 'https://keystone.api:5000/v2.0'
-	  keystone3:
-	    region_name: RegionOne
-	    identity_api_version: '3'
-	    auth:
-	      username: 'admin'
-	      password: 'password'
-	      project_name: 'admin'
-	      domain_name: 'default'
-	      auth_url: 'https://keystone.api:5000/v3'
+    clouds:
+      keystone2:
+        region_name: RegionOne
+        auth:
+          username: 'admin'
+          password: 'password'
+          project_name: 'admin'
+          auth_url: 'https://keystone.api:5000/v2.0'
+      keystone3:
+        region_name: RegionOne
+        identity_api_version: '3'
+        auth:
+          username: 'admin'
+          password: 'password'
+          project_name: 'admin'
+          domain_name: 'default'
+          auth_url: 'https://keystone.api:5000/v3'
 
 
 Documentation

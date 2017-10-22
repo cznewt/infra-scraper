@@ -1,7 +1,7 @@
 
-============================
-Infrasturcture Model Scraper
-============================
+==============================
+Infrastucture Metadata Scraper
+==============================
 
 Get your live infrastructure topology data from your favorite resource
 providers for further processing, visualialitions, etc. Currently supported
@@ -15,6 +15,8 @@ Installation
 ============
 
 To bootstrap development environment run following commands:
+
+.. code-block:: bash
 
     git clone git@github.com:cznewt/infra-scraper.git
     cd infra-scraper

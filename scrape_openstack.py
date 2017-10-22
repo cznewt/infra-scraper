@@ -1,7 +1,7 @@
 
 from infra_scraper.main import InfraScraper
 
-cloud_name = 'keystone'
+cloud_name = 'openstack'
 
 config = {
     'name': cloud_name,

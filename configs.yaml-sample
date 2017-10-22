@@ -1,0 +1,7 @@
+configs:
+  salt:
+    url: 'https://salt-api:8000'
+    verify: False
+    auth:
+      username: 'user'
+      password: 'password'

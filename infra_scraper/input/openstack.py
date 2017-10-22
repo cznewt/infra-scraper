@@ -9,12 +9,13 @@ from .base import BaseInput
 
 logger = logging.getLogger(__name__)
 
-OPENTACK_RESOURCE_MAPPING = {
+OS_RES_MAPPING = {
     'OS::Nova::Server': 'os:server',
     'OS::Neutron::Port': 'os:port',
     'OS::Neutron::Subnet': 'os:subnet',
     'OS::Neutron::Net': 'os:network'
 }
+
 
 class OpenStackInput(BaseInput):
 
@@ -39,12 +40,18 @@ class OpenStackInput(BaseInput):
             'network', cloud=self.name)
         self.orch_api = os_client_config.make_client(
             'orchestration', cloud=self.name)
+        self.image_api = os_client_config.make_client(
+            'image', cloud=self.name)
+        self.volume_api = os_client_config.make_client(
+            'volume', cloud=self.name)
 
     def scrape_all_resources(self):
         # keystone resources
-#        self.scrape_users()
-#        self.scrape_projects()
+        #        self.scrape_users()
+        #        self.scrape_projects()
         # nova resources
+        self.scrape_volumes()
+        self.scrape_images()
         self.scrape_aggregates()
         self.scrape_flavors()
         self.scrape_servers()
@@ -76,9 +83,10 @@ class OpenStackInput(BaseInput):
 
         for resource_id, resource in self.resources['os:stack'].items():
             for ext_resource in resource['metadata']['resources']:
-                if ext_resource['resource_type'] in OPENTACK_RESOURCE_MAPPING:
+                if ext_resource['resource_type'] in OS_RES_MAPPING:
                     self._scrape_relation(
-                        'os:stack-{}'.format(OPENTACK_RESOURCE_MAPPING[ext_resource['resource_type']]),
+                        'os:stack-{}'.format(
+                            OS_RES_MAPPING[ext_resource['resource_type']]),
                         resource_id,
                         ext_resource['physical_resource_id'])
 
@@ -171,6 +179,23 @@ class OpenStackInput(BaseInput):
             self._scrape_resource(resource['id'], resource['name'],
                                   'os:server', None, metadata=resource)
 
+    # cinder resources
+
+    def scrape_volumes(self):
+        response = self.volume_api.volumes.list()
+        for item in response:
+            resource = item.to_dict()
+            self._scrape_resource(resource['id'], resource['name'],
+                                  'os:volume', None, metadata=resource)
+
+    # glance resources
+
+    def scrape_images(self):
+        response = self.image_api.images.list()
+        for resource in response:
+            self._scrape_resource(resource['id'], resource['name'],
+                                  'os:image', None, metadata=resource)
+
     # neutron resources
 
     def scrape_routers(self):
@@ -222,12 +247,12 @@ class OpenStackInput(BaseInput):
                 resource = stack.to_dict()
                 resource['resources'] = []
                 try:
-                    stack_resources = self.orch_api.resources.list(stack.id,
-                                                                   nested_depth=2)
-                    for stack_resource in stack_resources:
+                    resources = self.orch_api.resources.list(stack.id,
+                                                             nested_depth=2)
+                    for stack_resource in resources:
                         resource['resources'].append(stack_resource.to_dict())
-                except HTTPBadRequest as e:
-                    print e
+                except HTTPBadRequest as exception:
+                    logger.error(exception)
                 self._scrape_resource(resource['id'], resource['stack_name'],
                                       'os:stack', None, metadata=resource)
             i += 1

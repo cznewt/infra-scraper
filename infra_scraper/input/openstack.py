@@ -47,11 +47,13 @@ class OpenStackInput(BaseInput):
 
     def scrape_all_resources(self):
         # keystone resources
-        #        self.scrape_users()
-        #        self.scrape_projects()
-        # nova resources
+        # self.scrape_users()
+        # self.scrape_projects()
+        # cinder resources
         self.scrape_volumes()
-        self.scrape_images()
+        # glance resources
+        # self.scrape_images()
+        # nova resources
         self.scrape_aggregates()
         self.scrape_flavors()
         self.scrape_servers()
@@ -192,7 +194,8 @@ class OpenStackInput(BaseInput):
 
     def scrape_images(self):
         response = self.image_api.images.list()
-        for resource in response:
+        for item in response:
+            resource = item
             self._scrape_resource(resource['id'], resource['name'],
                                   'os:image', None, metadata=resource)
 

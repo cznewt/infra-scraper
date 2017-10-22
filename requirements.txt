@@ -1,0 +1,10 @@
+pyyaml
+os_client_config
+python-heatclient
+python-novaclient
+python-keystoneclient
+python-neutronclient
+python-glanceclient
+pykube
+tosca-parser
+pepper

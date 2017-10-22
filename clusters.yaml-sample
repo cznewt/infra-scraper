@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: |
+      cacert
+    server: https://kubernetes.api:443
+  name: kubernetes-cluster
+contexts:
+- context:
+    cluster: kubernetes-cluster
+    user: kubernetes-cluster-admin
+  name: kubernetes-cluster
+current-context: kubernetes-cluster
+kind: Config
+preferences: {}
+users:
+- name: kubernetes-cluster-admin
+  user:
+    client-certificate-data: |
+      clientcert
+    client-key-data: |
+      clientkey

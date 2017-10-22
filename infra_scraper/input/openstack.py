@@ -9,6 +9,12 @@ from .base import BaseInput
 
 logger = logging.getLogger(__name__)
 
+OPENTACK_RESOURCE_MAPPING = {
+    'OS::Nova::Server': 'os:server',
+    'OS::Neutron::Port': 'os:port',
+    'OS::Neutron::Subnet': 'os:subnet',
+    'OS::Neutron::Net': 'os:network'
+}
 
 class OpenStackInput(BaseInput):
 
@@ -31,7 +37,7 @@ class OpenStackInput(BaseInput):
             'compute', cloud=self.name)
         self.network_api = os_client_config.make_client(
             'network', cloud=self.name)
-        self.orchestration_api = os_client_config.make_client(
+        self.orch_api = os_client_config.make_client(
             'orchestration', cloud=self.name)
 
     def scrape_all_resources(self):
@@ -41,8 +47,8 @@ class OpenStackInput(BaseInput):
         # nova resources
         self.scrape_aggregates()
         self.scrape_flavors()
-        self.scrape_hypervisors()
         self.scrape_servers()
+        self.scrape_hypervisors()
         # neutron resources
         self.scrape_networks()
         self.scrape_subnets()
@@ -51,7 +57,70 @@ class OpenStackInput(BaseInput):
         self.scrape_ports()
         # heat resources
         self.scrape_resource_types()
-#        self.scrape_stacks()
+        self.scrape_stacks()
+
+    def _create_relations(self):
+        # Define relationships between project and all namespaced resources.
+        for resource_type, resource_dict in self.resources.items():
+            for resource_id, resource in resource_dict.items():
+                if 'tenant_id' in resource['metadata']:
+                    self._scrape_relation(
+                        '{}-os:project'.format(resource_type),
+                        resource_id,
+                        resource['metadata']['tenant_id'])
+                elif 'project' in resource['metadata']:
+                    self._scrape_relation(
+                        '{}-os:project'.format(resource_type),
+                        resource_id,
+                        resource['metadata']['project'])
+
+        for resource_id, resource in self.resources['os:stack'].items():
+            for ext_resource in resource['metadata']['resources']:
+                if ext_resource['resource_type'] in OPENTACK_RESOURCE_MAPPING:
+                    self._scrape_relation(
+                        'os:stack-{}'.format(OPENTACK_RESOURCE_MAPPING[ext_resource['resource_type']]),
+                        resource_id,
+                        ext_resource['physical_resource_id'])
+
+        # Define relationships between aggregate zone and all hypervisors.
+        for resource_id, resource in self.resources['os:aggregate'].items():
+            for host in resource['metadata']['hosts']:
+                self._scrape_relation(
+                    'os:hypervisor-os:aggregate',
+                    host,
+                    resource_id)
+
+        for resource_id, resource in self.resources['os:port'].items():
+            self._scrape_relation(
+                'os:port-os:network',
+                resource_id,
+                resource['metadata']['network_id'])
+            if resource['metadata']['device_id'] is not None:
+                self._scrape_relation(
+                    'os:port-os:server',
+                    resource_id,
+                    resource['metadata']['device_id'])
+            if resource['metadata'].get('device_id', None) is not None:
+                self._scrape_relation(
+                    'os:port-os:hypervisor',
+                    resource_id,
+                    resource['metadata']['binding:host_id'])
+
+        for resource_id, resource in self.resources['os:server'].items():
+            self._scrape_relation(
+                'os:server-os:hypervisor',
+                resource_id,
+                resource['metadata']['OS-EXT-SRV-ATTR:host'])
+            self._scrape_relation(
+                'os:server-os:flavor',
+                resource_id,
+                resource['metadata']['flavor']['id'])
+
+        for resource_id, resource in self.resources['os:subnet'].items():
+            self._scrape_relation(
+                'os:subnet-os:network',
+                resource_id,
+                resource['metadata']['network_id'])
 
     # keystone resources
 
@@ -137,7 +206,7 @@ class OpenStackInput(BaseInput):
     # heat resources
 
     def scrape_resource_types(self):
-        resource_types = self.orchestration_api.resource_types.list(
+        resource_types = self.orch_api.resource_types.list(
             search_opts={'all_tenants': 1})
         for resource_type in resource_types:
             resource = resource_type.to_dict()
@@ -145,17 +214,20 @@ class OpenStackInput(BaseInput):
                                   'os:resource_type', None, metadata=resource)
 
     def scrape_stacks(self):
-        stacks = self.orchestration_api.stacks.list(
+        stacks = self.orch_api.stacks.list(
             search_opts={'all_tenants': 1})
+        i = 0
         for stack in stacks:
-            resource = stack.to_dict()
-            resource['resources'] = []
-            try:
-                stack_resources = self.orch_api.resources.list(stack.id,
-                                                               nested_depth=2)
-                for stack_resource in stack_resources:
-                    resource['resources'].append(stack_resource.to_dict())
-            except HTTPBadRequest as e:
-                print e
-            self._scrape_resource(resource['id'], resource['stack_name'],
-                                  'os:stack', None, metadata=resource)
+            if i < 2:
+                resource = stack.to_dict()
+                resource['resources'] = []
+                try:
+                    stack_resources = self.orch_api.resources.list(stack.id,
+                                                                   nested_depth=2)
+                    for stack_resource in stack_resources:
+                        resource['resources'].append(stack_resource.to_dict())
+                except HTTPBadRequest as e:
+                    print e
+                self._scrape_resource(resource['id'], resource['stack_name'],
+                                      'os:stack', None, metadata=resource)
+            i += 1

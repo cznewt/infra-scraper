@@ -11,8 +11,14 @@ class CountOutput(BaseOutput):
         super(CountOutput, self).__init__(**kwargs)
 
     def transform_data(self, data):
-        output = {}
+        resources = {}
+        relations = {}
         for resource_name, resource_data in data['resources'].items():
-            output[resource_name] = len(resource_data)
+            resources[resource_name] = len(resource_data)
 
-        return output
+        for relation_name, relation_data in data['relations'].items():
+            relations[relation_name] = len(relation_data)
+
+        data['resources'] = resources
+        data['relations'] = relations
+        return data

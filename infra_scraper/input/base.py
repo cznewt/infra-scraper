@@ -9,27 +9,36 @@ class BaseInput(object):
 
     def __init__(self, **kwargs):
         self.resources = {}
-        self.counters = {}
+        self.relations = {}
         self.timestamp = int(time.time())
 
+    def _create_relations(self):
+        raise NotImplementedError
+
     def to_dict(self):
+        self._create_relations()
         return {
             'name': self.name,
             'kind': self.kind,
             'timestamp': self.timestamp,
             'resources': self.resources,
+            'relations': self.relations,
         }
 
     def _scrape_resource(self, uid, name, kind, link=None, metadata={}):
         if kind not in self.resources:
             self.resources[kind] = {}
-            self.counters[kind] = 1
-        else:
-            if uid not in self.resources[kind]:
-                self.counters[kind] += 1
         self.resources[kind][uid] = {
             'id': uid,
             'kind': kind,
             'name': name,
             'metadata': metadata,
         }
+
+    def _scrape_relation(self, kind, source, target):
+        if kind not in self.relations:
+            self.relations[kind] = []
+        self.relations[kind].append({
+            'source': source,
+            'target': target,
+        })

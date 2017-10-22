@@ -89,8 +89,3 @@ Example configuration for keystone v2 and keystone v3 clouds in
           domain_name: 'default'
           auth_url: 'https://keystone.api:5000/v3'
 
-
-Documentation
-=============
-
-Full documenation is available at [infra-scraper.readthedocs.io](http://infra-scraper.readthedocs.io).

@@ -47,6 +47,98 @@ class KubernetesInput(BaseInput):
         self.scrape_services()
         self.scrape_stateful_sets()
 
+    def _create_relations(self):
+
+        namespace_2_uid = {}
+        for resource_id, resource in self.resources['k8s:namespace'].items():
+            resource_mapping = resource['metadata']['metadata']['name']
+            namespace_2_uid[resource_mapping] = resource_id
+
+        node_2_uid = {}
+        for resource_id, resource in self.resources['k8s:node'].items():
+            resource_mapping = resource['metadata']['metadata']['name']
+            node_2_uid[resource_mapping] = resource_id
+
+        service_run_2_uid = {}
+        service_app_2_uid = {}
+        for resource_id, resource in self.resources['k8s:service'].items():
+            if resource['metadata']['spec'].get('selector', {}) is not None:
+                if resource['metadata']['spec'].get('selector', {}).get('run', False):
+                    selector = resource['metadata']['spec']['selector']['run']
+                    service_run_2_uid[selector] = resource_id
+                if resource['metadata']['spec'].get('selector', {}).get('app', False):
+                    selector = resource['metadata']['spec']['selector']['app']
+                    service_app_2_uid[selector] = resource_id
+
+        # Add Containers as top-level resource
+        """
+        for resource_id, resource in self.resources['k8s:pod'].items():
+            for container in resource['metadata']['spec']['containers']:
+                container_id = "{1}-{2}".format(
+                    resource['metadata']['uid'], container['name'])
+                resources[container_id] = {
+                    'metadata': container,
+                    'kind': 'Container'
+                }
+                relations.append({
+                    'source': resource_id,
+                    'target': container_id,
+                })
+        """
+
+        # Define relationships between namespace and all namespaced resources.
+        for resource_type, resource_dict in self.resources.items():
+            for resource_id, resource in resource_dict.items():
+                if 'namespace' in resource['metadata']['metadata']:
+                    self._scrape_relation(
+                        '{}-k8s:namespace'.format(resource_type),
+                        resource_id,
+                        namespace_2_uid[resource['metadata']['metadata']['namespace']])
+
+        # Define relationships between replica sets and deployments
+        for resource_id, resource in self.resources['k8s:replica_set'].items():
+            deployment_id = resource['metadata']['metadata']['ownerReferences'][0]['uid']
+            self._scrape_relation(
+                'k8s:deployment-k8s:replica_set',
+                deployment_id,
+                resource_id)
+
+        for resource_id, resource in self.resources['k8s:pod'].items():
+            # Define relationships between pods and nodes
+            if resource['metadata']['spec']['nodeName'] is not None:
+                node = resource['metadata']['spec']['nodeName']
+                self._scrape_relation(
+                    'k8s:pod-k8s:node',
+                    resource_id,
+                    node_2_uid[node])
+
+            # Define relationships between pods and replication sets and
+            # replication controllers.
+            if resource['metadata']['metadata'].get('ownerReferences', False):
+                if resource['metadata']['metadata']['ownerReferences'][0]['kind'] == 'ReplicaSet':
+                    rep_set_id = resource['metadata']['metadata']['ownerReferences'][0]['uid']
+                    self._scrape_relation(
+                        'k8s:replica_set-k8s:pod',
+                        rep_set_id,
+                        resource_id)
+
+            # Define relationships between pods and services.
+            if resource['metadata']['metadata']['labels'].get('run', False):
+                selector = resource['metadata']['metadata']['labels']['run']
+                self._scrape_relation(
+                    'k8s:pod-k8s:service',
+                    resource_id,
+                    service_run_2_uid[selector])
+            if resource['metadata']['metadata']['labels'].get('app', False):
+                try:
+                    selector = resource['metadata']['metadata']['labels']['app']
+                    self._scrape_relation(
+                        'k8s:pod-k8s:service',
+                        resource_id,
+                        service_app_2_uid[selector])
+                except Exception:
+                    pass
+
     def _scrape_k8s_resources(self, response, kind):
         try:
             for item in response:

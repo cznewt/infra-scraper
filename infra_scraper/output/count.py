@@ -13,6 +13,7 @@ class CountOutput(BaseOutput):
     def transform_data(self, data):
         resources = {}
         relations = {}
+
         for resource_name, resource_data in data['resources'].items():
             resources[resource_name] = len(resource_data)
 
@@ -21,4 +22,5 @@ class CountOutput(BaseOutput):
 
         data['resources'] = resources
         data['relations'] = relations
+        data.pop('resource_types')
         return data

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block page_header %}
+Layout {{ name }}
+{% endblock %}
+
+{% block content %}
+<div id="visualLayout"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+
+var data_source = "/api/{{ name }}";
+var selector = '#visualLayout';
+var config = {};
+
+document.addEventListener("DOMContentLoaded", function(event) { 
+  d3.json(data_source, function(data) {
+    console.log(data);
+    HivePlot.init(selector, config, data)
+  });
+});
+
+</script>
+{% endblock %}

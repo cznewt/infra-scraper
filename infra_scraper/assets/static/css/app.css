@@ -1,0 +1,42 @@
+@font-face {
+  font-family: 'FontAwesome';
+  src: url('/static/fonts/fontawesome-webfont.woff') format('woff');
+}
+
+.link{
+  fill: none;
+  stroke: #ddd;
+  stroke-width: 1.5px;
+}
+
+.axis {
+  stroke: #666;
+}
+
+.axis, .node {
+  fill: #fff;
+  stroke-width: 1.5px;
+}
+
+.node {
+  stroke: #666;
+}
+
+circle.active: {
+  fill: #f00!important;
+  stroke: #f00!important;
+}
+
+.tooltip {
+  position: absolute;
+  padding: 5px 10px;
+  font: 12px sans-serif;
+  background: #fff;
+  border: 1px solid #000;
+  pointer-events: none;
+}
+
+/*.link:hover{
+  stroke: red;
+  stroke-opacity:.9;
+}*/

@@ -26,4 +26,9 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
     ],
+    entry_points={
+        'console_scripts': [
+            'infra_viz = infra_scraper.server:run',
+        ],
+    },
 )

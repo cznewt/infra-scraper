@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import os
 import pykube
@@ -9,6 +10,77 @@ logger = logging.getLogger(__name__)
 
 
 class KubernetesInput(BaseInput):
+
+    RESOURCE_MAP = {
+        'k8s_config_map': {
+            'resource': 'ConfigMap',
+            'icon_char': 'server',
+        },
+        'k8s_cron_job': {
+            'resource': 'CronJob',
+            'icon_char': 'server',
+        },
+        'k8s_deployment': {
+            'resource': 'Deployment',
+            'icon_char': 'server',
+        },
+        'k8s_endpoint': {
+            'resource': 'Endpoint',
+            'icon_char': 'server',
+        },
+        'k8s_event': {
+            'resource': 'Event',
+            'icon_char': 'server',
+        },
+        'k8s_job': {
+            'resource': 'Job',
+            'icon_char': 'server',
+        },
+        'k8s_namespace': {
+            'resource': 'Namespace',
+            'icon_char': 'server',
+        },
+        'k8s_node': {
+            'resource': 'Node',
+            'icon_char': 'server',
+        },
+        'k8s_persistent_volume': {
+            'resource': 'PersistentVolume',
+            'icon_char': 'server',
+        },
+        'k8s_persistent_volume_claim': {
+            'resource': 'PersistentVolumeClaim',
+            'icon_char': 'server',
+        },
+        'k8s_pod': {
+            'resource': 'Pod',
+            'icon_char': 'server',
+        },
+        'k8s_replica_set': {
+            'resource': 'ReplicaSet',
+            'icon_char': 'server',
+        },
+        'k8s_replication_controller': {
+            'resource': 'ReplicationController',
+            'icon_char': 'server',
+        },
+        'k8s_role': {
+            'resource': 'Role',
+            'icon_char': 'server',
+        },
+        'k8s_secret': {
+            'resource': 'Secret',
+            'icon_char': 'server',
+        },
+        'k8s_service': {
+            'resource': 'Service',
+            'icon_char': 'server',
+        },
+        'k8s_service_account': {
+            'resource': 'ServiceAccount',
+            'icon_char': 'server',
+        },
+    }
 
     def __init__(self, **kwargs):
         self.kind = 'kubernetes'
@@ -50,18 +122,18 @@ class KubernetesInput(BaseInput):
     def _create_relations(self):
 
         namespace_2_uid = {}
-        for resource_id, resource in self.resources['k8s:namespace'].items():
+        for resource_id, resource in self.resources['k8s_namespace'].items():
             resource_mapping = resource['metadata']['metadata']['name']
             namespace_2_uid[resource_mapping] = resource_id
 
         node_2_uid = {}
-        for resource_id, resource in self.resources['k8s:node'].items():
+        for resource_id, resource in self.resources['k8s_node'].items():
             resource_mapping = resource['metadata']['metadata']['name']
             node_2_uid[resource_mapping] = resource_id
 
         service_run_2_uid = {}
         service_app_2_uid = {}
-        for resource_id, resource in self.resources['k8s:service'].items():
+        for resource_id, resource in self.resources['k8s_service'].items():
             if resource['metadata']['spec'].get('selector', {}) is not None:
                 if resource['metadata']['spec'].get('selector', {}).get('run', False):
                     selector = resource['metadata']['spec']['selector']['run']
@@ -72,7 +144,7 @@ class KubernetesInput(BaseInput):
 
         # Add Containers as top-level resource
         """
-        for resource_id, resource in self.resources['k8s:pod'].items():
+        for resource_id, resource in self.resources['k8s_pod'].items():
             for container in resource['metadata']['spec']['containers']:
                 container_id = "{1}-{2}".format(
                     resource['metadata']['uid'], container['name'])
@@ -91,24 +163,24 @@ class KubernetesInput(BaseInput):
             for resource_id, resource in resource_dict.items():
                 if 'namespace' in resource['metadata']['metadata']:
                     self._scrape_relation(
-                        '{}-k8s:namespace'.format(resource_type),
+                        '{}-k8s_namespace'.format(resource_type),
                         resource_id,
                         namespace_2_uid[resource['metadata']['metadata']['namespace']])
 
         # Define relationships between replica sets and deployments
-        for resource_id, resource in self.resources['k8s:replica_set'].items():
+        for resource_id, resource in self.resources['k8s_replica_set'].items():
             deployment_id = resource['metadata']['metadata']['ownerReferences'][0]['uid']
             self._scrape_relation(
-                'k8s:deployment-k8s:replica_set',
+                'k8s_deployment-k8s_replica_set',
                 deployment_id,
                 resource_id)
 
-        for resource_id, resource in self.resources['k8s:pod'].items():
+        for resource_id, resource in self.resources['k8s_pod'].items():
             # Define relationships between pods and nodes
             if resource['metadata']['spec']['nodeName'] is not None:
                 node = resource['metadata']['spec']['nodeName']
                 self._scrape_relation(
-                    'k8s:pod-k8s:node',
+                    'k8s_pod-k8s_node',
                     resource_id,
                     node_2_uid[node])
 
@@ -118,7 +190,7 @@ class KubernetesInput(BaseInput):
                 if resource['metadata']['metadata']['ownerReferences'][0]['kind'] == 'ReplicaSet':
                     rep_set_id = resource['metadata']['metadata']['ownerReferences'][0]['uid']
                     self._scrape_relation(
-                        'k8s:replica_set-k8s:pod',
+                        'k8s_replica_set-k8s_pod',
                         rep_set_id,
                         resource_id)
 
@@ -126,14 +198,14 @@ class KubernetesInput(BaseInput):
             if resource['metadata']['metadata']['labels'].get('run', False):
                 selector = resource['metadata']['metadata']['labels']['run']
                 self._scrape_relation(
-                    'k8s:pod-k8s:service',
+                    'k8s_pod-k8s_service',
                     resource_id,
                     service_run_2_uid[selector])
             if resource['metadata']['metadata']['labels'].get('app', False):
                 try:
                     selector = resource['metadata']['metadata']['labels']['app']
                     self._scrape_relation(
-                        'k8s:pod-k8s:service',
+                        'k8s_pod-k8s_service',
                         resource_id,
                         service_app_2_uid[selector])
                 except Exception:
@@ -151,84 +223,84 @@ class KubernetesInput(BaseInput):
 
     def scrape_config_maps(self):
         response = pykube.ConfigMap.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:config_map')
+        self._scrape_k8s_resources(response, 'k8s_config_map')
 
     def scrape_cron_jobs(self):
         response = pykube.CronJob.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:blow_job')
+        self._scrape_k8s_resources(response, 'k8s_blow_job')
 
     def scrape_daemon_sets(self):
         response = pykube.DaemonSet.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:daemon_set')
+        self._scrape_k8s_resources(response, 'k8s_daemon_set')
 
     def scrape_deployments(self):
         response = pykube.Deployment.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:deployment')
+        self._scrape_k8s_resources(response, 'k8s_deployment')
 
     def scrape_endpoints(self):
         response = pykube.Endpoint.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:endpoint')
+        self._scrape_k8s_resources(response, 'k8s_endpoint')
 
     def scrape_events(self):
         response = pykube.Event.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:event')
+        self._scrape_k8s_resources(response, 'k8s_event')
 
     def scrape_horizontal_pod_autoscalers(self):
         response = pykube.HorizontalPodAutoscaler.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:horizontal_pod_autoscaler')
+        self._scrape_k8s_resources(response, 'k8s_horizontal_pod_autoscaler')
 
     def scrape_ingresses(self):
         response = pykube.Ingress.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:ingress')
+        self._scrape_k8s_resources(response, 'k8s_ingress')
 
     def scrape_jobs(self):
         response = pykube.Job.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:job')
+        self._scrape_k8s_resources(response, 'k8s_job')
 
     def scrape_namespaces(self):
         response = pykube.Namespace.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:namespace')
+        self._scrape_k8s_resources(response, 'k8s_namespace')
 
     def scrape_nodes(self):
         response = pykube.Node.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:node')
+        self._scrape_k8s_resources(response, 'k8s_node')
 
     def scrape_persistent_volumes(self):
         response = pykube.PersistentVolume.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:persistent_volume')
+        self._scrape_k8s_resources(response, 'k8s_persistent_volume')
 
     def scrape_persistent_volume_claims(self):
         response = pykube.PersistentVolumeClaim.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:persistent_volume_claim')
+        self._scrape_k8s_resources(response, 'k8s_persistent_volume_claim')
 
     def scrape_pods(self):
         response = pykube.Pod.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:pod')
+        self._scrape_k8s_resources(response, 'k8s_pod')
 
     def scrape_replica_sets(self):
         response = pykube.ReplicaSet.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:replica_set')
+        self._scrape_k8s_resources(response, 'k8s_replica_set')
 
     def scrape_replication_controllers(self):
         response = pykube.ReplicationController.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:replication_controller')
+        self._scrape_k8s_resources(response, 'k8s_replication_controller')
 
     def scrape_roles(self):
         response = pykube.Role.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:role')
+        self._scrape_k8s_resources(response, 'k8s_role')
 
     def scrape_secrets(self):
         response = pykube.Secret.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:secret')
+        self._scrape_k8s_resources(response, 'k8s_secret')
 
     def scrape_service_accounts(self):
         response = pykube.ServiceAccount.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:service_account')
+        self._scrape_k8s_resources(response, 'k8s_service_account')
 
     def scrape_services(self):
         response = pykube.Service.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:service')
+        self._scrape_k8s_resources(response, 'k8s_service')
 
     def scrape_stateful_sets(self):
         response = pykube.StatefulSet.objects(self.api)
-        self._scrape_k8s_resources(response, 'k8s:stateful_set')
+        self._scrape_k8s_resources(response, 'k8s_stateful_set')

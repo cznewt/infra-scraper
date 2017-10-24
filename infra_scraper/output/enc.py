@@ -15,7 +15,7 @@ class EncOutput(BaseOutput):
 
         for resource_name, resource_data in data['resources'].items():
             resources[resource_name] = []
-            for resource_id, resource_item in resource_data:
+            for resource_id, resource_item in resource_data.items():
                 resources[resource_name].append(resource_item['metadata'])
 
         data['resources'] = resources

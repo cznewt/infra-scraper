@@ -1,0 +1,22 @@
+{
+  "private": true,
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "bootstrap-sass": "^3.3.7",
+    "cheerio": "^1.0.0-rc.2",
+    "d3": "^4.11.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.0",
+    "gulp-batch": "^1.0.5",
+    "gulp-concat": "^2.6.0",
+    "gulp-ext-replace": "^0.3.0",
+    "gulp-livereload": "^3.8.1",
+    "gulp-minify": "0.0.13",
+    "gulp-sass": "^2.3.2",
+    "gulp-sync": "^0.1.4",
+    "gulp-util": "^3.0.8",
+    "gulp-watch": "^4.3.11",
+    "mdi": "^2.0.46",
+  }
+}

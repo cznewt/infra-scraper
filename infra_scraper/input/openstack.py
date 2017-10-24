@@ -13,67 +13,67 @@ class OpenStackInput(BaseInput):
     RESOURCE_MAP = {
         'os_aggregate': {
             'resource': 'Nova::Aggregate',
-            'icon_char': 'group',
+            'icon': 'fa:cube',
         },
         'os_flavor': {
             'resource': 'Nova::Flavor',
-            'icon_char': 'group',
+            'icon': 'fa:cube',
         },
         'os_floating_ip': {
             'resource': 'Neutron::FloatingIp',
-            'icon_char': 'group',
+            'icon': 'fa:cube',
         },
         'os_group': {
             'resource': 'Keystone::Group',
-            'icon_char': 'server',
+            'icon': 'fa:cube',
         },
         'os_hypervisor': {
             'resource': 'Nova::Hypervisor',
-            'icon_char': 'group',
+            'icon': 'fa:server',
         },
         'os_image': {
             'resource': 'Glance::Image',
-            'icon_char': 'group',
+            'icon': 'fa:cube',
         },
         'os_net': {
             'resource': 'Neutron::Net',
-            'icon_char': 'lan-connect',
+            'icon': 'fa:cube',
         },
         'os_port': {
             'resource': 'Neutron::Port',
-            'icon_char': 'serial-port',
+            'icon': 'fa:cube',
         },
         'os_project': {
             'resource': 'Keystone::Tenant',
-            'icon_char': 'server',
+            'icon': 'fa:cube',
         },
         'os_resource_type': {
             'resource': 'Heat::ResourceType',
-            'icon_char': 'lan',
+            'icon': 'fa:cube',
         },
         'os_router': {
             'resource': 'Neutron::Router',
-            'icon_char': 'lan',
+            'icon': 'fa:cube',
         },
         'os_server': {
             'resource': 'Nova::Server',
-            'icon_char': 'server',
+            'icon': 'fa:cube',
         },
         'os_stack': {
             'resource': 'Heat::Stack',
-            'icon_char': 'lan',
+            'icon': 'fa:cubes',
         },
         'os_subnet': {
             'resource': 'Neutron::Subnet',
-            'icon_char': 'lan',
+            'icon': 'fa:cube',
         },
         'os_user': {
             'resource': 'Keystone::User',
-            'icon_char': 'server',
+            'icon': 'fa:cube',
         },
         'os_volume': {
             'resource': 'Cinder::Volume',
-            'icon_char': 'server',
+            'icon': 'fa:cube',
         },
     }
 
@@ -140,13 +140,13 @@ class OpenStackInput(BaseInput):
                         resource['metadata']['project'])
 
         for resource_id, resource in self.resources['os_stack'].items():
-            for ext_resource in resource['metadata']['resources']:
-                if ext_resource['resource_type'] in self._get_resource_mapping():
+            for ext_res in resource['metadata']['resources']:
+                if ext_res['resource_type'] in self._get_resource_mapping():
                     self._scrape_relation(
                         'os_stack-{}'.format(
-                            self._get_resource_mapping()[ext_resource['resource_type']]),
+                            self._get_resource_mapping()[ext_res['resource_type']]),
                         resource_id,
-                        ext_resource['physical_resource_id'])
+                        ext_res['physical_resource_id'])
 
         # Define relationships between aggregate zone and all hypervisors.
         for resource_id, resource in self.resources['os_aggregate'].items():

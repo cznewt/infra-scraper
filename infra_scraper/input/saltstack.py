@@ -12,23 +12,19 @@ class SaltStackInput(BaseInput):
     RESOURCE_MAP = {
         'salt_high_state': {
             'resource': 'High State',
-            'icon_set': 'FontAwesome',
-            'icon_char': 'f233'
+            'icon': 'fa:cube',
         },
         'salt_low_state': {
             'resource': 'Low State',
-            'icon_set': 'FontAwesome',
-            'icon_char': 'f233',
+            'icon': 'fa:cube',
         },
         'salt_minion': {
             'resource': 'Minion',
-            'icon_set': 'FontAwesome',
-            'icon_char': 'f233',
+            'icon': 'fa:server',
         },
         'salt_service': {
             'resource': 'Service',
-            'icon_set': 'FontAwesome',
-            'icon_char': 'f233',
+            'icon': 'fa:cube',
         },
     }
 

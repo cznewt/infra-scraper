@@ -1,3 +1,4 @@
+
 @font-face {
   font-family: 'FontAwesome';
   src: url('/static/fonts/fontawesome-webfont.woff') format('woff');
@@ -11,19 +12,28 @@
 
 .axis {
   stroke: #666;
-}
-
-.axis, .node {
-  fill: #fff;
   stroke-width: 1.5px;
 }
 
-.node {
-  stroke: #666;
+.axis text {
+  font-family: "Open Sans";
 }
 
-circle.active: {
-  fill: #f00!important;
+.node {
+  fill: #fff;
+
+}
+
+.node circle {
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+.node text {
+  stroke-width: 0;
+}
+
+.active {
   stroke: #f00!important;
 }
 

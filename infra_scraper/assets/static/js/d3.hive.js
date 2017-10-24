@@ -91,55 +91,56 @@ d3.hive.link = function() {
 var HivePlot = {
   init: function(container, config, data) {
     if (!data) {
-      throw new Error("Cannot init Hive plot, invalid data provided: " + data);
+      throw new Error("Cannot initialize Hive plot, invalid data provided: " + data);
     }
     var width = config.width || 1920,
-        height = config.height || 1020,
-        radius = config.radius || 400,
+        height = config.height || 1920,
+        radius = config.radius || 600,
         axisMapping = {},
-        colorMapping = {},
-        iconSetMapping = {},
-        iconCharMapping = {},
+        iconMapping = {},
         radiusMapping = {},
         itemCounters = {},
-        itemStep = {},
-        createAxes = function(items) {
-          return items.map(function(item) {
-            iconSetMapping[item.kind] = item.iconSet;
-            iconCharMapping[item.kind] = item.iconChar;
-            colorMapping[item.kind] = '#f00';
-            itemCounters[item.kind] = 0;
-            axisMapping[item.kind] = item.x;
-            itemStep[item.kind] = 1 / item.items;
-            radiusMapping[item.kind] = d3.scaleLinear().range([item.innerRadius*radius, item.outerRadius*radius]);
-            return item;
-          });
-        },
-        createNodes = function(items) {
-          return items.map(function(item) {
-            item["x"] = axisMapping[item.kind];
-            itemCounters[item.kind]++;
-            item["y"] = itemCounters[item.kind];
-            return item;
-          });
-        },
-        createLinks = function(nodes, relations) {
-          return relations.map(function(link) {
-            var retLink = {};
-            nodes.forEach(function(node) {
-              if (link.source == node.id) {
-                retLink.source = node;
-              } else if (link.target == node.id) {
-                retLink.target = node;
-              }
-            });
-            if (!retLink.hasOwnProperty("source") || !retLink.hasOwnProperty("target")) {
-              console.log("Can not find relation node for link " + link);
-              retLink = link;
+        itemStep = {};
+
+    var plotFunctions = {
+      createAxes: function(items) {
+        return items.map(function(item, index) {
+          item.icon.color = d3.schemeCategory20[index];
+          iconMapping[item.kind] = item.icon;
+          itemCounters[item.kind] = 0;
+          axisMapping[item.kind] = item.x;
+          itemStep[item.kind] = 1 / item.items;
+          radiusMapping[item.kind] = d3.scaleLinear()
+            .range([item.innerRadius*radius, item.outerRadius*radius]);
+          return item;
+        });
+      },
+      createNodes: function(items) {
+        return items.map(function(item) {
+          item["x"] = axisMapping[item.kind];
+          itemCounters[item.kind]++;
+          item["y"] = itemCounters[item.kind];
+          return item;
+        });
+      },
+      createLinks: function(nodes, relations) {
+        return relations.map(function(link) {
+          var retLink = {};
+          nodes.forEach(function(node) {
+            if (link.source == node.id) {
+              retLink.source = node;
+            } else if (link.target == node.id) {
+              retLink.target = node;
             }
-            return retLink;
           });
-        };
+          if (!retLink.hasOwnProperty("source") || !retLink.hasOwnProperty("target")) {
+            console.log("Can not find relation node for link " + link);
+            retLink = link;
+          }
+          return retLink;
+        });
+      }
+    };
 
     if (typeof data.axes === 'object') {
       data.axes = Object.values(data.axes);
@@ -149,9 +150,27 @@ var HivePlot = {
       data.resources = Object.values(data.resources);
     }
 
-    var axes = createAxes(data.axes);
-    var nodes = createNodes(data.resources);
-    var links = createLinks(nodes, data.relations);
+    var axes = plotFunctions.createAxes(data.axes);
+    var nodes = plotFunctions.createNodes(data.resources);
+    var links = plotFunctions.createLinks(nodes, data.relations);
+
+    var iconFunctions = {
+      family: function(d) {
+        return iconMapping[d].family;
+      },
+      color: function(d) {
+        return iconMapping[d].color;
+      },
+      character: function(d) {
+        return String.fromCharCode(iconMapping[d].char);
+      },
+      size: function(d) {
+        return iconMapping[d].size + 'px';
+      },
+      transform: function(d) {
+        return 'translate('+ iconMapping[d].x + ', ' + iconMapping[d].y + ')';
+      }
+    };
 
     var angle = function(d) {
       var angle = 0,
@@ -163,18 +182,10 @@ var HivePlot = {
         }
       });
       if (!found) {
-        console.log("Cannot compute angle for item " + d.kind + d.name)
+        console.log("Cannot compute angle for " + d.kind + " " + d.name)
       }
-      return angle
+      return angle;
     }
-
-    var icon = function(i) {
-      return iconMapping[i]
-    };
-
-    var color = function(i) {
-      return colorMapping[i]
-    };
 
     var mouseFunctions = {
       linkOver: function(d) {
@@ -284,10 +295,11 @@ var HivePlot = {
       .on("mouseout", mouseFunctions.out);
 
     node.append("text")
-      .attr('font-size', function(d) { return '16px'; } )
-      .attr('font-family', function(d) { return iconSetMapping[d.kind]; } )
-      .text(function(d) { return String.fromCharCode(iconCharMapping[d.kind]); })
-      .attr("transform", "translate(-9, 6)")
+      .attr('fill', function(d) { return iconFunctions.color(d.kind); })
+      .attr('font-size', function(d) { return iconFunctions.size(d.kind); })
+      .attr('font-family', function(d) { return iconFunctions.family(d.kind); })
+      .text(function(d) { return iconFunctions.character(d.kind); })
+      .attr("transform", function(d) { return iconFunctions.transform(d.kind); })
       .on("mouseover", mouseFunctions.modeOver)
       .on("mouseout", mouseFunctions.out);
 

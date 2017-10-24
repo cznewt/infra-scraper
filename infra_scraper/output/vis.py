@@ -1,6 +1,7 @@
 
 import logging
 from .base import BaseOutput
+from infra_scraper.constants import get_icon
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,8 @@ class VisOutput(BaseOutput):
             for resource_id, resource_item in resource_data.items():
                 resource_item['kind'] = resource_item['kind'].replace(':', '_')
                 resources[resource_id] = resource_item
+            print data['resource_types'][resource_name]
+            icon = get_icon(data['resource_types'][resource_name]['icon'])
             axes[resource_name] = {
                 'x': i,
                 'angle': 360 / kinds * i,
@@ -28,8 +31,7 @@ class VisOutput(BaseOutput):
                 'name': data['resource_types'][resource_name]['resource'],
                 'items': len(data['resources'][resource_name]),
                 'kind': resource_name,
-                'iconSet': data['resource_types'][resource_name]['icon_set'],
-                'iconChar': data['resource_types'][resource_name]['icon_char'],
+                'icon': icon,
             }
             i += 1
 

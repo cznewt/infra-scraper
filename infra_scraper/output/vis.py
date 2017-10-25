@@ -21,7 +21,6 @@ class VisOutput(BaseOutput):
             for resource_id, resource_item in resource_data.items():
                 resource_item['kind'] = resource_item['kind'].replace(':', '_')
                 resources[resource_id] = resource_item
-            print data['resource_types'][resource_name]
             icon = get_icon(data['resource_types'][resource_name]['icon'])
             axes[resource_name] = {
                 'x': i,

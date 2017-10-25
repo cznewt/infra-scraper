@@ -5,19 +5,44 @@ Layout {{ name }}
 {% endblock %}
 
 {% block content %}
-<div id="visualLayout"></div>
+<div class="main-loader">
+  <div class="preloader-wrapper big active">
+    <div class="spinner-layer spinner-blue-only">
+      <div class="circle-clipper left">
+        <div class="circle"></div>
+      </div>
+      <div class="gap-patch">
+        <div class="circle"></div>
+      </div>
+      <div class="circle-clipper right">
+        <div class="circle"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="visual-layout-wrapper">
+  <div id="visual-layout"></div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 
 var data_source = "/api/{{ name }}";
-var selector = '#visualLayout';
-var config = {};
+var selector = '#visual-layout';
 
 document.addEventListener("DOMContentLoaded", function(event) { 
+  console.log('DOM content loaded.');
   d3.json(data_source, function(data) {
+    console.log('Plot data loaded.');
     console.log(data);
+//    containerWidth = d3.select("#visual-layout-wrapper").node().width();
+    var config = {
+      width: 1800,
+      height: 1200
+    };
+    console.log(config)
+    d3.select(".main-loader").style("display", "none");
     HivePlot.init(selector, config, data)
   });
 });

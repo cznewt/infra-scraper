@@ -14,6 +14,10 @@ class SaltStackInput(BaseInput):
             'resource': 'High State',
             'icon': 'fa:cube',
         },
+        'salt_job': {
+            'resource': 'Job',
+            'icon': 'fa:clock-o',
+        },
         'salt_low_state': {
             'resource': 'Low State',
             'icon': 'fa:cube',
@@ -24,7 +28,15 @@ class SaltStackInput(BaseInput):
         },
         'salt_service': {
             'resource': 'Service',
-            'icon': 'fa:cube',
+            'icon': 'fa:podcast',
+        },
+        'salt_state_module': {
+            'resource': 'State Module',
+            'icon': 'fa:cubes',
+        },
+        'salt_user': {
+            'resource': 'User',
+            'icon': 'fa:user',
         },
     }
 
@@ -45,6 +57,7 @@ class SaltStackInput(BaseInput):
                        'pam')
 
     def scrape_all_resources(self):
+        self.scrape_jobs()
         self.scrape_minions()
         self.scrape_services()
         self.scrape_high_states()
@@ -83,6 +96,44 @@ class SaltStackInput(BaseInput):
                 'salt_service-salt_minion',
                 resource_id,
                 resource['metadata']['host'])
+
+        for resource_id, resource in self.resources['salt_job'].items():
+            self._scrape_relation(
+                'salt_user-salt_job',
+                resource['metadata']['User'],
+                resource_id)
+            for minion_id, result in resource['metadata'].get('Result', {}).items():
+                self._scrape_relation(
+                    'salt_job-salt_minion',
+                    resource_id,
+                    minion_id)
+                if type(result) is list:
+                    logger.error(result[0])
+                else:
+                    for state_id, state in result.items():
+                        if '__id__' in state:
+                            result_id = '{}|{}'.format(minion_id, state['__id__'])
+                            self._scrape_relation(
+                                'salt_job-salt_high_state',
+                                resource_id,
+                                result_id)
+
+    def scrape_jobs(self):
+        response = self.api.low([{
+            'client': 'runner',
+            'fun': 'jobs.list_jobs',
+            'arg': "search_function='[\"state.apply\", \"state.sls\"]'"
+        }]).get('return')[0]
+        for job_id, job in response.items():
+            if job['Function'] in ['state.apply', 'state.sls']:
+                result = self.api.lookup_jid(job_id).get('return')[0]
+                job['Result'] = result
+                self._scrape_resource(job_id,
+                                      job['Function'],
+                                      'salt_job', None, metadata=job)
+                self._scrape_resource(job['User'],
+                                      job['User'],
+                                      'salt_user', None, metadata={})
 
     def scrape_minions(self):
         response = self.api.low([{
@@ -134,10 +185,13 @@ class SaltStackInput(BaseInput):
             'fun': 'state.show_highstate'
         }]).get('return')[0]
         for minion_id, high_states in response.items():
-            for high_state_id, high_state in high_states.items():
-                high_state['minion'] = minion_id
-                self._scrape_resource('{}|{}'.format(minion_id,
-                                                     high_state_id),
-                                      high_state_id,
-                                      'salt_high_state', None,
-                                      metadata=high_state)
+            if type(high_states) is list:
+                logger.error(high_states[0])
+            else:
+                for high_state_id, high_state in high_states.items():
+                    high_state['minion'] = minion_id
+                    self._scrape_resource('{}|{}'.format(minion_id,
+                                                         high_state_id),
+                                          high_state_id,
+                                          'salt_high_state', None,
+                                          metadata=high_state)

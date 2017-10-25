@@ -200,8 +200,16 @@ SaltStack
     kind: salt
     name: test-salt
     relations:
-      salt:minion-salt:low_state: 623
+      salt_job-salt_high_state: 552
+      salt_job-salt_minion: 9
+      salt_minion-salt_high_state: 689
+      salt_service-salt_high_state: 689
+      salt_service-salt_minion: 24
+      salt_user-salt_job: 7
     resources:
-      salt:low_state: 623
-      salt:minion: 3
-    timestamp: 1508692151
+      salt_high_state: 689
+      salt_job: 7
+      salt_minion: 3
+      salt_service: 24
+      salt_user: 2
+    timestamp: 1508932328

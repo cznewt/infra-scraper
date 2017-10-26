@@ -27,8 +27,9 @@ Available Endpoints
               <td>{{ endpoint.kind }}</td>
               <td>{{ endpoint.endpoint }}</td>
               <td class="right-align">
-                <a class="waves-effect waves-light btn" href="/layout/{{ name }}/hive">Display</a>
-                <a class="waves-effect waves-light btn" href="/api/{{ name }}/scrape">Scrape</a>
+                {% for layout in endpoint.layouts %}
+                <a class="waves-effect waves-light btn" href="/layout/{{ name }}/{{ layout }}">{{ layout|capitalize }} Plot</a>
+                {% endfor %}
               </td>
             </tr>
             {% endfor %}

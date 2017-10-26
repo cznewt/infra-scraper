@@ -37,8 +37,10 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="{{ url_for('static', filename='js/d3.plot.js') }}"></script>
     <script src="{{ url_for('static', filename='js/d3.hive.js') }}"></script>
     <script src="{{ url_for('static', filename='js/d3.edge-bundle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/d3.tree-map.js') }}"></script>
     {% block extra_js %}{% endblock %}
   </body>
 </html>

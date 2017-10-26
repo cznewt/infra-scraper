@@ -6,13 +6,13 @@ var RelationalPlot = function(RelationalPlot){
      * @param refreshInterval - Refresh interval in seconds (can be null, means refresh disabled)
      */
     RelationalPlot.treeMap = function(dataUrl, graphSelector, refreshInterval){
-      var content_width = $(graphSelector).innerWidth(),
-          width = content_width,
+      var contentWidth = $(graphSelector).innerWidth(),
+          width = contentWidth,
           height = 500,
           positioningMagicNumber = -105,
           //var fill = d3.scale.ordinal()      .range(["#f0f0f0", "#d9d9d9", "#bdbdbd"]);
-          fill = d3.scale.category20(),
-          stroke = d3.scale.linear().domain([0, 1e4]).range(["brown", "steelblue"]),
+          fill = d3.scaleCategory20,
+          stroke = d3.scaleLinear().domain([0, 1e4]).range(["brown", "steelblue"]),
           graph = this;
       this._data = {};
       this.init = function(reinit){
@@ -21,6 +21,7 @@ var RelationalPlot = function(RelationalPlot){
               .value(function(d) { return d.service.length });
 
           graph.bundle = d3.layout.bundle();
+
           if(reinit && graph.div){
              graph.div.remove();
           }
@@ -52,9 +53,9 @@ var RelationalPlot = function(RelationalPlot){
             }
         }
       };
-      this.render= function(){
-        var nodes = graph.treemap.nodes(graphHelpers.root(graph._data)),
-            links = graphHelpers.imports(nodes);
+      this.render = function(){
+        var nodes = graph.treemap.nodes(relationalPlotHelpers.root(graph._data)),
+            links = relationalPlotHelpers.imports(nodes);
 
         graph.div.selectAll(".cell")
             .data(nodes)
@@ -96,11 +97,11 @@ var RelationalPlot = function(RelationalPlot){
             var sidebarWidth = $("#sidebar").width(),
                 windowWidth = $(window).width();
             if(windowWidth > sidebarWidth){
-                content_width = windowWidth - sidebarWidth + positioningMagicNumber;
+                contentWidth = windowWidth - sidebarWidth + positioningMagicNumber;
             }else{
-                content_width = windowWidth;
+                contentWidth = windowWidth;
             }
-            width = content_width;
+            width = contentWidth;
         };
     };
     return RelationalPlot;

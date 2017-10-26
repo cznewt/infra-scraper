@@ -44,7 +44,7 @@ class InfraScraper(object):
         self.storage = self._get_module('storage', 'file')
 
     def _get_module(self, module_file, module_key, module_init={}):
-        module_class = _get_module("{}_{}".format(
+        module_class = _get_module("{}-{}".format(
             module_file, module_key))
         return module_class(**module_init)
 
@@ -63,20 +63,20 @@ class InfraScraper(object):
     def scrape_all_data(self):
         config = self.get_global_config()
         for endpoint_name, endpoint in config['endpoints'].items():
-            self.scrape_data(endpoint_name, endpoint['kind'])
+            self.scrape_data(endpoint_name)
 
     def scrape_data(self, name):
         config = self.get_config(name)
         self.input = self._get_module('input', config['kind'], config)
+        self.out_vis = self._get_module('output', 'vis')
+        self.out_vis_hier = self._get_module('output', 'vis-hier')
         self.input.scrape_all_resources()
         data = self.input.to_dict()
-        self.storage.save_data(name, data)
-        self.out_vis = self._get_module('output', 'vis')
-        self.out_count = self._get_module('output', 'count')
+        self.storage.save_data(name, data.copy())
         self.storage.save_output_data(name, 'vis',
-                                      self.out_vis.get_data('raw', data))
-     #   self.storage.save_output_data(name, 'count',
-     #                                 self.out_count.get_data('raw', data))
+                                      self.out_vis.get_data('raw', data.copy()))
+        self.storage.save_output_data(name, 'vis-hier',
+                                      self.out_vis_hier.get_data('raw', data.copy()))
 
     def get_cached_data(self, name, kind):
         data = self.storage.load_output_data(name, kind)

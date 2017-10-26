@@ -39,4 +39,10 @@ def run():
         data = scraper.get_cached_data(name, 'vis')
         return jsonify(data)
 
+    @app.route('/api/<name>/hier')
+    def hierarchy_topology_data(name=None):
+        scraper = InfraScraper()
+        data = scraper.get_cached_data(name, 'vis-hier')
+        return jsonify(data)
+
     app.run(host='0.0.0.0', port=8076)

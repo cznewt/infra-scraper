@@ -11,7 +11,7 @@ Layout {{ name }}
     <div class="card">
       <div class="card-content">
         <span class="card-title">Endpoint {{ name }}</span>
-        <div id="visual-layout-wrapper">
+        <div id="visual-layout-wrapper" class="{{ layout }}">
           <div id="visual-layout"></div>
         </div>
       </div>
@@ -48,30 +48,32 @@ Layout {{ name }}
 {% block extra_js %}
 <script>
 
-var dataSource = "/api/{{ name }}";
-var selector = '#visual-layout';
-
 document.addEventListener("DOMContentLoaded", function(event) {
-  console.log('DOM content loaded.');
-  var changeDetailBox =function (node){
-        var detailBoxTemplate = '<ul class="collection">' +
-           '<li class="collection-item">Name<span class="badge">{name}</span></li>' +
-           '<li class="collection-item">Kind<span class="badge">{kind}</span></li>' +
-           '</ul>';
-        $('#resource-detail').html(detailBoxTemplate.formatTemplate({
-            name: node.name,
-            kind: node.kind
-        }));
-    };
+  console.log('DOM loaded.');
+  var selector = '#visual-layout';
+  var changeDetailBox = function (node) {
+    var detailBoxTemplate = '<ul class="collection">' +
+     '<li class="collection-item">Name<span class="badge">{name}</span></li>' +
+     '<li class="collection-item">Kind<span class="badge">{kind}</span></li>' +
+     '</ul>';
+    $('#resource-detail').html(detailBoxTemplate.formatTemplate({
+      name: node.name,
+      kind: node.kind
+    }));
+  };
   {% if layout == 'hive' %}
+  var dataSource = "/api/{{ name }}";
   d3.json(dataSource, function(data) {
-    d3.select("#visual-preloader-wrapper .main-loader").style("display", "none");
     $("#countResources").html(Object.keys(data.resources).length);
     $("#countRelations").html(data.relations.length);
     HivePlot.init(selector, data, {nodeClickFn: changeDetailBox});
   });
   {% elif layout == 'edge-bundle' %}
+  var dataSource = "/api/{{ name }}/hier";
   new RelationalPlot.hierarchicalEdgeBundling(dataSource, selector, 60).init();
+  {% elif layout == 'tree-map' %}
+  var dataSource = "/api/{{ name }}/hier";
+  new RelationalPlot.treeMap(dataSource, selector, 60).init();
   {% endif %}
 });
 

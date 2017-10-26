@@ -11,11 +11,8 @@ Layout {{ name }}
     <div class="card">
       <div class="card-content">
         <span class="card-title">Endpoint {{ name }}</span>
-        <div id="visual-preloader-wrapper">
-          {% include "partials/preloader.html" %}
-          <div id="visual-layout-wrapper">
-            <div id="visual-layout"></div>
-          </div>
+        <div id="visual-layout-wrapper">
+          <div id="visual-layout"></div>
         </div>
       </div>
     </div>
@@ -51,26 +48,31 @@ Layout {{ name }}
 {% block extra_js %}
 <script>
 
-var data_source = "/api/{{ name }}";
+var dataSource = "/api/{{ name }}";
 var selector = '#visual-layout';
 
 document.addEventListener("DOMContentLoaded", function(event) {
   console.log('DOM content loaded.');
   var changeDetailBox =function (node){
-        var detailBoxTemplate = "<dl><dt>Name</dt><dd>{name}</dd>" +
-        "<dt>Kind</dt><dd>{kind}</dd></dl>";
+        var detailBoxTemplate = '<ul class="collection">' +
+           '<li class="collection-item">Name<span class="badge">{name}</span></li>' +
+           '<li class="collection-item">Kind<span class="badge">{kind}</span></li>' +
+           '</ul>';
         $('#resource-detail').html(detailBoxTemplate.formatTemplate({
             name: node.name,
             kind: node.kind
         }));
     };
-  d3.json(data_source, function(data) {
-    console.log('Plot data loaded.');
+  {% if layout == 'hive' %}
+  d3.json(dataSource, function(data) {
     d3.select("#visual-preloader-wrapper .main-loader").style("display", "none");
     $("#countResources").html(Object.keys(data.resources).length);
     $("#countRelations").html(data.relations.length);
     HivePlot.init(selector, data, {nodeClickFn: changeDetailBox});
   });
+  {% elif layout == 'edge-bundle' %}
+  new RelationalPlot.hierarchicalEdgeBundling(dataSource, selector, 60).init();
+  {% endif %}
 });
 
 </script>

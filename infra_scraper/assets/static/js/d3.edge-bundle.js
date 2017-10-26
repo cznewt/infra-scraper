@@ -16,7 +16,7 @@ var RelationalPlot = function(RelationalPlot){
             pi = Math.PI,
             active_link,
             splines = [],
-            color_arc = d3.scale.category20(),
+            color_arc = d3.scaleCategory20,
             line_color = function(d){
                 var color = "#C7C7C7";
                 if(d.hasOwnProperty("source") && d.hasOwnProperty("target")){
@@ -45,13 +45,13 @@ var RelationalPlot = function(RelationalPlot){
             if(!dataUrl || !graphSelector){
                 throw new Error("Cannot init ResourceTopology graph, dataUrl or graphSelector not defined");
             }
-            graph.cluster = d3.layout.cluster()
+            graph.cluster = d3.cluster()
                 .size([360, ry - 150])
                 .sort(function(a, b) {
                     return d3.ascending(a.service, b.service);
                 });
             graph.bundle = d3.layout.bundle();
-            graph.line = d3.svg.line.radial()
+            graph.line = d3.radialLine()
                 .interpolate("bundle")
                 .tension(.8)
                 .radius(function(d) {

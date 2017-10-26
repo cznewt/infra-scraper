@@ -223,6 +223,7 @@ var HivePlot = {
       var svg = container
         .append("svg")
         .attr("width", targetWidth)
+        .attr("preserveAspectRatio","xMidYMid meet")
         .attr("height", targetHeight)
         .append("g")
         .attr("transform", "translate(" + (targetWidth / 2) + "," + (targetHeight / 2) + ")");
@@ -341,6 +342,9 @@ var HivePlot = {
 
         node.on("click", function(node){
           svg.selectAll(".node").classed("selected", function(d) { return d === node; });
+          svg.selectAll(".link").classed("selected", function(p) {
+            return p.source === node || p.target === node;
+          });
           if(config.hasOwnProperty("nodeClickFn") && typeof config.nodeClickFn === 'function'){
               config.nodeClickFn(node);
           }

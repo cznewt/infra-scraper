@@ -1,7 +1,5 @@
 
-from flask import Flask
-from flask import render_template
-from flask import jsonify
+from flask import Flask, redirect, render_template, jsonify
 
 from .main import InfraScraper
 
@@ -28,6 +26,12 @@ def run():
                                name=name,
                                config=config,
                                layout=layout)
+
+    @app.route('/api/<name>/scrape')
+    def scrape_data(name=None):
+        scraper = InfraScraper()
+        scraper.scrape_data(name)
+        return redirect('.')
 
     @app.route('/api/<name>')
     def topology_data(name=None):

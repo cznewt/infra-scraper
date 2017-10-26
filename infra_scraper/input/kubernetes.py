@@ -127,28 +127,28 @@ class KubernetesInput(BaseInput):
     def _create_relations(self):
 
         namespace_2_uid = {}
-        for resource_id, resource in self.resources['k8s_namespace'].items():
+        for resource_id, resource in self.resources.get('k8s_namespace', {}).items():
             resource_mapping = resource['metadata']['metadata']['name']
             namespace_2_uid[resource_mapping] = resource_id
 
         node_2_uid = {}
-        for resource_id, resource in self.resources['k8s_node'].items():
+        for resource_id, resource in self.resources.get('k8s_node', {}).items():
             resource_mapping = resource['metadata']['metadata']['name']
             node_2_uid[resource_mapping] = resource_id
 
         secret_2_uid = {}
-        for resource_id, resource in self.resources['k8s_secret'].items():
+        for resource_id, resource in self.resources.get('k8s_secret', {}).items():
             resource_mapping = resource['metadata']['metadata']['name']
             secret_2_uid[resource_mapping] = resource_id
 
         volume_2_uid = {}
-        for resource_id, resource in self.resources['k8s_persistent_volume'].items():
+        for resource_id, resource in self.resources.get('k8s_persistent_volume', {}).items():
             resource_mapping = resource['metadata']['metadata']['name']
             volume_2_uid[resource_mapping] = resource_id
 
         service_run_2_uid = {}
         service_app_2_uid = {}
-        for resource_id, resource in self.resources['k8s_service'].items():
+        for resource_id, resource in self.resources.get('k8s_service', {}).items():
             if resource['metadata']['spec'].get('selector', {}) is not None:
                 if resource['metadata']['spec'].get('selector', {}).get('run', False):
                     selector = resource['metadata']['spec']['selector']['run']
@@ -167,7 +167,7 @@ class KubernetesInput(BaseInput):
                         namespace_2_uid[resource['metadata']['metadata']['namespace']])
 
         # Define relationships between service accounts and secrets
-        for resource_id, resource in self.resources['k8s_service_account'].items():
+        for resource_id, resource in self.resources.get('k8s_service_account', {}).items():
             for secret in resource['metadata']['secrets']:
                 self._scrape_relation('k8s_service_account-k8s_secret',
                                       resource_id,
@@ -180,14 +180,14 @@ class KubernetesInput(BaseInput):
         """
 
         # Define relationships between replica sets and deployments
-        for resource_id, resource in self.resources['k8s_replica_set'].items():
+        for resource_id, resource in self.resources.get('k8s_replica_set', {}).items():
             deployment_id = resource['metadata']['metadata']['ownerReferences'][0]['uid']
             self._scrape_relation(
                 'k8s_deployment-k8s_replica_set',
                 deployment_id,
                 resource_id)
 
-        for resource_id, resource in self.resources['k8s_pod'].items():
+        for resource_id, resource in self.resources.get('k8s_pod', {}).items():
             # Define relationships between pods and nodes
             if resource['metadata']['spec']['nodeName'] is not None:
                 node = resource['metadata']['spec']['nodeName']

@@ -10,7 +10,7 @@ Available Endpoints
     <div class="card">
       <div class="card-content">
         <span class="card-title">Available Endpoints</span>
-        <table class="striped">
+        <table class="bordered responsive-table">
           <thead>
             <tr>
                 <th>Name</th>
@@ -23,10 +23,13 @@ Available Endpoints
           <tbody>
             {% for name, endpoint in config['endpoints'].items() %}
             <tr>
-              <th>{{ name }}</th>
+              <td><b>{{ name }}</b></td>
               <td>{{ endpoint.kind }}</td>
               <td>{{ endpoint.endpoint }}</td>
-              <td class="right-align"><a class="waves-effect waves-light btn" href="/layout/{{ name }}/hive">Hive-plot</a></td>
+              <td class="right-align">
+                <a class="waves-effect waves-light btn" href="/layout/{{ name }}/hive">Display</a>
+                <a class="waves-effect waves-light btn" href="/api/{{ name }}/scrape">Scrape</a>
+              </td>
             </tr>
             {% endfor %}
           </tbody>

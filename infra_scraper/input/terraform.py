@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import python_terraform
-import yaml
+from graphviz import Digraph
 import logging
-import unicodedata
 import StringIO
 
 from .base import BaseInput
@@ -47,9 +46,6 @@ class TerraformInput(BaseInput):
             'icon': 'fa:cube',
         },
     }
-
-
-
 
     def __init__(self, **kwargs):
         super(TerraformInput, self).__init__(**kwargs)

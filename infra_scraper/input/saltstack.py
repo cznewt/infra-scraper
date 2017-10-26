@@ -78,7 +78,7 @@ class SaltStackInput(BaseInput):
                                   split_service[0], split_service[1]),
                 resource_id)
         """
-        for resource_id, resource in self.resources['salt_high_state'].items():
+        for resource_id, resource in self.resources.get('salt_high_state', {}).items():
             # Define relationships between high states and nodes.
             self._scrape_relation(
                 'salt_minion-salt_high_state',
@@ -91,13 +91,13 @@ class SaltStackInput(BaseInput):
                                   split_service[0], split_service[1]),
                 resource_id)
 
-        for resource_id, resource in self.resources['salt_service'].items():
+        for resource_id, resource in self.resources.get('salt_service', {}).items():
             self._scrape_relation(
                 'salt_service-salt_minion',
                 resource_id,
                 resource['metadata']['host'])
 
-        for resource_id, resource in self.resources['salt_job'].items():
+        for resource_id, resource in self.resources.get('salt_job', {}).items():
             self._scrape_relation(
                 'salt_user-salt_job',
                 resource['metadata']['User'],

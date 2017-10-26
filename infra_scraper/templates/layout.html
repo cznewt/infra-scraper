@@ -56,12 +56,20 @@ var selector = '#visual-layout';
 
 document.addEventListener("DOMContentLoaded", function(event) {
   console.log('DOM content loaded.');
+  var changeDetailBox =function (node){
+        var detailBoxTemplate = "<dl><dt>Name</dt><dd>{name}</dd>" +
+        "<dt>Kind</dt><dd>{kind}</dd></dl>";
+        $('#resource-detail').html(detailBoxTemplate.formatTemplate({
+            name: node.name,
+            kind: node.kind
+        }));
+    };
   d3.json(data_source, function(data) {
     console.log('Plot data loaded.');
     d3.select("#visual-preloader-wrapper .main-loader").style("display", "none");
     $("#countResources").html(Object.keys(data.resources).length);
     $("#countRelations").html(data.relations.length);
-    HivePlot.init(selector, data);
+    HivePlot.init(selector, data, {nodeClickFn: changeDetailBox});
   });
 });
 

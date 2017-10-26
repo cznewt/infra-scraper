@@ -2,6 +2,7 @@
     "input_openstack": "infra_scraper.input.openstack.OpenStackInput",
     "input_kubernetes": "infra_scraper.input.kubernetes.KubernetesInput",
     "input_salt": "infra_scraper.input.saltstack.SaltStackInput",
+    "input_terraform": "infra_scraper.input.terraform.TerraformInput",
     "storage_file": "infra_scraper.storage.file.FileStorage",
     "output_raw": "infra_scraper.output.raw.RawOutput",
     "output_enc": "infra_scraper.output.enc.EncOutput",

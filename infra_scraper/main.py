@@ -61,9 +61,9 @@ class InfraScraper(object):
         for endpoint_name, endpoint in config['endpoints'].items():
             self.scrape_data(endpoint_name, endpoint['kind'])
 
-    def scrape_data(self, name, kind):
+    def scrape_data(self, name):
         config = self.get_config(name)
-        self.input = self._get_module('input', kind, config)
+        self.input = self._get_module('input', config['kind'], config)
         self.input.scrape_all_resources()
         data = self.input.to_dict()
         self.storage.save_data(name, data)

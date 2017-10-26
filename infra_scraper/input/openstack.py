@@ -143,7 +143,7 @@ class OpenStackInput(BaseInput):
                         resource_id,
                         resource['metadata']['project'])
 
-        for resource_id, resource in self.resources['os_stack'].items():
+        for resource_id, resource in self.resources.get('os_stack').items():
             for ext_res in resource['metadata']['resources']:
                 if ext_res['resource_type'] in self._get_resource_mapping():
                     self._scrape_relation(
@@ -160,7 +160,14 @@ class OpenStackInput(BaseInput):
                     host,
                     resource_id)
 
-        for resource_id, resource in self.resources['os_port'].items():
+        for resource_id, resource in self.resources.get('os_floating_ip', {}).items():
+            if resource['metadata'].get('port_id', None) is not None:
+                self._scrape_relation(
+                    'os_floating_ip-os_port',
+                    resource_id,
+                    resource['metadata']['port_id'])
+
+        for resource_id, resource in self.resources.get('os_port', {}).items():
             self._scrape_relation(
                 'os_port-os_net',
                 resource_id,
@@ -177,7 +184,7 @@ class OpenStackInput(BaseInput):
                         resource_id,
                         resource['metadata']['binding:host_id'])
 
-        for resource_id, resource in self.resources['os_server'].items():
+        for resource_id, resource in self.resources.get('os_server').items():
             if self.scope == 'global':
                 self._scrape_relation(
                     'os_server-os_hypervisor',

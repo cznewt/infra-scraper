@@ -1,4 +1,9 @@
+
 pyyaml
+msgpack-python
+Flask
+
+# openstack requirements
 os_client_config
 python-cinderclient
 python-glanceclient
@@ -6,9 +11,15 @@ python-heatclient
 python-keystoneclient
 python-novaclient
 python-neutronclient
-pykube
-tosca-parser
-salt-pepper
-msgpack-python
 
-Flask
+# kubernetes requirements
+pykube
+
+# tosca requirements
+tosca-parser
+
+# salt requirements
+salt-pepper
+
+# terraform requirements
+python-terraform

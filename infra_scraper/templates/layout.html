@@ -54,23 +54,14 @@ Layout {{ name }}
 var data_source = "/api/{{ name }}";
 var selector = '#visual-layout';
 
-var containerWidth = $("#visual-layout-wrapper").width();
-$("#visual-layout-wrapper").height(containerWidth*2/3);
-
-document.addEventListener("DOMContentLoaded", function(event) { 
+document.addEventListener("DOMContentLoaded", function(event) {
   console.log('DOM content loaded.');
   d3.json(data_source, function(data) {
     console.log('Plot data loaded.');
     d3.select("#visual-preloader-wrapper .main-loader").style("display", "none");
     $("#countResources").html(Object.keys(data.resources).length);
     $("#countRelations").html(data.relations.length);
-    console.log(data);
-    var config = {
-      width: containerWidth,
-      height: containerWidth*2/3,
-      radius: containerWidth*2/(3*2.4)
-    };
-    HivePlot.init(selector, config, data)
+    HivePlot.init(selector, data);
   });
 });
 

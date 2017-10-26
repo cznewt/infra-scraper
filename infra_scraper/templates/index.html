@@ -21,7 +21,7 @@ Available Endpoints
           </thead>
 
           <tbody>
-            {% for name, endpoint in config.endpoints.items() %}
+            {% for name, endpoint in config['endpoints'].items() %}
             <tr>
               <th>{{ name }}</th>
               <td>{{ endpoint.kind }}</td>

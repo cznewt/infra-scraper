@@ -8,6 +8,10 @@
   position: relative;
 }
 
+#visual-layout{
+  width:100%;
+  min-height:600px;
+}
 #visual-preloader-wrapper .main-loader {
   top: 0px;
   left: 0px;

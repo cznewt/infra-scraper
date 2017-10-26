@@ -48,9 +48,10 @@ Layout {{ name }}
 {% block extra_js %}
 <script>
 
+var selector = '#visual-layout';
+
 document.addEventListener("DOMContentLoaded", function(event) {
   console.log('DOM loaded.');
-  var selector = '#visual-layout';
   var changeDetailBox = function (node) {
     var detailBoxTemplate = '<ul class="collection">' +
      '<li class="collection-item">Name<span class="badge">{name}</span></li>' +
@@ -66,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   d3.json(dataSource, function(data) {
     $("#countResources").html(Object.keys(data.resources).length);
     $("#countRelations").html(data.relations.length);
-    HivePlot.init(selector, data, {nodeClickFn: changeDetailBox});
+    HivePlot.init(selector, data, {nodeClickFn: changeDetailBox, selector: selector});
   });
   {% elif layout == 'edge-bundle' %}
   var dataSource = "/api/{{ name }}/hier";

@@ -114,6 +114,7 @@ var HivePlot = {
     var width = config.width || "auto",
         height = config.height || "auto",
         radius = config.radius || "auto",
+        selector = config.selector,
         axisMapping = {},
         iconMapping = {},
         radiusMapping = {},

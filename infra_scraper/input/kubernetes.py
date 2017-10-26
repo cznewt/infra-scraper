@@ -97,8 +97,8 @@ class KubernetesInput(BaseInput):
         self.config_file = kwargs.get('config_file', '{}/clusters.yaml'.format(
             os.path.dirname(os.path.realpath(__file__))))
 
-        self.api = pykube.HTTPClient(pykube.KubeConfig.from_file(
-                                     self.config_file))
+        self.config = pykube.KubeConfig.from_file(self.config_file)
+        self.api = pykube.HTTPClient(self.config)
 
     def scrape_all_resources(self):
         self.scrape_config_maps()

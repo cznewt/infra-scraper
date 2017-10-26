@@ -19,7 +19,8 @@ class VisOutput(BaseOutput):
         kinds = len(data['resources'])
         for resource_name, resource_data in data['resources'].items():
             for resource_id, resource_item in resource_data.items():
-                resource_item['kind'] = resource_item['kind'].replace(':', '_')
+                resource_item['kind'] = resource_item['kind']
+                resource_item.pop('metadata')
                 resources[resource_id] = resource_item
             icon = get_icon(data['resource_types'][resource_name]['icon'])
             axes[resource_name] = {

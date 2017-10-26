@@ -3,6 +3,7 @@ import importlib
 
 from infra_scraper import constructors
 from infra_scraper import exceptions
+from infra_scraper.utils import load_yaml_json_file
 
 
 def _get_module(module_key):
@@ -47,12 +48,37 @@ class InfraScraper(object):
             module_file, module_key))
         return module_class(**module_init)
 
-    def scrape_data(self, name, kind, config):
+    def get_global_config(self):
+        return load_yaml_json_file('/etc/infra-scraper/config.yaml')
+
+    def get_config(self, name):
+        config = self.get_global_config()['endpoints'][name]
+        config['name'] = name
+        return config
+
+    def scrape_all_data(self):
+        config = self.get_global_config()
+        for endpoint_name, endpoint in config['endpoints'].items():
+            self.scrape_data(endpoint_name, endpoint['kind'])
+
+    def scrape_data(self, name, kind):
+        config = self.get_config(name)
         self.input = self._get_module('input', kind, config)
         self.input.scrape_all_resources()
-        self.storage.save_data(name, self.input.to_dict())
+        data = self.input.to_dict()
+        self.storage.save_data(name, data)
+        self.out_vis = self._get_module('output', 'vis')
+        self.out_count = self._get_module('output', 'count')
+        self.storage.save_output_data(name, 'vis',
+                                      self.out_vis.get_data('raw', data))
+     #   self.storage.save_output_data(name, 'count',
+     #                                 self.out_count.get_data('raw', data))
 
-    def get_data(self, name, kind, format='yaml'):
-        data = self.storage.load_data(name)
+    def get_cached_data(self, name, kind):
+        data = self.storage.load_output_data(name, kind)
+        return data
+
+    def get_data(self, name, kind, format='raw'):
         self.output = self._get_module('output', kind)
+        data = self.storage.load_data(name)
         return self.output.get_data(format, data)

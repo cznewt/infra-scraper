@@ -9,5 +9,6 @@ python-neutronclient
 pykube
 tosca-parser
 salt-pepper
+msgpack-python
 
 Flask

@@ -106,3 +106,4 @@ ENV/
 clouds.yaml
 clusters.yaml
 configs.yaml
+config.yaml

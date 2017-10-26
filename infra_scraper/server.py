@@ -15,16 +15,24 @@ def run():
 
     @app.route('/')
     def index():
-        return render_template('index.html')
+        scraper = InfraScraper()
+        config = scraper.get_global_config()
+        return render_template('index.html',
+                               config=config)
 
-    @app.route('/layout/<name>')
-    def layout(name=None):
-        return render_template('layout.html', name=name)
+    @app.route('/layout/<name>/<layout>')
+    def topology_layout(name, layout):
+        scraper = InfraScraper()
+        config = scraper.get_config(name)
+        return render_template('layout.html',
+                               name=name,
+                               config=config,
+                               layout=layout)
 
     @app.route('/api/<name>')
     def topology_data(name=None):
         scraper = InfraScraper()
-        data = scraper.get_data(name, 'vis', 'raw')
+        data = scraper.get_cached_data(name, 'vis')
         return jsonify(data)
 
     app.run(host='0.0.0.0', port=8076)

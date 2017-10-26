@@ -29,42 +29,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
   </head>
   <body>
-    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-      {#
-      <div class="android-header mdl-layout__header mdl-layout__header--waterfall">
-        <div class="mdl-layout__header-row">
-          <span class="android-title mdl-layout-title">
-            Infra Scraper: {% block page_header %}{% endblock %}
-          </span>
-          <!-- Add spacer, to align navigation to the right in desktop -->
-          <div class="android-header-spacer mdl-layout-spacer"></div>
-          <!-- Navigation -->
-          <div class="android-navigation-container">
-            <nav class="android-navigation mdl-navigation">
-              <a class="mdl-navigation__link mdl-typography--text-uppercase" href="">Visualization Layouts</a>
-              <a class="mdl-navigation__link mdl-typography--text-uppercase" href="">Documenation</a>
-            </nav>
-          </div>
-        </div>
+    <main>
+      <div class="content">
+        {% block content %}{% endblock %}
       </div>
-      #}
-      {% block content %}{% endblock %}
-        {#
-      <div class="android-content mdl-layout__content">
-        <a name="top"></a>
-        <footer class="android-footer mdl-mega-footer">
-          <div class="mdl-mega-footer--middle-section">
-            <p class="mdl-typography--font-light">Infra Scraper: © 2017 Aleš Komárek</p>
-          </div>
-        </footer>
-      </div>
-      #}
-    </div>
+    </main>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="{{ url_for('static', filename='js/d3.hive.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     {% block extra_js %}{% endblock %}
   </body>
 </html>

@@ -3,6 +3,7 @@ from .base import BaseStorage
 import os
 import glob
 import yaml
+import msgpack
 import logging
 
 logger = logging.getLogger(__name__)
@@ -38,6 +39,7 @@ class FileStorage(BaseStorage):
                                        data['timestamp'])
         with open(filename, 'w') as outfile:
             yaml.safe_dump(data, outfile, default_flow_style=False)
+        outfile.close()
         self.last_timestamp = data['timestamp']
 
     def load_data(self, name):
@@ -51,4 +53,30 @@ class FileStorage(BaseStorage):
                 data = yaml.load(stream)
             except yaml.YAMLError as exception:
                 logger.error(exception)
+        stream.close()
+        return data
+
+    def save_output_data(self, name, kind, data):
+        self._storage_dir_exist(name)
+        filename = '{}/{}-{}.msgpack'.format(self._get_storage_dir(name),
+                                             data['timestamp'],
+                                             kind)
+        with open(filename, 'w') as outfile:
+            binary_data = msgpack.packb(data)
+            file_byte_array = bytearray(binary_data)
+            outfile.write(file_byte_array)
+        outfile.close()
+
+    def load_output_data(self, name, kind):
+        last_timestamp = self._get_last_timestamp(name)
+        data = None
+        filename = '{}/{}-{}.msgpack'.format(self._get_storage_dir(name),
+                                             last_timestamp, kind)
+        with open(filename, 'r') as stream:
+            file_byte_array = stream.read()
+            try:
+                data = msgpack.unpackb(file_byte_array, use_list=False)
+            except Exception as exception:
+                logger.error(exception)
+        stream.close()
         return data

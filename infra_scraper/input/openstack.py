@@ -86,6 +86,8 @@ class OpenStackInput(BaseInput):
         except KeyError:
             raise ValueError('Missing parameter name')
 
+        self.scope = kwargs['scope']
+
         self.region = kwargs.get('region', 'RegionOne')
         self.identity_api = os_client_config.make_client(
             'identity', cloud=self.name)
@@ -109,11 +111,13 @@ class OpenStackInput(BaseInput):
         # glance resources
         # self.scrape_images()
         # nova resources
-        self.scrape_aggregates()
+        if self.scope == 'global':
+            self.scrape_aggregates()
         self.scrape_flavors()
         # self.scrape_security_groups()
         self.scrape_servers()
-        self.scrape_hypervisors()
+        if self.scope == 'global':
+            self.scrape_hypervisors()
         # neutron resources
         self.scrape_networks()
         self.scrape_subnets()
@@ -149,7 +153,7 @@ class OpenStackInput(BaseInput):
                         ext_res['physical_resource_id'])
 
         # Define relationships between aggregate zone and all hypervisors.
-        for resource_id, resource in self.resources['os_aggregate'].items():
+        for resource_id, resource in self.resources.get('os_aggregate', {}).items():
             for host in resource['metadata']['hosts']:
                 self._scrape_relation(
                     'os_hypervisor-os_aggregate',
@@ -166,17 +170,19 @@ class OpenStackInput(BaseInput):
                     'os_port-os_server',
                     resource_id,
                     resource['metadata']['device_id'])
-            if resource['metadata'].get('device_id', None) is not None:
-                self._scrape_relation(
-                    'os_port-os_hypervisor',
-                    resource_id,
-                    resource['metadata']['binding:host_id'])
+            if self.scope == 'global':
+                if resource['metadata'].get('device_id', None) is not None:
+                    self._scrape_relation(
+                        'os_port-os_hypervisor',
+                        resource_id,
+                        resource['metadata']['binding:host_id'])
 
         for resource_id, resource in self.resources['os_server'].items():
-            self._scrape_relation(
-                'os_server-os_hypervisor',
-                resource_id,
-                resource['metadata']['OS-EXT-SRV-ATTR:host'])
+            if self.scope == 'global':
+                self._scrape_relation(
+                    'os_server-os_hypervisor',
+                    resource_id,
+                    resource['metadata']['OS-EXT-SRV-ATTR:host'])
 
             self._scrape_relation(
                 'os_server-os_flavor',
@@ -238,8 +244,12 @@ class OpenStackInput(BaseInput):
                                   'os_hypervisor', None, metadata=resource)
 
     def scrape_servers(self):
+        if self.scope == 'global':
+            search_opts = {'all_tenants': 1}
+        else:
+            search_opts = None
         response = self.compute_api.servers.list(
-            search_opts={'all_tenants': 1})
+            search_opts=search_opts)
         for item in response:
             resource = item.to_dict()
             self._scrape_resource(resource['id'], resource['name'],
@@ -315,8 +325,12 @@ class OpenStackInput(BaseInput):
                                   'os_resource_type', None, metadata=resource)
 
     def scrape_stacks(self):
+        if self.scope == 'global':
+            search_opts = {'all_tenants': 1}
+        else:
+            search_opts = None
         stacks = self.orch_api.stacks.list(
-            search_opts={'all_tenants': 1})
+            search_opts=search_opts)
         i = 0
         for stack in stacks:
             if i < 2:

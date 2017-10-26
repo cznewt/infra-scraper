@@ -226,7 +226,7 @@ var HivePlot = {
       .attr("width", width)
       .attr("height", height)
       .append("g")
-      .attr("transform", "translate(" + (width / 2 - 180) + "," + (height / 2 - 20) + ")");
+      .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
 
     var tooltip = d3.select("body").append("div")
       .attr("class", "tooltip")

@@ -53,7 +53,7 @@
   stroke-width: 0;
 }
 
-.active {
+.active, .selected {
   stroke: #f00!important;
 }
 

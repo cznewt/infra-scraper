@@ -1,5 +1,21 @@
+String.prototype.formatTemplate = String.prototype.formatTemplate ||
+function () {
+    "use strict";
+    var str = this.toString();
+    if (arguments.length) {
+        var t = typeof arguments[0];
+        var key;
+        var args = ("string" === t || "number" === t) ?
+            Array.prototype.slice.call(arguments)
+            : arguments[0];
 
-d3.hive = {};
+        for (key in args) {
+            str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
+        }
+    }
+
+    return str;
+};
 
 Math.radians = function(degrees) {
   return degrees * Math.PI / 180;
@@ -9,6 +25,7 @@ Math.degrees = function(radians) {
   return radians * 180 / Math.PI;
 };
 
+d3.hive = {};
 d3.hive.link = function() {
   var source = function(d) { return d.source; },
       target = function(d) { return d.target; },
@@ -322,9 +339,12 @@ var HivePlot = {
         .on("mouseover", mouseFunctions.modeOver)
         .on("mouseout", mouseFunctions.out);
 
-      if(config.hasOwnProperty("nodeClickFn") && typeof config.nodeClickFn === 'function'){
-        node.on("click", config.nodeClickFn);
-      }
+        node.on("click", function(node){
+          svg.selectAll(".node").classed("selected", function(d) { return d === node; });
+          if(config.hasOwnProperty("nodeClickFn") && typeof config.nodeClickFn === 'function'){
+              config.nodeClickFn(node);
+          }
+        });
     }
     render();
     window.removeEventListener('resize', render);

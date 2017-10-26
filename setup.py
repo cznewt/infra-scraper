@@ -28,7 +28,10 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'infra_viz = infra_scraper.server:run',
+            'scraper_web = infra_scraper.server:run',
+            'scraper_status = infra_scraper.cli:status',
+            'scraper_get = infra_scraper.cli:scrape',
+            'scraper_get_all = infra_scraper.server:scrape_all',
         ],
     },
 )

@@ -56,6 +56,10 @@ class InfraScraper(object):
         config['name'] = name
         return config
 
+    def status(self):
+        config = self.get_global_config()
+        return config
+
     def scrape_all_data(self):
         config = self.get_global_config()
         for endpoint_name, endpoint in config['endpoints'].items():

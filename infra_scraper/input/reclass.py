@@ -35,7 +35,26 @@ class SaltReclassInput(SaltStackInput):
         self.kind = 'reclass'
 
     def _create_relations(self):
-        pass
+        for resource_id, resource in self.resources.get('salt_job', {}).items():
+            self._scrape_relation(
+                'salt_user-salt_job',
+                resource['metadata']['User'],
+                resource_id)
+            for minion_id, result in resource['metadata'].get('Result', {}).items():
+                self._scrape_relation(
+                    'salt_job-salt_minion',
+                    resource_id,
+                    minion_id)
+                if type(result) is list:
+                    logger.error(result[0])
+                else:
+                    for state_id, state in result.items():
+                        if '__id__' in state:
+                            result_id = '{}|{}'.format(minion_id, state['__id__'])
+                            self._scrape_relation(
+                                'salt_job-salt_high_state',
+                                resource_id,
+                                result_id)
 
     def scrape_all_resources(self):
         self.scrape_nodes()

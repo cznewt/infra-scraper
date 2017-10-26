@@ -2,6 +2,7 @@
 pyyaml
 msgpack-python
 Flask
+Click
 
 # openstack requirements
 os_client_config

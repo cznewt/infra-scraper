@@ -14,7 +14,14 @@ providers are:
 Installation
 ============
 
-To bootstrap development environment run following commands:
+Release version of infra-scraper is currently available on `Pypi
+<https://pypi.org/project/infra-scraper/>`_, to install it, simply execute:
+
+.. code-block:: bash
+
+    pip install infra-scraper
+
+To bootstrap latest version into virtualenv, run following commands:
 
 .. code-block:: bash
 
@@ -23,6 +30,7 @@ To bootstrap development environment run following commands:
     virtualenv venv
     source venv/bin/activate
     pip install -r requirements.txt
+    python setup.py install
 
 
 Configuration

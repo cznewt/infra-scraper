@@ -49,7 +49,7 @@ var RelationalPlot = function(RelationalPlot){
                 .angle(function(d) { return d.x / 180 * Math.PI; });
 
             if(reinit && graph.svg){
-                graph.svg.remove();
+//                graph.svg.remove();
             }
 
             graph.svg = d3.select(graphSelector).append("svg")
@@ -63,9 +63,7 @@ var RelationalPlot = function(RelationalPlot){
 
             if(!reinit){
                 graph.requestData(dataUrl, graph.render);
-
                 $(window).on('resize', function(ev){
-                    graph.resetPosition();
                     graph.init(true);
                     graph.render();
                 });
@@ -107,54 +105,14 @@ var RelationalPlot = function(RelationalPlot){
 
         this.requestData = function(dataUrl, callback){
             d3.json(dataUrl, function(res){
-                console.log(res);
                 graph._data = res.resources;
-                console.log(graph._data);
+                console.log(res.resources);
                 if(typeof callback === 'function'){
                     callback();
                 }
             });
         };
 
-        this.resetPosition = function(){
-            var sidebarWidth = $("#sidebar").width(),
-                windowWidth = $(window).width();
-            if(windowWidth > sidebarWidth){
-                contentWidth = windowWidth - sidebarWidth + positioningMagicNumber;
-            }else{
-                contentWidth = windowWidth;
-            }
-            w = contentWidth;
-            h = contentWidth;
-            rx = w / 2;
-            ry = h / 2;
-        };
-
-        this.updateNodes = function(name, value) {
-            return function(d) {
-                if (value) this.parentNode.appendChild(this);
-                var selector = graphHelpers.nodeServiceId(d[name]);
-                graph.svg.select("#"+selector).classed(name, value);
-            };
-        };
-
-        this.findStartAngle = function(children) {
-            var min = children[0].x;
-            children.forEach(function(d) {
-                if (d.x < min)
-                    min = d.x;
-            });
-            return min;
-        };
-
-        this.findEndAngle = function(children) {
-            var max = children[0].x;
-            children.forEach(function(d) {
-                if (d.x > max)
-                    max = d.x;
-            });
-            return max;
-        };
     };
     return RelationalPlot;
 }(RelationalPlot || {});

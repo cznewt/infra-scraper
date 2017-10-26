@@ -22,8 +22,8 @@ Layout {{ name }}
       <div class="card-content">
         <span class="card-title">Topology</span>
         <ul class="collection">
-          <li class="collection-item">Visual Layout<span class="badge">{{ layout|capitalize }}</span></li>
-          <li class="collection-item">Endpoint Type<span class="badge">{{ config.kind|capitalize }}</span></li>
+          <li class="collection-item">Layout<span class="badge">{{ layout|capitalize }}</span></li>
+          <li class="collection-item">Dataset<span class="badge">{{ config.kind|capitalize }}</span></li>
           <li class="collection-item">Resources<span class="badge" id="countResources">N/A</span></li>
           <li class="collection-item">Relations<span class="badge" id="countRelations">N/A</span></li>
         </ul>
@@ -71,10 +71,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
   });
   {% elif layout == 'edge-bundle' %}
   var dataSource = "/api/{{ name }}/hier";
-  new RelationalPlot.hierarchicalEdgeBundling(dataSource, selector, 60).init();
+  new RelationalPlot.hierarchicalEdgeBundling(dataSource, selector, 3600).init();
   {% elif layout == 'tree-map' %}
   var dataSource = "/api/{{ name }}/hier";
-  new RelationalPlot.treeMap(dataSource, selector, 60).init();
+  new RelationalPlot.treeMap(dataSource, selector, 3600).init();
   {% endif %}
 });
 

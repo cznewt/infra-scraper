@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-
+import yaml
 import python_terraform
-from graphviz import Digraph
+from pydot import graph_from_dot_data
 import logging
 import StringIO
 
@@ -34,7 +34,7 @@ class TerraformInput(BaseInput):
             'icon': 'fa:cube',
         },
         'tf_openstack_networking_network_v2': {
-            'resource': 'Subnet',
+            'resource': 'Network',
             'icon': 'fa:cube',
         },
         'tf_openstack_networking_subnet_v2': {
@@ -42,7 +42,7 @@ class TerraformInput(BaseInput):
             'icon': 'fa:cube',
         },
         'tf_openstack_networking_floatingip_v2': {
-            'resource': 'Subnet',
+            'resource': 'FloatingIP',
             'icon': 'fa:cube',
         },
     }
@@ -58,17 +58,28 @@ class TerraformInput(BaseInput):
             raise ValueError('Missing parameter config_dir')
 
         self.client = python_terraform.Terraform(working_dir=self.config_dir)
-        print self.client.fmt(diff=True)
 
     def scrape_all_resources(self):
         self.scrape_resources()
 
+    def clean_name(self, name):
+        return name.replace('"', '').replace('[root] ', '').strip()
+
     def _create_relations(self):
-        return_code, raw_data, stderr = self.client.graph()
+        return_code, raw_data, stderr = self.client.graph(no_color=python_terraform.IsFlagged)
+        graph = graph_from_dot_data(raw_data)[0]
+        for edge in graph.obj_dict['subgraphs']['"root"'][0]['edges']:
+            source = self.clean_name(edge[0]).split('.')
+            target = self.clean_name(edge[1]).split('.')
+            if 'tf_{}'.format(source[0]) in self.resources and 'tf_{}'.format(target[0]) in self.resources:
+                self._scrape_relation(
+                    'tf_{}-tf_{}'.format(source[0], target[0]),
+                    '{}.{}'.format(source[0], source[1]),
+                    '{}.{}'.format(target[0], target[1]))
 
     def scrape_resources(self):
         res = None
-        return_code, raw_data, stderr = self.client.show()
+        return_code, raw_data, stderr = self.client.show(no_color=python_terraform.IsFlagged)
         raw_data = raw_data.split('Outputs:')[0]
         data_buffer = StringIO.StringIO(raw_data)
         for line in data_buffer.readlines():
@@ -82,16 +93,15 @@ class TerraformInput(BaseInput):
                     self._scrape_resource(res['id'], res['name'],
                                           res['kind'], None,
                                           metadata=res['metadata'])
-                resource_id = line.replace(' (tainted', '').replace(' (:', '')
+                resource_id = line.replace(' (tainted', '') \
+                    .replace(':', '').replace('(', '').replace(')', '').strip()
                 try:
-                    resource_kind, resource_name = resource_id.split('.')
-                    if resource_kind == '\x1b[0mopenstack_compute_instance_v2':
-                        resource_kind = 'openstack_compute_instance_v2'
+                    resource_kind, resource_name = str(resource_id).split('.')
                     res = {
                         'id': resource_id,
-                        'name': resource_name,
+                        'name': resource_name.strip(),
                         'kind': 'tf_{}'.format(resource_kind),
                         'metadata': {}
                     }
-                except Exception:
-                    pass
+                except Exception as exception:
+                    print exception

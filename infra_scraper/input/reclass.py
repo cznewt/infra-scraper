@@ -36,25 +36,11 @@ class SaltReclassInput(SaltStackInput):
 
     def _create_relations(self):
         for resource_id, resource in self.resources.get('salt_job', {}).items():
-            self._scrape_relation(
-                'salt_user-salt_job',
-                resource['metadata']['User'],
-                resource_id)
             for minion_id, result in resource['metadata'].get('Result', {}).items():
                 self._scrape_relation(
-                    'salt_job-salt_minion',
+                    'salt_job-salt_node',
                     resource_id,
                     minion_id)
-                if type(result) is list:
-                    logger.error(result[0])
-                else:
-                    for state_id, state in result.items():
-                        if '__id__' in state:
-                            result_id = '{}|{}'.format(minion_id, state['__id__'])
-                            self._scrape_relation(
-                                'salt_job-salt_high_state',
-                                resource_id,
-                                result_id)
 
     def scrape_all_resources(self):
         self.scrape_nodes()
@@ -85,7 +71,7 @@ class SaltReclassInput(SaltStackInput):
         }]).get('return')[0]
         for minion_id, minion in response.items():
             for service in minion['graph']:
-                service_id = '{}|{}'.format(minion_id,
+                service_id = '{}|{}'.format(service['host'],
                                             service['service'])
                 self._scrape_resource(service_id,
                                       service['service'],
@@ -94,15 +80,17 @@ class SaltReclassInput(SaltStackInput):
                 self._scrape_relation(
                     'salt_service-salt_host',
                     service_id,
-                    minion_id)
+                    service['host'])
                 for rel in service['relations']:
                     if rel['host'] not in self.resources['salt_node']:
+                        print rel['host']
                         self._scrape_resource(rel['host'],
                                               rel['host'],
                                               'salt_node', None,
                                               metadata={})
                     rel_service_id = '{}|{}'.format(rel['host'],
                                                     rel['service'])
+                    # print rel_service_id
                     if rel_service_id not in self.resources['salt_service']:
                         self._scrape_resource(rel_service_id,
                                               rel['service'],

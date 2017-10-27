@@ -22,8 +22,13 @@ class OpenStackInput(BaseInput):
             'icon': 'fa:cube',
         },
         'os_floating_ip': {
-            'resource': 'OS::Neutron::FloatingIp',
+            'resource': 'OS::Neutron::FloatingIP',
             'name': 'Floating IP',
+            'icon': 'fa:cube',
+        },
+        'os_floating_ip_association': {
+            'resource': 'OS::Neutron::FloatingIPAssociation',
+            'name': 'Floating IP Association',
             'icon': 'fa:cube',
         },
         'os_group': {
@@ -318,6 +323,12 @@ class OpenStackInput(BaseInput):
         for resource in resources:
             self._scrape_resource(resource['id'], resource['id'],
                                   'os_floating_ip', None, metadata=resource)
+
+    def scrape_floating_ip_associations(self):
+        resources = self.network_api.list_floatingips().get('floatingips')
+        for resource in resources:
+            self._scrape_resource(resource['id'], resource['id'],
+                                  'os_floating_ip_association', None, metadata=resource)
 
     def scrape_networks(self):
         resources = self.network_api.list_networks().get('networks')

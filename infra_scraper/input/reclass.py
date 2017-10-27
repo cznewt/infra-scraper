@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from infra_scraper.input.base import SaltStackInput
+from infra_scraper.input.saltstack import SaltStackInput
 from infra_scraper.utils import setup_logger
 
 logger = setup_logger('input.reclass')
@@ -10,23 +10,28 @@ class SaltReclassInput(SaltStackInput):
 
     RESOURCE_MAP = {
         'salt_high_state': {
-            'resource': 'High State',
+            'resource': 'high_state',
+            'name': 'High State',
             'icon': 'fa:cube',
         },
         'salt_job': {
-            'resource': 'Job',
+            'resource': 'job',
+            'name': 'Job',
             'icon': 'fa:clock-o',
         },
         'salt_node': {
-            'resource': 'Node',
+            'resource': 'node',
+            'name': 'Node',
             'icon': 'fa:server',
         },
         'salt_service': {
-            'resource': 'Service',
+            'resource': 'service',
+            'name': 'Service',
             'icon': 'fa:podcast',
         },
         'salt_user': {
-            'resource': 'User',
+            'resource': 'user',
+            'name': 'User',
             'icon': 'fa:user',
         },
     }

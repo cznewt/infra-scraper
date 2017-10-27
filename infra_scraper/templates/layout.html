@@ -5,12 +5,11 @@ Layout {{ name }}
 {% endblock %}
 
 {% block content %}
-
 <div class="row">
   <div class="col s12 m9">
+    <h6>Topology {{ name }}</h6>
     <div class="card">
       <div class="card-content">
-        <span class="card-title">Endpoint {{ name }}</span>
         <div id="visual-layout-wrapper" class="{{ layout }}">
           <div id="visual-layout"></div>
         </div>
@@ -18,30 +17,32 @@ Layout {{ name }}
     </div>
   </div>
   <div class="col s12 m3">
-    <div class="card">
-      <div class="card-content">
-        <span class="card-title">Topology</span>
-        <ul class="collection">
-          <li class="collection-item">Layout<span class="badge">{{ layout|capitalize }}</span></li>
-          <li class="collection-item">Dataset<span class="badge">{{ config.kind|capitalize }}</span></li>
-          <li class="collection-item">Resources<span class="badge" id="countResources">N/A</span></li>
-          <li class="collection-item">Relations<span class="badge" id="countRelations">N/A</span></li>
-        </ul>
-      </div>
-      <div class="card-action right-align">
-        <a href="/">Close</a>
-        <a href="./{{ layout }}">Update</a>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-content">
-        <span class="card-title">Resource</span>
-        <div id="resource-detail">
-          None selected
-        <div>
-      </div>
-    </div>
+    <h6>Topology Details</h6>
+    <ul class="collection">
+      <li class="collection-item">Endpoint<span class="badge">{{ name }}</span></li>
+      <li class="collection-item">Dataset<span class="badge">{{ config.kind|capitalize }}</span></li>
+      <li class="collection-item">Layout<span class="badge">{{ layout|capitalize }}</span></li>
+      <li class="collection-item">Resources<span class="badge" id="countResources">N/A</span></li>
+      <li class="collection-item">Relations<span class="badge" id="countRelations">N/A</span></li>
+      <li class="collection-item">Scraped<span class="badge" id="timeAgo"></span></li>
+    </ul>
+    <h6>Resource Details</h6>
+    <div id="resource-detail">
+      <p>No resource selected.</p>
+    <div>
   </div>
+</div>
+{% endblock %}
+
+{% block content_actions %}
+<div class="fixed-action-btn toolbar">
+  <a class="btn-floating btn-large red">
+    <i class="large material-icons">mode_edit</i>
+  </a>
+  <ul>
+    <li class="waves-effect waves-light"><a href="./{{ layout }}">Update</a></li>
+    <li class="waves-effect waves-light"><a href="/">Close</a></li>
+  </ul>
 </div>
 {% endblock %}
 
@@ -65,8 +66,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
   {% if layout == 'hive' %}
   var dataSource = "/api/{{ name }}";
   d3.json(dataSource, function(data) {
+    console.log(data);
     $("#countResources").html(Object.keys(data.resources).length);
     $("#countRelations").html(data.relations.length);
+    $("#timeAgo").html("<time class='timeago' datetime='"+data.date+"'>N/A</time>");
+    jQuery("time.timeago").timeago();
     HivePlot.init(selector, data, {nodeClickFn: changeDetailBox, selector: selector});
   });
   {% elif layout == 'edge-bundle' %}

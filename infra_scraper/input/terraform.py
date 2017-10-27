@@ -13,39 +13,48 @@ class TerraformInput(BaseInput):
 
     RESOURCE_MAP = {
         'tf_openstack_compute_instance_v2': {
-            'resource': 'Compute',
+            'resource': 'openstack_compute_instance_v2',
+            'name': 'Instance',
             'icon': 'fa:server',
         },
         'tf_openstack_compute_keypair_v2': {
-            'resource': 'KeyPair',
+            'resource': 'openstack_compute_keypair_v2',
+            'name': 'Key Pair',
             'icon': 'fa:cube',
         },
         'tf_openstack_compute_secgroup_v2': {
-            'resource': 'SecGroup',
+            'resource': 'openstack_compute_secgroup_v2',
+            'name': 'Security Group',
             'icon': 'fa:cube',
         },
         'tf_openstack_networking_router_interface_v2': {
-            'resource': 'RouterInterface',
+            'resource': 'openstack_networking_router_interface_v2',
+            'name': 'Router Interface',
             'icon': 'fa:cube',
         },
         'tf_openstack_networking_router_v2': {
-            'resource': 'Router',
+            'resource': 'openstack_networking_router_v2',
+            'name': 'Router',
             'icon': 'fa:cube',
         },
         'tf_openstack_networking_network_v2': {
-            'resource': 'Network',
+            'resource': 'openstack_networking_network_v2',
+            'name': 'Net',
             'icon': 'fa:cube',
         },
         'tf_openstack_networking_subnet_v2': {
-            'resource': 'Subnet',
+            'resource': 'openstack_networking_subnet_v2',
+            'name': 'Subnet',
             'icon': 'fa:cube',
         },
         'tf_openstack_networking_floatingip_v2': {
-            'resource': 'FloatingIP',
+            'resource': 'openstack_networking_floatingip_v2',
+            'name': 'Floating IP',
             'icon': 'fa:cube',
         },
         'tf_openstack_compute_floatingip_associate_v2': {
-            'resource': 'FloatingIPAssociation',
+            'resource': 'openstack_compute_floatingip_associate_v2',
+            'name': 'Floating IP Association',
             'icon': 'fa:cube',
         },
     }
@@ -71,6 +80,8 @@ class TerraformInput(BaseInput):
     def _create_relations(self):
         return_code, raw_data, stderr = self.client.graph(no_color=python_terraform.IsFlagged)
         graph = graph_from_dot_data(raw_data)[0]
+        for node in graph.obj_dict['subgraphs']['"root"'][0]['nodes']:
+            print node
         for edge in graph.obj_dict['subgraphs']['"root"'][0]['edges']:
             source = self.clean_name(edge[0]).split('.')
             target = self.clean_name(edge[1]).split('.')

@@ -1,6 +1,6 @@
 
 from flask import Flask, redirect, render_template, jsonify
-
+from collections import OrderedDict
 from .main import InfraScraper
 
 import logging
@@ -15,6 +15,8 @@ def run():
     def index():
         scraper = InfraScraper()
         config = scraper.get_global_config()
+        endpoints = config['endpoints'].copy()
+        config['endpoints'] = OrderedDict(reversed(sorted(endpoints.items(), key=lambda x: x[1])))
         return render_template('index.html',
                                config=config)
 

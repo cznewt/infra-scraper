@@ -8,87 +8,71 @@ from .base import BaseInput
 logger = logging.getLogger(__name__)
 
 
-class OpenStackInput(BaseInput):
+class OpenStackHeatInput(BaseInput):
 
     RESOURCE_MAP = {
         'os_aggregate': {
-            'resource': 'OS::Nova::Aggregate',
-            'name': 'Aggregate',
+            'resource': 'Nova::Aggregate',
             'icon': 'fa:cube',
         },
         'os_flavor': {
-            'resource': 'OS::Nova::Flavor',
-            'name': 'Flavor',
+            'resource': 'Nova::Flavor',
             'icon': 'fa:cube',
         },
         'os_floating_ip': {
-            'resource': 'OS::Neutron::FloatingIp',
-            'name': 'Floating IP',
+            'resource': 'Neutron::FloatingIp',
             'icon': 'fa:cube',
         },
         'os_group': {
-            'resource': 'OS::Keystone::Group',
-            'name': 'Group',
+            'resource': 'Keystone::Group',
             'icon': 'fa:cube',
         },
         'os_hypervisor': {
-            'resource': 'OS::Nova::Hypervisor',
-            'name': 'Hypervisor',
+            'resource': 'Nova::Hypervisor',
             'icon': 'fa:server',
         },
         'os_image': {
             'resource': 'Glance::Image',
-            'name': 'Image',
             'icon': 'fa:cube',
         },
         'os_net': {
-            'resource': 'OS::Neutron::Net',
-            'name': 'Net',
+            'resource': 'Neutron::Net',
             'icon': 'fa:cube',
         },
         'os_port': {
-            'resource': 'OS::Neutron::Port',
-            'name': 'Port',
+            'resource': 'Neutron::Port',
             'icon': 'fa:cube',
         },
         'os_project': {
-            'resource': 'OS::Keystone::Tenant',
-            'name': 'Project',
+            'resource': 'Keystone::Tenant',
             'icon': 'fa:cube',
         },
         'os_resource_type': {
-            'resource': 'OS::Heat::ResourceType',
-            'name': 'Resource Type',
+            'resource': 'Heat::ResourceType',
             'icon': 'fa:cube',
         },
         'os_router': {
-            'resource': 'OS::Neutron::Router',
-            'name': 'Router',
+            'resource': 'Neutron::Router',
             'icon': 'fa:cube',
         },
         'os_server': {
-            'resource': 'OS::Nova::Server',
-            'name': 'Server',
+            'resource': 'Nova::Server',
             'icon': 'fa:cube',
         },
         'os_stack': {
-            'resource': 'OS::Heat::Stack',
-            'name': 'Stack',
+            'resource': 'Heat::Stack',
             'icon': 'fa:cubes',
         },
         'os_subnet': {
-            'resource': 'OS::Neutron::Subnet',
-            'name': 'Subnet',
+            'resource': 'Neutron::Subnet',
             'icon': 'fa:cube',
         },
         'os_user': {
-            'resource': 'OS::Keystone::User',
-            'name': 'User',
+            'resource': 'Keystone::User',
             'icon': 'fa:cube',
         },
         'os_volume': {
-            'resource': 'OS::Cinder::Volume',
-            'name': 'Volume',
+            'resource': 'Cinder::Volume',
             'icon': 'fa:cube',
         },
     }
@@ -141,7 +125,7 @@ class OpenStackInput(BaseInput):
         self.scrape_routers()
         self.scrape_ports()
         # heat resources
-        # self.scrape_resource_types()
+        self.scrape_resource_types()
         self.scrape_stacks()
 
     def _create_relations(self):

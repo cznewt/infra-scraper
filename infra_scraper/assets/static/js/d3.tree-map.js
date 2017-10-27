@@ -1,9 +1,9 @@
 var RelationalPlot = function(RelationalPlot){
     /**
-     * Tree map render method
-     * @param dataUrl - URL to data endpoint
-     * @param graphSelector - CSS selector of graph parent div
-     * @param refreshInterval - Refresh interval in seconds (can be null, means refresh disabled)
+     * Tree map rendering method
+     * @param dataUrl - Data endpoint URL
+     * @param graphSelector - Graph parent <div> CSS selector
+     * @param refreshInterval - Refresh interval in seconds (null for disabled)
      */
     RelationalPlot.treeMap = function(dataUrl, graphSelector, refreshInterval){
       var contentWidth = $(graphSelector).innerWidth(),

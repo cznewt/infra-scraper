@@ -12,13 +12,25 @@ logger = logging.getLogger(__name__)
 def scrape(name):
     scraper = InfraScraper()
     scraper.scrape_data(name)
-    print(scraper.get_data(name, 'count', 'yaml'))
+
+
+@click.command()
+@click.argument('name')
+def scrape_forever(name):
+    scraper = InfraScraper()
+    scraper.scrape_data_forever(name)
 
 
 @click.command()
 def scrape_all():
     scraper = InfraScraper()
     scraper.scrape_all_data()
+
+
+@click.command()
+def scrape_all_forever():
+    scraper = InfraScraper()
+    scraper.scrape_all_data_forever()
 
 
 @click.command()

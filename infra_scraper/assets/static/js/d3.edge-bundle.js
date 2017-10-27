@@ -1,9 +1,9 @@
 var RelationalPlot = function(RelationalPlot){
     /**
-     * Hierarchical edge bundling render method
-     * @param dataUrl - URL to data endpoint
-     * @param graphSelector - CSS selector of graph parent div
-     * @param refreshInterval - Refresh interval in seconds (can be null, means refresh disabled)
+     * Hierarchical edge bundling rendering method
+     * @param dataUrl - Data endpoint URL
+     * @param graphSelector - Graph parent <div> CSS selector
+     * @param refreshInterval - Refresh interval in seconds (null for disabled)
      */
     RelationalPlot.hierarchicalEdgeBundling = function(dataUrl, graphSelector, refreshInterval) {
         var contentWidth = $(graphSelector).innerWidth(),
@@ -81,12 +81,12 @@ var RelationalPlot = function(RelationalPlot){
         this.render = function() {
             if(graph._data && graph._data.length > 0){
 
-                var root = nodeHierarchy(graph._data)
+                var root = relationalPlotHelpers.nodeHierarchy(graph._data)
                     .sum(function(d) { return d.size; });
 
                 graph.cluster(root);
                 graph.link = graph.link
-                  .data(nodeRelations(root.leaves()))
+                  .data(relationalPlotHelpers.nodeRelations(root.leaves()))
                   .enter().append("path")
                     .each(function(d) { d.source = d[0], d.target = d[d.length - 1]; })
                     .attr("class", "link")

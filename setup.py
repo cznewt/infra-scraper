@@ -31,7 +31,9 @@ setup(
             'scraper_web = infra_scraper.server:run',
             'scraper_status = infra_scraper.cli:status',
             'scraper_get = infra_scraper.cli:scrape',
+            'scraper_get_forever = infra_scraper.cli:scrape_forever',
             'scraper_get_all = infra_scraper.cli:scrape_all',
+            'scraper_get_all_forever = infra_scraper.cli:scrape_all_forever',
         ],
     },
 )

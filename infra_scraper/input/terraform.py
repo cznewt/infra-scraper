@@ -45,6 +45,10 @@ class TerraformInput(BaseInput):
             'resource': 'FloatingIP',
             'icon': 'fa:cube',
         },
+        'tf_openstack_compute_floatingip_associate_v2': {
+            'resource': 'FloatingIPAssociation',
+            'icon': 'fa:cube',
+        },
     }
 
     def __init__(self, **kwargs):

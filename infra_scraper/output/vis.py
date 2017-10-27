@@ -50,7 +50,7 @@ class VisHierOutput(BaseOutput):
     def __init__(self, **kwargs):
         super(VisHierOutput, self).__init__(**kwargs)
 
-    def transform_data(self, data):
+    def _transform_openstack(self, data):
         resources = {}
         out_resources = []
 
@@ -66,7 +66,8 @@ class VisHierOutput(BaseOutput):
                 for relation in relation_data:
                     relation['source'] = 'root|{}'.format(relation['source'])
                     relation['target'] = 'root|{}'.format(relation['target'])
-                    resources[relation['source']]['relations'].append(relation['target'])
+                    resources[relation['source']]['relations'].append(
+                        relation['target'])
 
         for resource_name, resource_data in resources.items():
             out_resources.append({
@@ -78,3 +79,39 @@ class VisHierOutput(BaseOutput):
         data.pop('relations')
         data.pop('resource_types')
         return data
+
+    def _transform_default(self, data):
+        resources = {}
+        out_resources = []
+
+        for resource_name, resource_data in data['resources'].items():
+            if resource_name == 'salt_service':
+                for resource_id, resource_item in resource_data.items():
+                    resource_item['relations'] = []
+                    resources['root|{}'.format(resource_id)] = resource_item
+
+        for relation_name, relation_data in data['relations'].items():
+            if relation_name == 'salt_service-salt_service':
+
+                for relation in relation_data:
+                    relation['source'] = 'root|{}'.format(relation['source'])
+                    relation['target'] = 'root|{}'.format(relation['target'])
+                    resources[relation['source']]['relations'].append(
+                        relation['target'])
+
+        for resource_name, resource_data in resources.items():
+            out_resources.append({
+                'name': resource_name,
+                'size': 1,
+                'relations': resource_data['relations']
+            })
+        data['resources'] = out_resources
+        data.pop('relations')
+        data.pop('resource_types')
+        return data
+
+    def transform_data(self, data):
+        if data['kind'] == 'openstack':
+            return self._transform_openstack(data)
+        else:
+            return self._transform_default(data)

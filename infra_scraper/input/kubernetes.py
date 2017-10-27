@@ -14,74 +14,92 @@ class KubernetesInput(BaseInput):
     RESOURCE_MAP = {
         'k8s_config_map': {
             'resource': 'ConfigMap',
+            'name': 'Config Map',
             'icon': 'fa:file-text-o',
         },
         'k8s_container': {
             'resource': 'Container',
+            'name': 'Container',
             'icon': 'fa:cube',
         },
         'k8s_cron_job': {
             'resource': 'CronJob',
+            'name': 'Cron Job',
             'icon': 'fa:cube',
         },
         'k8s_deployment': {
             'resource': 'Deployment',
+            'name': 'Deployment',
             'icon': 'fa:cubes',
         },
         'k8s_endpoint': {
             'resource': 'Endpoint',
+            'name': 'Endpoint',
             'icon': 'fa:cube',
         },
         'k8s_event': {
             'resource': 'Event',
+            'name': 'Event',
             'icon': 'fa:cube',
         },
         'k8s_job': {
             'resource': 'Job',
+            'name': 'Job',
             'icon': 'fa:cube',
         },
         'k8s_namespace': {
             'resource': 'Namespace',
+            'name': 'Namespace',
             'icon': 'fa:cube',
         },
         'k8s_node': {
             'resource': 'Node',
+            'name': 'Node',
             'icon': 'fa:server',
         },
         'k8s_persistent_volume': {
             'resource': 'PersistentVolume',
+            'name': 'Persistent Volume',
             'icon': 'fa:hdd-o',
         },
         'k8s_persistent_volume_claim': {
             'resource': 'PersistentVolumeClaim',
+            'name': 'Persistent Volume Claim',
             'icon': 'fa:hdd-o',
         },
         'k8s_pod': {
             'resource': 'Pod',
+            'name': 'Pod',
             'icon': 'fa:cubes',
         },
         'k8s_replica_set': {
             'resource': 'ReplicaSet',
+            'name': 'Replica Set',
             'icon': 'fa:cubes',
         },
         'k8s_replication_controller': {
             'resource': 'ReplicationController',
+            'name': 'Replication Controller',
             'icon': 'fa:cubes',
         },
         'k8s_role': {
             'resource': 'Role',
+            'name': 'Role',
             'icon': 'fa:cube',
         },
         'k8s_secret': {
             'resource': 'Secret',
+            'name': 'Secret',
             'icon': 'fa:lock',
         },
         'k8s_service': {
             'resource': 'Service',
+            'name': 'Service',
             'icon': 'fa:podcast',
         },
         'k8s_service_account': {
             'resource': 'ServiceAccount',
+            'name': 'Service Account',
             'icon': 'fa:user',
         },
     }

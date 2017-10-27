@@ -1,6 +1,6 @@
 
 import importlib
-
+import time
 from infra_scraper import constructors
 from infra_scraper import exceptions
 from infra_scraper.utils import load_yaml_json_file
@@ -60,10 +60,23 @@ class InfraScraper(object):
         config = self.get_global_config()
         return config
 
+    def scrape_all_data_forever(self):
+        config = self.get_global_config()
+        while True:
+            for endpoint_name, endpoint in config['endpoints'].items():
+                self.scrape_data(endpoint_name)
+            time.sleep(config.get('scrape_interval', 60))
+
     def scrape_all_data(self):
         config = self.get_global_config()
         for endpoint_name, endpoint in config['endpoints'].items():
             self.scrape_data(endpoint_name)
+
+    def scrape_data_forever(self, name):
+        config = self.get_global_config()
+        while True:
+            self.scrape_data(name)
+            time.sleep(config.get('scrape_interval', 60))
 
     def scrape_data(self, name):
         config = self.get_config(name)

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import logging
-from .base import BaseInput
-from infra_scraper.utils import load_yaml_json_file
 from pepper.libpepper import Pepper
-logger = logging.getLogger(__name__)
+from infra_scraper.input.base import BaseInput
+from infra_scraper.utils import load_yaml_json_file, setup_logger
+
+logger = setup_logger('input.salt')
 
 
 class SaltStackInput(BaseInput):

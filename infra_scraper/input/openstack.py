@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from heatclient.exc import HTTPBadRequest
 import os_client_config
-import logging
-from .base import BaseInput
+from heatclient.exc import HTTPBadRequest
+from infra_scraper.input.base import BaseInput
+from infra_scraper.utils import setup_logger
 
-logger = logging.getLogger(__name__)
+logger = setup_logger('input.openstack')
 
 
 class OpenStackInput(BaseInput):
@@ -354,18 +354,15 @@ class OpenStackInput(BaseInput):
             search_opts = None
         stacks = self.orch_api.stacks.list(
             search_opts=search_opts)
-        i = 0
         for stack in stacks:
-            if i < 2:
-                resource = stack.to_dict()
-                resource['resources'] = []
-                try:
-                    resources = self.orch_api.resources.list(stack.id,
-                                                             nested_depth=2)
-                    for stack_resource in resources:
-                        resource['resources'].append(stack_resource.to_dict())
-                except HTTPBadRequest as exception:
-                    logger.error(exception)
-                self._scrape_resource(resource['id'], resource['stack_name'],
-                                      'os_stack', None, metadata=resource)
-            i += 1
+            resource = stack.to_dict()
+            resource['resources'] = []
+            try:
+                resources = self.orch_api.resources.list(stack.id,
+                                                         nested_depth=2)
+                for stack_resource in resources:
+                    resource['resources'].append(stack_resource.to_dict())
+            except HTTPBadRequest as exception:
+                logger.error(exception)
+            self._scrape_resource(resource['id'], resource['stack_name'],
+                                  'os_stack', None, metadata=resource)

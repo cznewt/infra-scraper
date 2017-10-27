@@ -2,11 +2,11 @@
 
 import os
 import pykube
-import logging
 from requests.exceptions import HTTPError
-from .base import BaseInput
+from infra_scraper.input.base import BaseInput
+from infra_scraper.utils import setup_logger
 
-logger = logging.getLogger(__name__)
+logger = setup_logger('input.kubernetes')
 
 
 class KubernetesInput(BaseInput):

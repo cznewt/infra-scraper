@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-import yaml
+
+import StringIO
 import python_terraform
 from pydot import graph_from_dot_data
-import logging
-import StringIO
+from infra_scraper.input.base import BaseInput
+from infra_scraper.utils import setup_logger
 
-from .base import BaseInput
-
-logger = logging.getLogger(__name__)
+logger = setup_logger('input.terraform')
 
 
 class TerraformInput(BaseInput):

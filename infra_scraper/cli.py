@@ -16,9 +16,10 @@ def scrape(name):
 
 @click.command()
 @click.argument('name')
-def scrape_forever(name):
+@click.argument('interval', default=10)
+def scrape_forever(name, interval):
     scraper = InfraScraper()
-    scraper.scrape_data_forever(name)
+    scraper.scrape_data_forever(name, int(interval))
 
 
 @click.command()
@@ -28,9 +29,10 @@ def scrape_all():
 
 
 @click.command()
-def scrape_all_forever():
+@click.argument('--interval', default=10)
+def scrape_all_forever(interval):
     scraper = InfraScraper()
-    scraper.scrape_all_data_forever()
+    scraper.scrape_all_data_forever(int(interval))
 
 
 @click.command()

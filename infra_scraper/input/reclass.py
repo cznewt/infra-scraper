@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from .saltstack import SaltStackInput
-import logging
-logger = logging.getLogger(__name__)
+from infra_scraper.input.base import SaltStackInput
+from infra_scraper.utils import setup_logger
+
+logger = setup_logger('input.reclass')
 
 
 class SaltReclassInput(SaltStackInput):

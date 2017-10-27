@@ -1,9 +1,12 @@
 
 import importlib
 import time
+
 from infra_scraper import constructors
 from infra_scraper import exceptions
-from infra_scraper.utils import load_yaml_json_file
+from infra_scraper.utils import load_yaml_json_file, setup_logger
+
+logger = setup_logger(__name__)
 
 
 def _get_module(module_key):
@@ -60,7 +63,7 @@ class InfraScraper(object):
         config = self.get_global_config()
         return config
 
-    def scrape_all_data_forever(self):
+    def scrape_all_data_forever(self, interval):
         config = self.get_global_config()
         while True:
             for endpoint_name, endpoint in config['endpoints'].items():
@@ -72,17 +75,20 @@ class InfraScraper(object):
         for endpoint_name, endpoint in config['endpoints'].items():
             self.scrape_data(endpoint_name)
 
-    def scrape_data_forever(self, name):
+    def scrape_data_forever(self, name, interval):
         config = self.get_global_config()
+        sleep_interval = config.get('scrape_interval', interval)
         while True:
             self.scrape_data(name)
-            time.sleep(config.get('scrape_interval', 60))
+            logger.info('Sleeping for {} seconds.'.format(sleep_interval))
+            time.sleep(sleep_interval)
 
     def scrape_data(self, name):
         config = self.get_config(name)
         self.input = self._get_module('input', config['kind'], config)
         self.out_vis = self._get_module('output', 'vis')
         self.out_vis_hier = self._get_module('output', 'vis-hier')
+        logger.info('Scraping of {} started.'.format(name))
         self.input.scrape_all_resources()
         data = self.input.to_dict()
         self.storage.save_data(name, data.copy())
@@ -90,6 +96,7 @@ class InfraScraper(object):
                                       self.out_vis.get_data('raw', data.copy()))
         self.storage.save_output_data(name, 'vis-hier',
                                       self.out_vis_hier.get_data('raw', data.copy()))
+        logger.info('Scraping of {} completed.'.format(name))
 
     def get_cached_data(self, name, kind):
         data = self.storage.load_output_data(name, kind)

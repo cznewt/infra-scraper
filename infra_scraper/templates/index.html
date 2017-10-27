@@ -16,7 +16,7 @@ Available Endpoints
                 <th>Name</th>
                 <th>Type</th>
                 <th>Endpoint</th>
-                <th class="right-align">Action</th>
+                <th class="right-align">Show Topology</th>
             </tr>
           </thead>
 
@@ -28,7 +28,7 @@ Available Endpoints
               <td>{{ endpoint.endpoint }}</td>
               <td class="right-align">
                 {% for layout in endpoint.layouts %}
-                <a class="waves-effect waves-light btn" href="/layout/{{ name }}/{{ layout }}">{{ layout|capitalize }} Plot</a>
+                <a class="waves-effect waves-light btn btn-small" href="/layout/{{ name }}/{{ layout }}">{{ layout|capitalize }}</a>&nbsp;
                 {% endfor %}
               </td>
             </tr>

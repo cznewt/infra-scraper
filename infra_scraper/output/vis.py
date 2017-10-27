@@ -85,7 +85,7 @@ class VisOutput(BaseOutput):
 
 
     def transform_data(self, data):
-        data['date'] = datetime.fromtimestamp(data['timestamp']).strftime('%Y-%m-%dT%H:%M:%SZ')
+        data['date'] = datetime.fromtimestamp(data['timestamp']).strftime('%Y-%m-%dT%H:%M:%S')
         if data['kind'] == 'openstack':
             return self._transform_openstack(data)
         else:
@@ -143,7 +143,7 @@ class VisHierOutput(BaseOutput):
         return data
 
     def transform_data(self, data):
-        data['date'] = datetime.fromtimestamp(data['timestamp']).strftime('%Y-%m-%dT%H:%M:%SZ')
+        data['date'] = datetime.fromtimestamp(data['timestamp']).strftime('%Y-%m-%dT%H:%M:%S')
         if data['kind'] == 'openstack':
             return self._transform_openstack(data)
         else:

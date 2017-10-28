@@ -10,7 +10,8 @@ var RelationalPlot = function(RelationalPlot){
         var adjacencyMatrix = d3.adjacencyMatrixLayout(),
             colorMapping = d3.scaleOrdinal()
                 .range(d3.schemeCategory20b),
-            width = $(graphSelector).innerWidth() - 0;
+            width = $(graphSelector).innerWidth(),
+            graphWidth = width - 10;
 
         var graph = this;
 
@@ -24,8 +25,7 @@ var RelationalPlot = function(RelationalPlot){
 
             graph.svg = d3.select(graphSelector).append("svg")
                 .attr("width", width)
-                .attr("height", width)
-
+                .attr("height", width);
             if(!alreadyRunning){
                 graph.requestData(dataUrl, graph.render);
                 $(window).on('resize', function(ev){
@@ -78,7 +78,7 @@ var RelationalPlot = function(RelationalPlot){
             links = graph.createLinks(nodes, graph._data.relations);
 
             adjacencyMatrix
-                .size([width, width])
+                .size([width-81, width-81])
                 .nodes(nodes)
                 .links(links)
                 .directed(false)

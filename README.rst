@@ -113,8 +113,52 @@ Configuration for connecting to Salt API.
           password: 'password'
 
 
-Supported Metadata
-==================
+Supported Visualizations
+========================
+
+
+Force-Directed Layout
+---------------------
+
+.. figure:: ./docs/source/static/img/force-directed-plot.png
+    :width: 600px
+    :figclass: align-center
+
+    Force-directed plot of all OpenStack resources (cca 3000 resources)
+
+
+Hive Plot
+---------
+
+.. figure:: ./docs/source/static/img/hive-plot.png
+    :width: 600px
+    :figclass: align-center
+
+    Hive plot of all OpenStack resources (cca 3000 resources)
+
+
+Arc Diagram
+-----------
+
+.. figure:: ./docs/source/static/img/arc-diagram.png
+    :width: 600px
+    :figclass: align-center
+
+    Arc diagram of OpenStack project's resources (cca 100 resources)
+
+
+Adjacency Matrix
+----------------
+
+.. figure:: ./docs/source/static/img/adjacency-matrix.png
+    :width: 600px
+    :figclass: align-center
+
+    Adjacency matrix of OpenStack project's resources (cca 100 resources)
+
+
+Supported Platform Metadata
+===========================
 
 Following outputs show available resources and relations from given domain.
 
@@ -222,11 +266,3 @@ SaltStack
       salt_user: 2
     timestamp: 1508932328
 
-Supported Visualizations
-========================
-
-Adjacency Matrix
-----------------
-
-.. image:: ./docs/source/static/img/adjacency-matrix.png
-    :width: 50%

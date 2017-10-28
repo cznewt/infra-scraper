@@ -3,6 +3,7 @@ import click
 import yaml
 import logging
 from infra_scraper.main import InfraScraper
+from infra_scraper.server import run
 
 logger = logging.getLogger(__name__)
 
@@ -39,3 +40,10 @@ def scrape_all_forever(interval):
 def status():
     scraper = InfraScraper()
     print yaml.safe_dump(scraper.status())
+
+
+@click.command()
+@click.argument('--host', default="0.0.0.0")
+@click.argument('--port', default=8076)
+def runserver(host, port):
+    run(host=host, port=port)

@@ -157,6 +157,16 @@ Adjacency Matrix
     Adjacency matrix of OpenStack project's resources (cca 100 resources)
 
 
+Hierarchical Edge Bundling
+--------------------------
+
+.. figure:: ./docs/source/static/img/hiearchical-edge-bundling.png
+    :width: 600px
+    :figclass: align-center
+
+    Hierarchical edge bundling of SaltStack services (cca 100 resources)
+
+
 Supported Platform Metadata
 ===========================
 

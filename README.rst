@@ -221,3 +221,12 @@ SaltStack
       salt_service: 24
       salt_user: 2
     timestamp: 1508932328
+
+Supported Visualizations
+========================
+
+Adjacency Matrix
+----------------
+
+.. image:: ./docs/source/static/img/adjacency-matrix.png
+    :width: 50%

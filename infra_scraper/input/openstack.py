@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import os
+import yaml
+import tempfile
 import os_client_config
+from os_client_config import cloud_config
 from heatclient.exc import HTTPBadRequest
 from infra_scraper.input.base import BaseInput
 from infra_scraper.utils import setup_logger
@@ -100,28 +104,28 @@ class OpenStackInput(BaseInput):
 
     def __init__(self, **kwargs):
         self.kind = 'openstack'
+        self.scope = kwargs.get('scope', 'local')
         super(OpenStackInput, self).__init__(**kwargs)
+        config_file, filename = tempfile.mkstemp()
+        config_content = {
+            'clouds': {self.name: self.config}
+        }
+        os.write(config_file, yaml.safe_dump(config_content))
+        os.close(config_file)
+        self.cloud = os_client_config.config \
+            .OpenStackConfig(config_files=[filename]) \
+            .get_one_cloud(cloud=self.name)
+        os.remove(filename)
+        self.identity_api = self._get_client('identity')
+        self.compute_api = self._get_client('compute')
+        self.network_api = self._get_client('network')
+        self.orch_api = self._get_client('orchestration')
+        self.image_api = self._get_client('image')
+        self.volume_api = self._get_client('volume')
 
-        try:
-            self.name = kwargs['name']
-        except KeyError:
-            raise ValueError('Missing parameter name')
-
-        self.scope = kwargs['scope']
-
-        self.region = kwargs.get('region', 'RegionOne')
-        self.identity_api = os_client_config.make_client(
-            'identity', cloud=self.name)
-        self.compute_api = os_client_config.make_client(
-            'compute', cloud=self.name)
-        self.network_api = os_client_config.make_client(
-            'network', cloud=self.name)
-        self.orch_api = os_client_config.make_client(
-            'orchestration', cloud=self.name)
-        self.image_api = os_client_config.make_client(
-            'image', cloud=self.name)
-        self.volume_api = os_client_config.make_client(
-            'volume', cloud=self.name)
+    def _get_client(self, service_key):
+        constructor = cloud_config._get_client(service_key)
+        return self.cloud.get_legacy_client(service_key, constructor)
 
     def scrape_all_resources(self):
         # keystone resources

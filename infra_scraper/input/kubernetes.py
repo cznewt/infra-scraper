@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
+import yaml
+import tempfile
 import pykube
 from requests.exceptions import HTTPError
 from infra_scraper.input.base import BaseInput
@@ -106,17 +108,36 @@ class KubernetesInput(BaseInput):
 
     def __init__(self, **kwargs):
         self.kind = 'kubernetes'
+        self.scope = kwargs.get('scope', 'local')
         super(KubernetesInput, self).__init__(**kwargs)
-        try:
-            self.name = kwargs['name']
-        except KeyError:
-            raise ValueError('Missing parameter name.')
-
-        self.config_file = kwargs.get('config_file', '{}/clusters.yaml'.format(
-            os.path.dirname(os.path.realpath(__file__))))
-
-        self.config = pykube.KubeConfig.from_file(self.config_file)
-        self.api = pykube.HTTPClient(self.config)
+        config_file, filename = tempfile.mkstemp()
+        config_content = {
+            'apiVersion': 'v1',
+            'clusters': [{
+                'cluster': self.config['cluster'],
+                'name': self.name,
+            }],
+            'contexts': [{
+                'context': {
+                    'cluster': self.name,
+                    'user': self.name,
+                },
+                'name': self.name,
+            }],
+            'current-context': self.name,
+            'kind': 'Config',
+            'preferences': {},
+            'users': [{
+                'name': self.name,
+                'user': self.config['user']
+            }]
+        }
+        print yaml.dump(config_content)
+        os.write(config_file, yaml.safe_dump(config_content))
+        os.close(config_file)
+        self.config_wrapper = pykube.KubeConfig.from_file(filename)
+        os.remove(filename)
+        self.api = pykube.HTTPClient(self.config_wrapper)
 
     def scrape_all_resources(self):
         self.scrape_config_maps()

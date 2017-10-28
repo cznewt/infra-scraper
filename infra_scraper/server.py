@@ -55,7 +55,3 @@ def hierarchy_topology_data(name=None):
 
 def run(*args, **kwargs):
     app.run(*args, **kwargs)
-
-
-if __name__ == "__main__":
-    run(host='0.0.0.0', port=8076)

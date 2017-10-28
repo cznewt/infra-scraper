@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-version = '0.1'
+version = '0.2'
 
 with open('README.rst') as readme:
     long_description = ''.join(readme.readlines())
@@ -10,7 +10,7 @@ with open('README.rst') as readme:
 setup(
     name='infra-scraper',
     version=version,
-    description='Infrastructure metadata scraper with support for Kubernetes, OpenStack ans SaltStack.',
+    description='Metadata scraper with support for Kubernetes, OpenStack, SaltStack, and Terraform resource providers.',
     long_description=long_description,
     author='Aleš Komárek',
     author_email='ales.komarek@newt.cz',
@@ -28,7 +28,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'scraper_web = infra_scraper.server:run',
+            'scraper_web = infra_scraper.cli:runserver',
             'scraper_status = infra_scraper.cli:status',
             'scraper_get = infra_scraper.cli:scrape',
             'scraper_get_forever = infra_scraper.cli:scrape_forever',

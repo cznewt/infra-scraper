@@ -8,6 +8,8 @@ logger = logging.getLogger(__name__)
 class BaseInput(object):
 
     def __init__(self, **kwargs):
+        self.name = kwargs['name']
+        self.config = kwargs['config']
         self.resources = {}
         self.resource_types = {}
         self.relations = {}

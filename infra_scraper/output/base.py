@@ -11,7 +11,8 @@ class BaseOutput(object):
     def __init__(self, **kwargs):
         pass
 
-    def get_data(self, data_format='raw', data={}):
+    def get_data(self, data_format='raw', raw_data={}):
+        data = raw_data.copy()
         if data_format == 'yaml':
             return self.yaml_output(self.transform_data(data))
         elif data_format == 'json':

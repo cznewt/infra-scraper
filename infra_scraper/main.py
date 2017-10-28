@@ -67,10 +67,10 @@ class InfraScraper(object):
 
     def get_endpoint_status(self, name):
         try:
-            status = self.get_data(self, name, 'count', format='raw')
+            data = self.get_cached_data(name, 'count')
         except Exception:
-            status = None
-        return status
+            data = None
+        return data
 
     def scrape_all_data_forever(self, interval):
         config = self.get_global_config()
@@ -95,12 +95,15 @@ class InfraScraper(object):
     def scrape_data(self, name):
         config = self.get_config(name)
         self.input = self._get_module('input', config['kind'], config)
+        self.out_count = self._get_module('output', 'count')
         self.out_vis = self._get_module('output', 'vis')
         self.out_vis_hier = self._get_module('output', 'vis-hier')
         logger.info('Scraping of {} started.'.format(name))
         self.input.scrape_all_resources()
         data = self.input.to_dict()
         self.storage.save_data(name, data.copy())
+        self.storage.save_output_data(name, 'count',
+                                      self.out_count.get_data('raw', data.copy()))
         self.storage.save_output_data(name, 'vis',
                                       self.out_vis.get_data('raw', data.copy()))
         self.storage.save_output_data(name, 'vis-hier',

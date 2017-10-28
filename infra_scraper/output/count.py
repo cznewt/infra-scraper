@@ -1,4 +1,6 @@
 
+from datetime import datetime
+
 import logging
 from .base import BaseOutput
 
@@ -23,4 +25,5 @@ class CountOutput(BaseOutput):
         data['resources'] = resources
         data['relations'] = relations
         data.pop('resource_types')
+        data['date'] = datetime.fromtimestamp(data['timestamp']).strftime('%Y-%m-%dT%H:%M:%S')
         return data

@@ -44,8 +44,8 @@ class FileStorage(BaseStorage):
 
     def load_data(self, name):
         data = None
-        if self.last_timestamp is None:
-            self.last_timestamp = self._get_last_timestamp(name)
+#        if self.last_timestamp is None:
+        self.last_timestamp = self._get_last_timestamp(name)
         filename = '{}/{}.yaml'.format(self._get_storage_dir(name),
                                        self.last_timestamp)
         with open(filename, 'r') as stream:

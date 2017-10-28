@@ -13,8 +13,8 @@ Available Endpoints
           <tr>
               <th>Name</th>
               <th>Type</th>
-              <th>Description</th>
-              <th>Scrape</th>
+              <th>Resources</th>
+              <th>Scraped</th>
               <th class="right-align">Visual Layouts</th>
           </tr>
         </thead>
@@ -24,10 +24,26 @@ Available Endpoints
           <tr>
             <td><b>{{ name }}</b></td>
             <td>{{ endpoint.kind }}</td>
-            <td>{{ endpoint.get('description', 'N/A') }}</td>
+            <td>
+              {% if endpoint.status != None %}
+              {% set resources = [0] %}
+              {% for type, count in endpoint.status.resources.items() %}
+              {% if resources.append(resources.pop() + count) %}{% endif %}
+              {% endfor %}
+              {% set resource_count = resources.pop() %}
+              {{ resource_count }} node{% if resource_count != 1 %}s{% endif %}
+              {% else %}N/A
+              {% endif %}
+            </td>
+            <td>
+              {% if endpoint.status != None %}
+              <time class='timeago' datetime='{{ endpoint.status.date }}'>Set</time>
+              {% else %}N/A
+              {% endif %}
+            </td>
             <td class="right-align">
               {% for layout in endpoint.layouts %}
-              <a href="/layout/{{ name }}/{{ layout }}">{{ layout|capitalize }}</a>
+              <a href="/layout/{{ name }}/{{ layout }}">{{ layout|capitalize }}</a>{% if not loop.last %}, {% endif %}
               {% endfor %}
             </td>
           </tr>
@@ -37,4 +53,12 @@ Available Endpoints
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function(event) {
+  $("time.timeago").timeago();
+});
+</script>
 {% endblock %}

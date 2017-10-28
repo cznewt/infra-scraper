@@ -50,17 +50,9 @@ class SaltStackInput(BaseInput):
     def __init__(self, **kwargs):
         self.kind = 'salt'
         super(SaltStackInput, self).__init__(**kwargs)
-
-        try:
-            self.name = kwargs['name']
-        except KeyError:
-            raise ValueError('Missing parameter name')
-
-        config_data = load_yaml_json_file(kwargs['config_file'])
-        self.config = config_data['configs'][self.name]
-        self.api = Pepper(self.config['url'])
-        self.api.login(self.config['auth']['username'],
-                       self.config['auth']['password'],
+        self.api = Pepper(self.config['auth_url'])
+        self.api.login(self.config['username'],
+                       self.config['password'],
                        'pam')
 
     def scrape_all_resources(self):

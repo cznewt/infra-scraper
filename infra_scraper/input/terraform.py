@@ -62,14 +62,7 @@ class TerraformInput(BaseInput):
     def __init__(self, **kwargs):
         super(TerraformInput, self).__init__(**kwargs)
         self.kind = 'terraform'
-        self.name = kwargs['name']
-
-        try:
-            self.config_dir = kwargs['config_dir']
-        except KeyError:
-            raise ValueError('Missing parameter config_dir')
-
-        self.client = python_terraform.Terraform(working_dir=self.config_dir)
+        self.client = python_terraform.Terraform(working_dir=self.config['dir'])
 
     def scrape_all_resources(self):
         self.scrape_resources()

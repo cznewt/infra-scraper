@@ -1,4 +1,5 @@
 
+import os
 import importlib
 import time
 
@@ -7,6 +8,11 @@ from infra_scraper import exceptions
 from infra_scraper.utils import load_yaml_json_file, setup_logger
 
 logger = setup_logger(__name__)
+
+config_backend = os.environ.get('INFRA_SCRAPER_CONFIG_BACKEND',
+                                'localfs')
+config_file = os.environ.get('INFRA_SCRAPER_CONFIG_FILE',
+                             '/etc/infra-scraper/config.yaml')
 
 
 def _get_module(module_key):
@@ -52,7 +58,7 @@ class InfraScraper(object):
         return module_class(**module_init)
 
     def get_global_config(self):
-        return load_yaml_json_file('/etc/infra-scraper/config.yaml')
+        return load_yaml_json_file(config_file)
 
     def get_config(self, name):
         config = self.get_global_config()['endpoints'][name]

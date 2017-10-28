@@ -14,7 +14,7 @@ app = Flask(__name__, static_folder='./assets/static')
 @app.route('/')
 def index():
     scraper = InfraScraper()
-    config = scraper.get_global_config()
+    config = scraper.status()
     endpoints = config['endpoints'].copy()
     config['endpoints'] = OrderedDict(
         reversed(sorted(endpoints.items(), key=lambda x: x[1])))

@@ -7,49 +7,56 @@ Available Endpoints
 {% block content %}
 <div class="row">
   <div class="col m12">
-    <div class="card-panel">
-      <table class="bordered responsive-table">
-        <thead>
-          <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Resources</th>
-              <th>Scraped</th>
-              <th class="right-align">Visual Layouts</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {% for name, endpoint in config['endpoints'].items() %}
-          <tr>
-            <td><b>{{ name }}</b></td>
-            <td>{{ endpoint.kind }}</td>
-            <td>
-              {% if endpoint.status != None %}
-              {% set resources = [0] %}
-              {% for type, count in endpoint.status.resources.items() %}
-              {% if resources.append(resources.pop() + count) %}{% endif %}
-              {% endfor %}
-              {% set resource_count = resources.pop() %}
-              {{ resource_count }} node{% if resource_count != 1 %}s{% endif %}
-              {% else %}N/A
-              {% endif %}
-            </td>
-            <td>
-              {% if endpoint.status != None %}
-              <time class='timeago' datetime='{{ endpoint.status.date }}'>Set</time>
-              {% else %}N/A
-              {% endif %}
-            </td>
-            <td class="right-align">
-              {% for layout in endpoint.layouts %}
-              <a href="/layout/{{ name }}/{{ layout }}">{{ layout|capitalize }}</a>{% if not loop.last %}, {% endif %}
-              {% endfor %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title">Available Graphs</span>
+        <table class="bordered responsive-table">
+          <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Resources</th>
+                <th>Scraped</th>
+                <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for name, endpoint in config['endpoints'].items() %}
+            <tr>
+              <td><b>{{ name }}</b></td>
+              <td>{{ endpoint.kind }}</td>
+              <td>
+                {% if endpoint.status != None %}
+                {% set resources = [0] %}
+                {% for type, count in endpoint.status.resources.items() %}
+                {% if resources.append(resources.pop() + count) %}{% endif %}
+                {% endfor %}
+                {% set resource_count = resources.pop() %}
+                {{ resource_count }} node{% if resource_count != 1 %}s{% endif %}
+                {% else %}N/A
+                {% endif %}
+              </td>
+              <td>
+                {% if endpoint.status != None %}
+                <time class='timeago' datetime='{{ endpoint.status.date }}'>Set</time>
+                {% else %}N/A
+                {% endif %}
+              </td>
+              <td class="right-align">
+                <a class='dropdown-button btn btn-small' href='#' data-alignment="right" data-constrainwidth="false" data-activates='dropdown{{ loop.index }}'>Perform Action</a>
+                <ul id='dropdown{{ loop.index }}' class='dropdown-content'>
+                  {% for layout in endpoint.layouts %}
+                  <li><a href="/layout/{{ name }}/{{ layout }}">Display&nbsp;{{ layout|capitalize }} Plot</a></li>
+                  {% endfor %}
+                  <li class="divider"></li>
+                  <li><a href="/api/{{ name }}/scrape">Scrape Now</a></li>
+                </ul>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>

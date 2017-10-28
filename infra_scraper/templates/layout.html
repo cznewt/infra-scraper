@@ -14,26 +14,27 @@ Layout {{ name }}
     </div>
   </div>
   <div class="col s12 m3">
-    <h6>Topology Details</h6>
-    <ul class="collection">
-      <li class="collection-item">Endpoint<span class="badge">{{ name }}</span></li>
-      <li class="collection-item">Dataset<span class="badge">{{ config.kind|capitalize }}</span></li>
-      <li class="collection-item">Layout<span class="badge">{{ layout|capitalize }}</span></li>
-      <li class="collection-item">Resources<span class="badge" id="plotResources">N/A</span></li>
-      <li class="collection-item">Relations<span class="badge" id="plotRelations">N/A</span></li>
-      <li class="collection-item">Scraped<span class="badge" id="plotScrapeTime">N/A</span></li>
-    </ul>
-    <h6>Resource Details</h6>
-    <div id="resource-detail">
-      <p>No resource selected.</p>
-    <div>
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title">Graph {{ name }}</span>
+        <ul class="collection">
+          <li class="collection-item">Endpoint<span class="badge">{{ name }}</span></li>
+          <li class="collection-item">Dataset<span class="badge">{{ config.kind|capitalize }}</span></li>
+          <li class="collection-item">Layout<span class="badge">{{ layout|capitalize }}</span></li>
+          <li class="collection-item">Resources<span class="badge" id="plotResources">N/A</span></li>
+          <li class="collection-item">Relations<span class="badge" id="plotRelations">N/A</span></li>
+          <li class="collection-item">Scraped<span class="badge" id="plotScrapeTime">N/A</span></li>
+        </ul>
+        <div id="resource-detail">
+          <p>No resource selected.</p>
+        <div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
 
 {% block content_actions %}
-
-
 <div class="fixed-action-btn toolbar">
   <a class="btn-floating btn-large red">
     <i class="large material-icons">mode_edit</i>

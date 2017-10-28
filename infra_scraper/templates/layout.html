@@ -7,12 +7,9 @@ Layout {{ name }}
 {% block content %}
 <div class="row">
   <div class="col s12 m9">
-    <h6>Topology {{ name }}</h6>
-    <div class="card">
-      <div class="card-content">
-        <div id="visual-layout-wrapper" class="{{ layout }}">
-          <div id="visual-layout"></div>
-        </div>
+  	<div class="card-panel">
+      <div id="visual-layout-wrapper" class="{{ layout }}">
+        <div id="visual-layout"></div>
       </div>
     </div>
   </div>
@@ -22,9 +19,9 @@ Layout {{ name }}
       <li class="collection-item">Endpoint<span class="badge">{{ name }}</span></li>
       <li class="collection-item">Dataset<span class="badge">{{ config.kind|capitalize }}</span></li>
       <li class="collection-item">Layout<span class="badge">{{ layout|capitalize }}</span></li>
-      <li class="collection-item">Resources<span class="badge" id="countResources">N/A</span></li>
-      <li class="collection-item">Relations<span class="badge" id="countRelations">N/A</span></li>
-      <li class="collection-item">Scraped<span class="badge" id="timeAgo"></span></li>
+      <li class="collection-item">Resources<span class="badge" id="plotResources">N/A</span></li>
+      <li class="collection-item">Relations<span class="badge" id="plotRelations">N/A</span></li>
+      <li class="collection-item">Scraped<span class="badge" id="plotScrapeTime">N/A</span></li>
     </ul>
     <h6>Resource Details</h6>
     <div id="resource-detail">
@@ -69,14 +66,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
     console.log(data);
     $("#countResources").html(Object.keys(data.resources).length);
     $("#countRelations").html(data.relations.length);
-    $("#timeAgo").html("<time class='timeago' datetime='"+data.date+"'>N/A</time>");
-    jQuery("time.timeago").timeago();
     HivePlot.init(selector, data, {nodeClickFn: changeDetailBox, selector: selector});
   });
+  {% elif layout == 'arc' %}
+  var dataSource = "/api/{{ name }}";
+  new RelationalPlot.arc(dataSource, selector, 3600).init();
+  {% elif layout == 'force' %}
+  var dataSource = "/api/{{ name }}";
+  new RelationalPlot.forceDirected(dataSource, selector, 3600).init();
+  {% elif layout == 'matrix' %}
+  var dataSource = "/api/{{ name }}";
+  new RelationalPlot.adjacencyMatrix(dataSource, selector, 3600).init();
   {% elif layout == 'edge-bundle' %}
   var dataSource = "/api/{{ name }}/hier";
   new RelationalPlot.hierarchicalEdgeBundling(dataSource, selector, 3600).init();
-  {% elif layout == 'tree-map' %}
+  {% elif layout == 'treemap' %}
   var dataSource = "/api/{{ name }}/hier";
   new RelationalPlot.treeMap(dataSource, selector, 3600).init();
   {% endif %}

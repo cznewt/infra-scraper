@@ -105,7 +105,41 @@ Math.degrees = function(radians) {
   return radians * 180 / Math.PI;
 };
 
+var iconMapping = {};
+
+var iconFunctions = {
+    family: function(d) {
+       return iconMapping[d].family;
+    },
+    color: function(d) {
+        return iconMapping[d].color;
+    },
+    character: function(d) {
+        return String.fromCharCode(iconMapping[d].char);
+    },
+    size: function(d) {
+        return iconMapping[d].size + 'px';
+    },
+    transform: function(d) {
+        return 'translate('+ iconMapping[d].x + ', ' + iconMapping[d].y + ')';
+    }
+};
+
 var relationalPlotHelpers = {
+
+  displayResources: function(resources) {
+      $("#plotResources").html(resources);
+  },
+
+  displayRelations: function(relations) {
+      $("#plotRelations").html(relations);
+  },
+
+  displayScrapeTime: function(date) {
+      $("#plotScrapeTime time").remove();
+      $("#plotScrapeTime").html("<time datetime='"+date+"''>N/A</time>");
+      $("#plotScrapeTime time").timeago();
+  },
 
   nodeRelations: function(nodes) {
     var map = {},

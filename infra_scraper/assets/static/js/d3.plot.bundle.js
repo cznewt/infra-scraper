@@ -34,8 +34,10 @@ var RelationalPlot = function(RelationalPlot){
                 return [e.pageX - rx, e.pageY - ry];
             },
             graph = this;
-        this._data = {},
-        this.init = function(reinit) {
+
+        this._data = {};
+
+        this.init = function(alreadyRunning) {
             if(!dataUrl || !graphSelector){
                 throw new Error("Cannot init graph, dataUrl or graphSelector not defined");
             }
@@ -48,7 +50,7 @@ var RelationalPlot = function(RelationalPlot){
                 .radius(function(d) { return d.y; })
                 .angle(function(d) { return d.x / 180 * Math.PI; });
 
-            if(reinit && graph.svg){
+            if(alreadyRunning && graph.svg) {
 //                graph.svg.remove();
             }
 
@@ -61,7 +63,7 @@ var RelationalPlot = function(RelationalPlot){
             graph.link = graph.svg.append("g").selectAll(".link");
             graph.node = graph.svg.append("g").selectAll(".node");
 
-            if(!reinit){
+            if(!alreadyRunning){
                 graph.requestData(dataUrl, graph.render);
                 $(window).on('resize', function(ev){
                     graph.init(true);
@@ -78,6 +80,7 @@ var RelationalPlot = function(RelationalPlot){
                 }
             }
         };
+
         this.render = function() {
             if(graph._data && graph._data.length > 0){
 
@@ -106,7 +109,9 @@ var RelationalPlot = function(RelationalPlot){
         this.requestData = function(dataUrl, callback){
             d3.json(dataUrl, function(res){
                 graph._data = res.resources;
-                console.log(res.resources);
+                relationalPlotHelpers.displayResources(Object.keys(graph._data).length);
+                //relationalPlotHelpers.displayRelations();
+                relationalPlotHelpers.displayScrapeTime(res.date);
                 if(typeof callback === 'function'){
                     callback();
                 }

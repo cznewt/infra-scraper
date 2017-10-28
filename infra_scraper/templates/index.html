@@ -13,7 +13,9 @@ Available Endpoints
           <tr>
               <th>Name</th>
               <th>Type</th>
-              <th class="right-align">Visual Layout</th>
+              <th>Description</th>
+              <th>Scrape</th>
+              <th class="right-align">Visual Layouts</th>
           </tr>
         </thead>
 
@@ -22,9 +24,10 @@ Available Endpoints
           <tr>
             <td><b>{{ name }}</b></td>
             <td>{{ endpoint.kind }}</td>
+            <td>{{ endpoint.get('description', 'N/A') }}</td>
             <td class="right-align">
               {% for layout in endpoint.layouts %}
-              <a class="waves-effect waves-light btn btn-small" href="/layout/{{ name }}/{{ layout }}">{{ layout|capitalize }}</a>&nbsp;
+              <a href="/layout/{{ name }}/{{ layout }}">{{ layout|capitalize }}</a>
               {% endfor %}
             </td>
           </tr>

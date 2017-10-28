@@ -61,7 +61,16 @@ class InfraScraper(object):
 
     def status(self):
         config = self.get_global_config()
+        for endpoint_name, endpoint in config['endpoints'].items():
+            endpoint['status'] = self.get_endpoint_status(endpoint_name)
         return config
+
+    def get_endpoint_status(self, name):
+        try:
+            status = self.get_data(self, name, 'count', format='raw')
+        except Exception:
+            status = None
+        return status
 
     def scrape_all_data_forever(self, interval):
         config = self.get_global_config()

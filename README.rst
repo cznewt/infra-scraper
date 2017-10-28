@@ -7,9 +7,10 @@ Get your live infrastructure topology data from your favorite resource
 providers for further processing, visualialitions, etc. Currently supported
 providers are:
 
-* Kubernetes
-* OpenStack
-* SaltStack
+* Kubernetes cluster
+* OpenStack cloud
+* SaltStack infra
+* Terraform template
 
 Installation
 ============

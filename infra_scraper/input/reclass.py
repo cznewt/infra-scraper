@@ -89,14 +89,12 @@ class SaltReclassInput(SaltStackInput):
                     service['host'])
                 for rel in service['relations']:
                     if rel['host'] not in self.resources['salt_node']:
-                        print rel['host']
                         self._scrape_resource(rel['host'],
                                               rel['host'],
                                               'salt_node', None,
                                               metadata={})
                     rel_service_id = '{}|{}'.format(rel['host'],
                                                     rel['service'])
-                    # print rel_service_id
                     if rel_service_id not in self.resources['salt_service']:
                         self._scrape_resource(rel_service_id,
                                               rel['service'],

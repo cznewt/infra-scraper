@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block page_header %}
-Available Endpoints
+Metadata Endpoints
 {% endblock %}
 
 {% block content %}
@@ -9,8 +9,8 @@ Available Endpoints
   <div class="col m12">
     <div class="card">
       <div class="card-content">
-        <span class="card-title">Available Graphs</span>
-        <table class="bordered responsive-table">
+        <span class="card-title">Metadata Endpoints</span>
+        <table class="bordered">
           <thead>
             <tr>
                 <th>Name</th>
@@ -32,7 +32,15 @@ Available Endpoints
                 {% if resources.append(resources.pop() + count) %}{% endif %}
                 {% endfor %}
                 {% set resource_count = resources.pop() %}
-                {{ resource_count }} node{% if resource_count != 1 %}s{% endif %}
+                {{ resource_count }} node{% if resource_count != 1 %}s{% endif %},
+
+                {% set relations = [0] %}
+                {% for type, count in endpoint.status.relations.items() %}
+                {% if relations.append(relations.pop() + count) %}{% endif %}
+                {% endfor %}
+                {% set relation_count = relations.pop() %}
+                {{ relation_count }} link{% if relation_count != 1 %}s{% endif %}
+
                 {% else %}N/A
                 {% endif %}
               </td>

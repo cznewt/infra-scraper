@@ -50,10 +50,15 @@ class OpenStackInput(BaseInput):
             'name': 'Image',
             'icon': 'fa:cube',
         },
+        'os_key_pair': {
+            'resource': 'OS::Nova::KeyPair',
+            'name': 'Key Pair',
+            'icon': 'fa:key',
+        },
         'os_net': {
             'resource': 'OS::Neutron::Net',
             'name': 'Net',
-            'icon': 'fa:cube',
+            'icon': 'fa:share-alt',
         },
         'os_port': {
             'resource': 'OS::Neutron::Port',
@@ -73,12 +78,12 @@ class OpenStackInput(BaseInput):
         'os_router': {
             'resource': 'OS::Neutron::Router',
             'name': 'Router',
-            'icon': 'fa:cube',
+            'icon': 'fa:arrows-alt',
         },
         'os_server': {
             'resource': 'OS::Nova::Server',
             'name': 'Server',
-            'icon': 'fa:cube',
+            'icon': 'fa:server',
         },
         'os_stack': {
             'resource': 'OS::Heat::Stack',
@@ -88,7 +93,7 @@ class OpenStackInput(BaseInput):
         'os_subnet': {
             'resource': 'OS::Neutron::Subnet',
             'name': 'Subnet',
-            'icon': 'fa:cube',
+            'icon': 'fa:share-alt',
         },
         'os_user': {
             'resource': 'OS::Keystone::User',
@@ -132,9 +137,10 @@ class OpenStackInput(BaseInput):
         # self.scrape_users()
         # self.scrape_projects()
         # cinder resources
+        self.scrape_keypairs()
         self.scrape_volumes()
         # glance resources
-        # self.scrape_images()
+        self.scrape_images()
         # nova resources
         if self.scope == 'global':
             self.scrape_aggregates()
@@ -259,6 +265,14 @@ class OpenStackInput(BaseInput):
             self._scrape_resource(resource['name'], resource['name'],
                                   'os_aggregate', None, metadata=resource)
 
+    def scrape_keypairs(self):
+        response = self.compute_api.keypairs.list()
+        for item in response:
+            resource = item.to_dict()['keypair']
+            self._scrape_resource(resource['name'],
+                                  resource['name'],
+                                  'os_key_pair', None, metadata=resource)
+
     def scrape_flavors(self):
         response = self.compute_api.flavors.list()
         for item in response:
@@ -309,8 +323,7 @@ class OpenStackInput(BaseInput):
     def scrape_images(self):
         response = self.image_api.images.list()
         for item in response:
-            print item.__class__
-            resource = item.__class__
+            resource = item.__dict__['__original__']
             self._scrape_resource(resource['id'], resource['name'],
                                   'os_image', None, metadata=resource)
 

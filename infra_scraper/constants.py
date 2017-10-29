@@ -1,6 +1,12 @@
 
 CHARACTER_MAP = {
     "fa": {
+        "arrows-alt": {
+            "char": "f0b2",
+            "size": 18,
+            "x": -8,
+            "y": 7,
+        },
         "clock-o": {
             "char": "f017",
             "size": 18,
@@ -16,7 +22,7 @@ CHARACTER_MAP = {
         "cube": {
             "char": "f1b2",
             "size": 18,
-            "x": -9,
+            "x": -8,
             "y": 6,
         },
         "cubes": {
@@ -37,10 +43,22 @@ CHARACTER_MAP = {
             "x": -9,
             "y": 7,
         },
+        "key": {
+            "char": "f084",
+            "size": 18,
+            "x": -9,
+            "y": 5,
+        },
         "lock": {
             "char": "f023",
             "size": 18,
             "x": -7,
+            "y": 7,
+        },
+        "map-signs": {
+            "char": "f277",
+            "size": 18,
+            "x": -9,
             "y": 7,
         },
         "object-group": {
@@ -57,6 +75,12 @@ CHARACTER_MAP = {
         },
         "server": {
             "char": "f233",
+            "size": 18,
+            "x": -9,
+            "y": 7,
+        },
+        "share-alt": {
+            "char": "f1e0",
             "size": 18,
             "x": -9,
             "y": 7,

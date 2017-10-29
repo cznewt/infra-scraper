@@ -118,6 +118,24 @@ var RelationalPlot = function(RelationalPlot){
             });
         };
 
+        this.findStartAngle = function(children) {
+            var min = children[0].x;
+            children.forEach(function(d) {
+                if (d.x < min)
+                    min = d.x;
+            });
+            return min;
+        };
+
+        this.findEndAngle = function(children) {
+            var max = children[0].x;
+            children.forEach(function(d) {
+                if (d.x > max)
+                    max = d.x;
+            });
+            return max;
+        };
+
     };
     return RelationalPlot;
 }(RelationalPlot || {});

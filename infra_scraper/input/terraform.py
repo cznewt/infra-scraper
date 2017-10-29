@@ -20,7 +20,7 @@ class TerraformInput(BaseInput):
         'tf_openstack_compute_keypair_v2': {
             'resource': 'openstack_compute_keypair_v2',
             'name': 'Key Pair',
-            'icon': 'fa:cube',
+            'icon': 'fa:key',
         },
         'tf_openstack_compute_secgroup_v2': {
             'resource': 'openstack_compute_secgroup_v2',
@@ -30,39 +30,40 @@ class TerraformInput(BaseInput):
         'tf_openstack_networking_router_interface_v2': {
             'resource': 'openstack_networking_router_interface_v2',
             'name': 'Router Interface',
-            'icon': 'fa:cube',
+            'icon': 'fa:arrows-alt',
         },
         'tf_openstack_networking_router_v2': {
             'resource': 'openstack_networking_router_v2',
             'name': 'Router',
-            'icon': 'fa:cube',
+            'icon': 'fa:arrows-alt',
         },
         'tf_openstack_networking_network_v2': {
             'resource': 'openstack_networking_network_v2',
             'name': 'Net',
-            'icon': 'fa:cube',
+            'icon': 'fa:share-alt',
         },
         'tf_openstack_networking_subnet_v2': {
             'resource': 'openstack_networking_subnet_v2',
             'name': 'Subnet',
-            'icon': 'fa:cube',
+            'icon': 'fa:share-alt',
         },
         'tf_openstack_networking_floatingip_v2': {
             'resource': 'openstack_networking_floatingip_v2',
             'name': 'Floating IP',
-            'icon': 'fa:cube',
+            'icon': 'fa:map-signs',
         },
         'tf_openstack_compute_floatingip_associate_v2': {
             'resource': 'openstack_compute_floatingip_associate_v2',
             'name': 'Floating IP Association',
-            'icon': 'fa:cube',
+            'icon': 'fa:map-signs',
         },
     }
 
     def __init__(self, **kwargs):
         super(TerraformInput, self).__init__(**kwargs)
         self.kind = 'terraform'
-        self.client = python_terraform.Terraform(working_dir=self.config['dir'])
+        self.client = python_terraform.Terraform(
+            working_dir=self.config['dir'])
 
     def scrape_all_resources(self):
         self.scrape_resources()
@@ -71,10 +72,9 @@ class TerraformInput(BaseInput):
         return name.replace('"', '').replace('[root] ', '').strip()
 
     def _create_relations(self):
-        return_code, raw_data, stderr = self.client.graph(no_color=python_terraform.IsFlagged)
+        return_code, raw_data, stderr = self.client.graph(
+            no_color=python_terraform.IsFlagged)
         graph = graph_from_dot_data(raw_data)[0]
-        for node in graph.obj_dict['subgraphs']['"root"'][0]['nodes']:
-            print node
         for edge in graph.obj_dict['subgraphs']['"root"'][0]['edges']:
             source = self.clean_name(edge[0]).split('.')
             target = self.clean_name(edge[1]).split('.')
@@ -85,8 +85,22 @@ class TerraformInput(BaseInput):
                     '{}.{}'.format(target[0], target[1]))
 
     def scrape_resources(self):
+        return_code, raw_data, stderr = self.client.graph(
+            no_color=python_terraform.IsFlagged)
+        graph = graph_from_dot_data(raw_data)[0]
+        nodes = {}
+        for node in graph.obj_dict['subgraphs']['"root"'][0]['nodes']:
+            clean_node = 'tf_{}'.format(self.clean_name(node).split('.')[0])
+            if clean_node in self.RESOURCE_MAP:
+                nodes[self.clean_name(node)] = {
+                    'id': self.clean_name(node),
+                    'name': self.clean_name(node).split('.')[1],
+                    'kind': 'tf_{}'.format(self.clean_name(node).split('.')[0]),
+                    'metadata': {}
+                }
         res = None
-        return_code, raw_data, stderr = self.client.show(no_color=python_terraform.IsFlagged)
+        return_code, raw_data, stderr = self.client.show(
+            no_color=python_terraform.IsFlagged)
         raw_data = raw_data.split('Outputs:')[0]
         data_buffer = StringIO.StringIO(raw_data)
         for line in data_buffer.readlines():
@@ -97,9 +111,7 @@ class TerraformInput(BaseInput):
                 res['metadata'][meta_key.strip()] = meta_value.strip()
             else:
                 if res is not None:
-                    self._scrape_resource(res['id'], res['name'],
-                                          res['kind'], None,
-                                          metadata=res['metadata'])
+                    nodes[res['id']]['metadata'] = res['metadata']
                 resource_id = line.replace(' (tainted', '') \
                     .replace(':', '').replace('(', '').replace(')', '').strip()
                 try:
@@ -111,4 +123,8 @@ class TerraformInput(BaseInput):
                         'metadata': {}
                     }
                 except Exception as exception:
-                    print exception
+                    logger.error(exception)
+        for node_name, node in nodes.items():
+            self._scrape_resource(node['id'], node['name'],
+                                  node['kind'], None,
+                                  metadata=node['metadata'])

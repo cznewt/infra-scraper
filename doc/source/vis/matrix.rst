@@ -23,3 +23,4 @@ More Information
 
 * https://github.com/micahstubbs/d3-adjacency-matrix-layout
 * https://bl.ocks.org/micahstubbs/7f360cc66abfa28b400b96bc75b8984e (Micah Stubbs’s adjacency matrix layout)
+* https://en.wikipedia.org/wiki/Adjacency_matrix

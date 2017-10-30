@@ -37,7 +37,7 @@ To bootstrap latest version into virtualenv, run following commands:
 Configuration
 =============
 
-You provide separate configuration files for differt provider kinds.
+You provide separate configuration files for different kinds of provider.
 
 
 Kubernetes
@@ -48,55 +48,72 @@ scraper.
 
 .. code-block:: yaml
 
-    ---
-    apiVersion: v1
-    clusters:
-    - cluster:
-        certificate-authority-data: |
-          cacert
-        server: https://kubernetes.api:443
-      name: kubernetes-cluster
-    contexts:
-    - context:
-        cluster: kubernetes-cluster
-        user: kubernetes-cluster-admin
-      name: kubernetes-cluster
-    current-context: kubernetes-cluster
-    kind: Config
-    preferences: {}
-    users:
-    - name: kubernetes-cluster-admin
-      user:
-        client-certificate-data: |
-          clientcert
-        client-key-data: |
-          clientkey
+    endpoints:
+      k8s-admin:
+        kind: kubernetes
+        scope: global
+        layouts:
+        - force
+        - hive
+        - matrix
+        config:
+          cluster:
+            server: https://kqueen-te-ControlL-O136N2H44UCM-87640419.us-west-2.elb.amazonaws.com:443
+            certificate-authority-data: |
+              <ca-for-server-and-clients>
+          user:
+            client-certificate-data: |
+              <client-cert-public>
+            client-key-data: |
+              <client-cert-private>
 
 OpenStack
 ---------
 
-Example configuration for keystone v2 and keystone v3 clouds in
-`os_client_config` format.
+Configurations for keystone v2 and keystone v3 clouds. Config for single
+tenant scraping.
 
 .. code-block:: yaml
 
-    clouds:
-      keystone2:
-        region_name: RegionOne
-        auth:
-          username: 'admin'
-          password: 'password'
-          project_name: 'admin'
-          auth_url: 'https://keystone.api:5000/v2.0'
-      keystone3:
-        region_name: RegionOne
-        identity_api_version: '3'
-        auth:
-          username: 'admin'
-          password: 'password'
-          project_name: 'admin'
-          domain_name: 'default'
-          auth_url: 'https://keystone.api:5000/v3'
+    endpoints:
+      os-v2-tenant:
+        kind: openstack
+        description: OpenStack (keystone v2) tenant
+        scope: local
+        layouts:
+        - arc
+        - force
+        - hive
+        - matrix
+        config:
+          region_name: RegionOne
+          compute_api_version: '2.1'
+          auth:
+            username: user
+            password: password
+            project_name: project-name
+            domain_name: 'default'
+            auth_url: 'https://keystone-api:5000/v3'
+
+Config for scraping resources from entire cloud.
+
+.. code-block:: yaml
+
+    endpoints:
+      os-v2-admin:
+        kind: openstack
+        description: OpenStack (keystone v2) cloud
+        scope: global
+        layouts:
+        - force
+        - hive
+        config:
+          region_name: RegionOne
+          auth:
+            username: admin
+            password: password
+            project_name: admin
+            auth_url:  https://keystone-api:5000/v2.0
 
 SaltStack
 ---------
@@ -105,21 +122,51 @@ Configuration for connecting to Salt API.
 
 .. code-block:: yaml
 
-    configs:
-      salt:
-        url: 'https://salt-api:8000'
-        verify: False
-        auth:
-          username: 'user'
-          password: 'password'
+    endpoints:
+      salt-global:
+        kind: salt
+        layouts:
+        - force
+        - hive
+        config:
+          auth_url: 'http://127.0.0.1:8000'
+          username: salt-user
+          password: password
+
+Terraform
+---------
+
+Configuration for parsing terraform templates.
+
+.. code-block:: yaml
+
+    endpoints:
+      tf-aws-app:
+        kind: terraform
+        layouts:
+        - hive
+        config:
+          dir: ~/terraform/two-tier-aws
 
 
-Supported Visualizations
-========================
+Supported Visualization Layouts
+===============================
+
+Presented data requires different layouts. Every time you need to emphasise
+different qualities of displayed resources. You can choose from several
+different layouts to display collected data.
 
 
-Force-Directed Layout
----------------------
+Force-Directed Graph
+--------------------
+
+`Force-directed graph` drawing algorithms are used for drawing graphs in an
+aesthetically pleasing way. Their purpose is to position the nodes of a graph
+in two-dimensional or three-dimensional space so that all the edges are of
+more or less equal length and there are as few crossing edges as possible, by
+assigning forces among the set of edges and the set of nodes, based on their
+relative positions, and then using these forces either to simulate the motion
+of the edges and nodes or to minimize their energy.
 
 .. figure:: ./doc/source/static/img/force-directed-plot.png
     :width: 600px
@@ -131,6 +178,11 @@ Force-Directed Layout
 Hive Plot
 ---------
 
+The `hive plot` is a visualization method for drawing networks. Nodes
+are mapped to and positioned on radially distributed linear axes — this
+mapping is based on network structural properties. Edges are drawn as curved
+links. Simple and interpretable.
+
 .. figure:: ./doc/source/static/img/hive-plot.png
     :width: 600px
     :figclass: align-center
@@ -140,6 +192,13 @@ Hive Plot
 
 Arc Diagram
 -----------
+
+An `arc diagram` is a style of graph drawing, in which the vertices of a graph
+are placed along a line in the Euclidean plane, with edges being drawn as
+semicircles in one of the two halfplanes bounded by the line, or as smooth
+curves formed by sequences of semicircles. In some cases, line segments of the
+line itself are also allowed as edges, as long as they connect only vertices
+that are consecutive along the line.
 
 .. figure:: ./doc/source/static/img/arc-diagram.png
     :width: 600px
@@ -151,6 +210,10 @@ Arc Diagram
 Adjacency Matrix
 ----------------
 
+An adjacency matrix is a square matrix used to represent a finite graph. The
+elements of the matrix indicate whether pairs of vertices are adjacent or not
+in the graph.
+
 .. figure:: ./doc/source/static/img/adjacency-matrix.png
     :width: 600px
     :figclass: align-center
@@ -160,6 +223,11 @@ Adjacency Matrix
 
 Hierarchical Edge Bundling
 --------------------------
+
+Danny Holten presents an awesome and aesthetically pleasing way of simplifying
+graphs and making tree graphs more accessible.  What makes his project so
+useful, however, is how he outlines the particular thought process that goes
+into making a visualization.
 
 .. figure:: ./doc/source/static/img/hiearchical-edge-bundling.png
     :width: 600px

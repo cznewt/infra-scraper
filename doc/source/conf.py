@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Robophery documentation build configuration file
+# InfraScraper documentation build configuration file
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -250,31 +250,3 @@ man_pages = [
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
-
-
-# -- Options for Texinfo output -------------------------------------------
-
-# Grouping the document tree into Texinfo files. List of tuples
-# (source start file, target name, title, author,
-#  dir menu entry, description, category)
-texinfo_documents = [
-  ('index', 'InfraScraper', u'InfraScraper Documentation',
-   u'InfraScraper Team', 'InfraScraper', 'Python library for interfacing low level hardware sensors and actuators with MQTT and statsd bindings.',
-   'Miscellaneous'),
-]
-
-# Documents to append as an appendix to all manuals.
-#texinfo_appendices = []
-
-# If false, no module index is generated.
-#texinfo_domain_indices = True
-
-# How to display URL addresses: 'footnote', 'no', or 'inline'.
-#texinfo_show_urls = 'footnote'
-
-# If true, do not generate a @detailmenu in the "Top" node's menu.
-#texinfo_no_detailmenu = False
-
-
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'http://docs.python.org/': None}

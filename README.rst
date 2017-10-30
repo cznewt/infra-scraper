@@ -58,7 +58,7 @@ scraper.
         - matrix
         config:
           cluster:
-            server: https://kqueen-te-ControlL-O136N2H44UCM-87640419.us-west-2.elb.amazonaws.com:443
+            server: https://kubernetes-api:443
             certificate-authority-data: |
               <ca-for-server-and-clients>
           user:

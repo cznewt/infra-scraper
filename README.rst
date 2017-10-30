@@ -37,14 +37,21 @@ To bootstrap latest version into virtualenv, run following commands:
 Configuration
 =============
 
-You provide separate configuration files for different kinds of provider.
+You provide one configuration file for all providers. The default location is
+`/etc/infra-scraper/config.yaml` but it can be overriden by
+`INFRA_SCRAPER_CONFIG_FILE` environmental variable, for example:
+
+.. code-block:: yaml
+
+    export INFRA_SCRAPER_CONFIG_FILE='~/scraper.yml'
 
 
 Kubernetes
 ----------
 
-Kubernetes requires kubeconfig file. You provide name of the context to the
-scraper.
+Kubernetes requires some information from kubeconfig file. You provide the
+parameters of the cluster and the user to the scraper. These can be found
+under corresponding keys.
 
 .. code-block:: yaml
 

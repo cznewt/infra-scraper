@@ -38,10 +38,10 @@ Configuration
 =============
 
 You provide one configuration file for all providers. The default location is
-`/etc/infra-scraper/config.yaml` but it can be overriden by
-`INFRA_SCRAPER_CONFIG_FILE` environmental variable, for example:
+``/etc/infra-scraper/config.yaml`` but it can be overriden by
+``INFRA_SCRAPER_CONFIG_FILE`` environmental variable, for example:
 
-.. code-block:: yaml
+.. code-block:: bash
 
     export INFRA_SCRAPER_CONFIG_FILE='~/scraper.yml'
 

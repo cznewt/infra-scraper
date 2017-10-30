@@ -121,7 +121,7 @@ Supported Visualizations
 Force-Directed Layout
 ---------------------
 
-.. figure:: ./docs/source/static/img/force-directed-plot.png
+.. figure:: ./doc/source/static/img/force-directed-plot.png
     :width: 600px
     :figclass: align-center
 
@@ -131,7 +131,7 @@ Force-Directed Layout
 Hive Plot
 ---------
 
-.. figure:: ./docs/source/static/img/hive-plot.png
+.. figure:: ./doc/source/static/img/hive-plot.png
     :width: 600px
     :figclass: align-center
 
@@ -141,7 +141,7 @@ Hive Plot
 Arc Diagram
 -----------
 
-.. figure:: ./docs/source/static/img/arc-diagram.png
+.. figure:: ./doc/source/static/img/arc-diagram.png
     :width: 600px
     :figclass: align-center
 
@@ -151,7 +151,7 @@ Arc Diagram
 Adjacency Matrix
 ----------------
 
-.. figure:: ./docs/source/static/img/adjacency-matrix.png
+.. figure:: ./doc/source/static/img/adjacency-matrix.png
     :width: 600px
     :figclass: align-center
 
@@ -161,7 +161,7 @@ Adjacency Matrix
 Hierarchical Edge Bundling
 --------------------------
 
-.. figure:: ./docs/source/static/img/hiearchical-edge-bundling.png
+.. figure:: ./doc/source/static/img/hiearchical-edge-bundling.png
     :width: 600px
     :figclass: align-center
 

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import yaml
 import boto3
 from infra_scraper.input.base import BaseInput
 from infra_scraper.utils import setup_logger
@@ -17,7 +18,7 @@ class AmazonWebServicesInput(BaseInput):
             'icon': 'fa:hdd-o',
         },
         'ec2_instance': {
-            'resource': 'ec2_instance`',
+            'resource': 'ec2_instance',
             'client': 'ec2',
             'name': 'EC2 Instance',
             'icon': 'fa:server',
@@ -38,10 +39,20 @@ class AmazonWebServicesInput(BaseInput):
     def _create_relations(self):
         pass
 
-    def scrape_s3_buckets(self):
-        for item in self.s3_client.buckets.all():
-            print item
-
     def scrape_ec2_instances(self):
         for item in self.ec2_client.instances.all():
-            print item
+            resource = item.meta.__dict__
+            resource.pop('resource_model')
+            resource.pop('client')
+            self._scrape_resource(resource['data']['InstanceId'],
+                                  resource['data']['InstanceId'],
+                                  'ec2_instance', None, metadata=resource)
+
+    def scrape_s3_buckets(self):
+        for item in self.s3_client.buckets.all():
+            resource = item.meta.__dict__
+            resource.pop('resource_model')
+            resource.pop('client')
+            self._scrape_resource(resource['data']['Name'],
+                                  resource['data']['Name'],
+                                  's3_bucket', None, metadata=resource)

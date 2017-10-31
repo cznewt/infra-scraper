@@ -127,8 +127,8 @@ var HivePlot = {
           svg.selectAll(".link").classed("active", function(p) {
             return p.source === d || p.target === d;
           });
-          d3.select(this).select("circle").classed("active", true);
-          d3.select(this).select("text").classed("active", true);
+          d3.select(this).classed("active", true);
+          //d3.select(this).select("text").classed("active", true);
           tooltip.html("Node - " + d.name + "<br/>" + "Kind - " + d.kind)
             .style("left", (d3.event.pageX + 5) + "px")
             .style("top", (d3.event.pageY - 28) + "px");
@@ -208,28 +208,26 @@ var HivePlot = {
 
       node.append("circle")
         .attr("r", 16)
-        .attr("class", "node")
-        .on("mouseover", mouseFunctions.nodeOver)
-        .on("mouseout", mouseFunctions.out);
 
       node.append("text")
         .attr('fill', function(d) { return iconFunctions.color(d.kind); })
         .attr('font-size', function(d) { return iconFunctions.size(d.kind); })
         .attr('font-family', function(d) { return iconFunctions.family(d.kind); })
         .text(function(d) { return iconFunctions.character(d.kind); })
-        .attr("transform", function(d) { return iconFunctions.transform(d.kind); })
-        .on("mouseover", mouseFunctions.modeOver)
-        .on("mouseout", mouseFunctions.out);
+        .attr("transform", function(d) { return iconFunctions.transform(d.kind); });
 
-        node.on("click", function(node){
-          svg.selectAll(".node").classed("selected", function(d) { return d === node; });
-          svg.selectAll(".link").classed("selected", function(p) {
-            return p.source === node || p.target === node;
-          });
-          if(config.hasOwnProperty("nodeClickFn") && typeof config.nodeClickFn === 'function'){
-              config.nodeClickFn(node);
-          }
+      node.on("mouseover", mouseFunctions.nodeOver)
+          .on("mouseout", mouseFunctions.out);
+
+      node.on("click", function(node){
+        svg.selectAll(".node").classed("selected", function(d) { return d === node; });
+        svg.selectAll(".link").classed("selected", function(p) {
+          return p.source === node || p.target === node;
         });
+        if(config.hasOwnProperty("nodeClickFn") && typeof config.nodeClickFn === 'function'){
+            config.nodeClickFn(node);
+        }
+      });
     }
     render();
     window.removeEventListener('resize', render);

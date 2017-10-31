@@ -48,10 +48,9 @@ var RelationalPlot = function(RelationalPlot){
             graph.line = d3.radialLine()
                 .curve(d3.curveBundle.beta(0.85))
                 .radius(function(d) { return d.y; })
-                .angle(function(d) { return d.x / 180 * Math.PI; });
-
+                .angle(function(d) { return d.x / 180 * Math.PI; })
             if(alreadyRunning && graph.svg) {
-//                graph.svg.remove();
+                d3.select(graph.svg.node().parentNode).remove();
             }
 
             graph.svg = d3.select(graphSelector).append("svg")
@@ -86,8 +85,123 @@ var RelationalPlot = function(RelationalPlot){
 
                 var root = relationalPlotHelpers.nodeHierarchy(graph._data)
                     .sum(function(d) { return d.size; });
+                console.log(root);
+                var nodes = graph.cluster(root);
+                var links = nodes.links();
+                console.log(nodes);
+                var groupData = graph.svg.selectAll("g.group")
+                    .data(root.leaves().filter(function(d) {
+                        //TODO: decide which one is group itself
+                        return true || d.host && d.service == d.host && d.children;
+                    }))
+                    .enter().append("group")
+                    .attr("class", "group")
 
-                graph.cluster(root);
+                var groupArc = d3.arc()
+                    .innerRadius((diameter/2) - 185)
+                    .outerRadius((diameter/2) - 160)
+                    .startAngle(function(d) {
+                        // TODO: in this we have to have childrens in data
+                        //return (graph.findStartAngle(d.__data__.children) - 0.25) * Math.PI / 180;
+                        return (graph.findStartAngle([d.__data__]) - 0.25) * Math.PI / 180;
+                    })
+                    .endAngle(function(d) {
+                        // TODO: in this we have to have childrens in data
+                        //return (graph.findEndAngle(d.__data__.children) + 0.25) * Math.PI / 180
+                        return (graph.findEndAngle([d.__data__]) + 0.25) * Math.PI / 180
+                    });
+
+
+                graph.svg.selectAll("g.arc")
+                    .data(groupData.nodes())
+                    .enter().append("svg:path")
+                    .attr("id",function(d){
+                        return d.name;
+                        //return "node-"+d.__data__.host.replace(/\./g,"_");
+                    })
+                    .attr("data-node-host",function(d){
+                        return d.name;
+                        //return d.__data__.host;
+                    })
+                    .attr("d", groupArc)
+                    .attr("class", "groupArc")
+                    .style("fill", function(d,i) {
+                        return true;//return color_arc(i);
+                    });
+                var arc = graph.svg.select("path.groupArc");
+                    var nodeHostId = arc.attr("id"),
+                    nodeHost = arc.attr("data-node-host");
+
+                d3.select("g").append("text")
+                .style("font-size",12)
+                .style("fill","#F8F8F8")
+                .attr("dy", 17)
+                .append("textPath")
+                .attr("xlink:href", function(d){
+                    return "#"+nodeHostId;
+                })
+                .attr("startOffset", 7)
+                .attr("width", arc.node().getTotalLength()/2.4)
+                .text(nodeHost)
+                .each(function wrap( d ) {
+                    var self = d3.select(this),
+                        textLength = self.node().getComputedTextLength(),
+                        text = self.text(),
+                        width = self.attr('width');
+                    if(width > 50){
+                        while ( ( textLength > width )&& text.length > 0) {
+                            if(width > 100){
+                                text = text.slice(0, -1);
+                                self.text(text + '...');
+                            }else{
+                                text = text.slice(0, -5);
+                                self.text(text);
+                            }
+                            textLength = self.node().getComputedTextLength();
+                        }
+                    }else{
+                        self.text("");
+                    }
+                });
+                if(false){
+                graph.svg.selectAll("g.node")
+                    .data(root.leaves().filter(function(n) {
+                        return !n.children;
+                    }))
+                    .enter().append("svg:g")
+                    .attr("class", "node")
+                    .attr("data-host-id", function(d){
+                        return d.host;
+                    })
+                    .attr("id", function(d) {
+                        return graphHelpers.nodeServiceId(d);
+                    })
+                    .attr("transform", function(d) {
+                        return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
+                    })
+                    .append("svg:a")
+
+                    .append("svg:text")
+                    .attr("dx", function(d) {
+                        return d.x < 180 ? 0 : 0;
+                    })
+                    .attr("dy", ".2em")
+                    .attr("text-anchor", function(d) {
+                        return d.x < 180 ? "start" : "end";
+                    })
+                    .style("text-anchor", function(d) {
+                        return d.x < 180 ? "end" : "start";
+                    })
+                    .attr("transform", function(d) {
+                        return d.x < 180 ? "rotate(180)" : "rotate(0)";
+                    })
+                    .text(function(d) {
+                        return d.service;
+                    })
+                }
+
+
+
                 graph.link = graph.link
                   .data(relationalPlotHelpers.nodeRelations(root.leaves()))
                   .enter().append("path")
@@ -110,7 +224,7 @@ var RelationalPlot = function(RelationalPlot){
             d3.json(dataUrl, function(res){
                 graph._data = res.resources;
                 relationalPlotHelpers.displayResources(Object.keys(graph._data).length);
-                //relationalPlotHelpers.displayRelations();
+                relationalPlotHelpers.displayRelations();
                 relationalPlotHelpers.displayScrapeTime(res.date);
                 if(typeof callback === 'function'){
                     callback();

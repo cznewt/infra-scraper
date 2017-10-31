@@ -61,9 +61,6 @@
 .hive .node {
   fill: #fff;
   cursor: pointer;
-}
-
-.hive .node circle {
   stroke: #666;
   stroke-width: 1.5px;
 }

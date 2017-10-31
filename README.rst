@@ -207,6 +207,7 @@ Configuration for connecting to Salt API.
           username: salt-user
           password: password
 
+
 Terraform
 ~~~~~~~~~
 

@@ -1,0 +1,16 @@
+endpoints:
+  k8s-admin:
+    kind: kubernetes
+    layouts:
+    - force
+    - hive
+    config:
+      cluster:
+        server: https://kubernetes-api:443
+        certificate-authority-data: |
+          <ca-for-server-and-clients>
+      user:
+        client-certificate-data: |
+          <client-cert-public>
+        client-key-data: |
+          <client-cert-private>

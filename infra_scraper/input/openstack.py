@@ -17,91 +17,109 @@ class OpenStackInput(BaseInput):
     RESOURCE_MAP = {
         'os_aggregate': {
             'resource': 'OS::Nova::Aggregate',
+            'client': 'nova',
             'name': 'Aggregate',
             'icon': 'fa:cube',
         },
         'os_flavor': {
             'resource': 'OS::Nova::Flavor',
+            'client': 'nova',
             'name': 'Flavor',
             'icon': 'fa:cube',
         },
         'os_floating_ip': {
             'resource': 'OS::Neutron::FloatingIP',
+            'client': 'neutron',
             'name': 'Floating IP',
             'icon': 'fa:cube',
         },
         'os_floating_ip_association': {
             'resource': 'OS::Neutron::FloatingIPAssociation',
+            'client': 'neutron',
             'name': 'Floating IP Association',
             'icon': 'fa:cube',
         },
         'os_group': {
             'resource': 'OS::Keystone::Group',
+            'client': 'keystone',
             'name': 'Group',
             'icon': 'fa:cube',
         },
         'os_hypervisor': {
             'resource': 'OS::Nova::Hypervisor',
+            'client': 'nova',
             'name': 'Hypervisor',
             'icon': 'fa:server',
         },
         'os_image': {
             'resource': 'Glance::Image',
+            'client': 'glance',
             'name': 'Image',
             'icon': 'fa:cube',
         },
         'os_key_pair': {
             'resource': 'OS::Nova::KeyPair',
+            'client': 'nova',
             'name': 'Key Pair',
             'icon': 'fa:key',
         },
         'os_net': {
             'resource': 'OS::Neutron::Net',
+            'client': 'neutron',
             'name': 'Net',
             'icon': 'fa:share-alt',
         },
         'os_port': {
             'resource': 'OS::Neutron::Port',
+            'client': 'neutron',
             'name': 'Port',
             'icon': 'fa:cube',
         },
         'os_project': {
             'resource': 'OS::Keystone::Tenant',
+            'client': 'keystone',
             'name': 'Project',
             'icon': 'fa:cube',
         },
         'os_resource_type': {
             'resource': 'OS::Heat::ResourceType',
+            'client': 'heat',
             'name': 'Resource Type',
             'icon': 'fa:cube',
         },
         'os_router': {
             'resource': 'OS::Neutron::Router',
+            'client': 'neutron',
             'name': 'Router',
             'icon': 'fa:arrows-alt',
         },
         'os_server': {
             'resource': 'OS::Nova::Server',
+            'client': 'nova',
             'name': 'Server',
             'icon': 'fa:server',
         },
         'os_stack': {
             'resource': 'OS::Heat::Stack',
+            'client': 'heat',
             'name': 'Stack',
             'icon': 'fa:cubes',
         },
         'os_subnet': {
             'resource': 'OS::Neutron::Subnet',
+            'client': 'neutron',
             'name': 'Subnet',
             'icon': 'fa:share-alt',
         },
         'os_user': {
             'resource': 'OS::Keystone::User',
+            'client': 'keystone',
             'name': 'User',
             'icon': 'fa:cube',
         },
         'os_volume': {
             'resource': 'OS::Cinder::Volume',
+            'client': 'cinder',
             'name': 'Volume',
             'icon': 'fa:cube',
         },
@@ -133,31 +151,24 @@ class OpenStackInput(BaseInput):
         return self.cloud.get_legacy_client(service_key, constructor)
 
     def scrape_all_resources(self):
-        # keystone resources
-        # self.scrape_users()
-        # self.scrape_projects()
-        # cinder resources
-        self.scrape_keypairs()
-        self.scrape_volumes()
-        # glance resources
-        self.scrape_images()
-        # nova resources
+        # self.scrape_keystone_users()
+        # self.scrape_keystone_projects()
+        self.scrape_cinder_volumes()
+        self.scrape_glance_images()
         if self.scope == 'global':
-            self.scrape_aggregates()
-        self.scrape_flavors()
-        # self.scrape_security_groups()
-        self.scrape_servers()
-        if self.scope == 'global':
-            self.scrape_hypervisors()
-        # neutron resources
-        self.scrape_networks()
-        self.scrape_subnets()
-        self.scrape_floating_ips()
-        self.scrape_routers()
-        self.scrape_ports()
-        # heat resources
-        # self.scrape_resource_types()
-        self.scrape_stacks()
+            self.scrape_nova_aggregates()
+            self.scrape_nova_hypervisors()
+        self.scrape_nova_keypairs()
+        self.scrape_nova_flavors()
+        self.scrape_nova_servers()
+        # self.scrape_nova_security_groups()
+        self.scrape_neutron_networks()
+        self.scrape_neutron_subnets()
+        self.scrape_neutron_floating_ips()
+        self.scrape_neutron_routers()
+        self.scrape_neutron_ports()
+        self.scrape_heat_stacks()
+        # self.scrape_heat_resource_types()
 
     def _create_relations(self):
         # Define relationships between project and all namespaced resources.
@@ -240,32 +251,28 @@ class OpenStackInput(BaseInput):
                 resource_id,
                 resource['metadata']['network_id'])
 
-    # keystone resources
-
-    def scrape_users(self):
+    def scrape_keystone_users(self):
         users = self.identity_api.get('/users')
         for user in users:
             resource = user.to_dict()
             self._scrape_resource(resource['id'], resource['name'],
                                   'os_user', None, metadata=resource)
 
-    def scrape_projects(self):
+    def scrape_keystone_projects(self):
         projects = self.identity_api.tenants.list()
         for project in projects:
             resource = project.to_dict()
             self._scrape_resource(resource['id'], resource['name'],
                                   'os_project', None, metadata=resource)
 
-    # nova resources
-
-    def scrape_aggregates(self):
+    def scrape_nova_aggregates(self):
         response = self.compute_api.aggregates.list()
         for item in response:
             resource = item.to_dict()
             self._scrape_resource(resource['name'], resource['name'],
                                   'os_aggregate', None, metadata=resource)
 
-    def scrape_keypairs(self):
+    def scrape_nova_keypairs(self):
         response = self.compute_api.keypairs.list()
         for item in response:
             resource = item.to_dict()['keypair']
@@ -273,7 +280,7 @@ class OpenStackInput(BaseInput):
                                   resource['name'],
                                   'os_key_pair', None, metadata=resource)
 
-    def scrape_flavors(self):
+    def scrape_nova_flavors(self):
         response = self.compute_api.flavors.list()
         for item in response:
             resource = item.to_dict()
@@ -281,7 +288,7 @@ class OpenStackInput(BaseInput):
                                   resource['name'],
                                   'os_flavor', None, metadata=resource)
 
-    def scrape_hypervisors(self):
+    def scrape_nova_hypervisors(self):
         response = self.compute_api.hypervisors.list()
         for item in response:
             resource = item.to_dict()
@@ -289,7 +296,7 @@ class OpenStackInput(BaseInput):
                                   resource['hypervisor_hostname'],
                                   'os_hypervisor', None, metadata=resource)
 
-    def scrape_servers(self):
+    def scrape_nova_servers(self):
         if self.scope == 'global':
             search_opts = {'all_tenants': 1}
         else:
@@ -301,7 +308,7 @@ class OpenStackInput(BaseInput):
             self._scrape_resource(resource['id'], resource['name'],
                                   'os_server', None, metadata=resource)
 
-    def scrape_security_groups(self):
+    def scrape_nova_security_groups(self):
         response = self.compute_api.security_groups.list(
             search_opts={'all_tenants': 1})
         for item in response:
@@ -309,57 +316,51 @@ class OpenStackInput(BaseInput):
             self._scrape_resource(resource['id'], resource['name'],
                                   'os_security_group', None, metadata=resource)
 
-    # cinder resources
-
-    def scrape_volumes(self):
+    def scrape_cinder_volumes(self):
         response = self.volume_api.volumes.list()
         for item in response:
             resource = item.to_dict()
             self._scrape_resource(resource['id'], resource['name'],
                                   'os_volume', None, metadata=resource)
 
-    # glance resources
-
-    def scrape_images(self):
+    def scrape_glance_images(self):
         response = self.image_api.images.list()
         for item in response:
             resource = item.__dict__['__original__']
             self._scrape_resource(resource['id'], resource['name'],
                                   'os_image', None, metadata=resource)
 
-    # neutron resources
-
-    def scrape_routers(self):
+    def scrape_neutron_routers(self):
         resources = self.network_api.list_routers().get('routers')
         for resource in resources:
             self._scrape_resource(resource['id'], resource['id'],
                                   'os_router', None, metadata=resource)
 
-    def scrape_floating_ips(self):
+    def scrape_neutron_floating_ips(self):
         resources = self.network_api.list_floatingips().get('floatingips')
         for resource in resources:
             self._scrape_resource(resource['id'], resource['id'],
                                   'os_floating_ip', None, metadata=resource)
 
-    def scrape_floating_ip_associations(self):
+    def scrape_neutron_floating_ip_associations(self):
         resources = self.network_api.list_floatingips().get('floatingips')
         for resource in resources:
             self._scrape_resource(resource['id'], resource['id'],
                                   'os_floating_ip_association', None, metadata=resource)
 
-    def scrape_networks(self):
+    def scrape_neutron_networks(self):
         resources = self.network_api.list_networks().get('networks')
         for resource in resources:
             self._scrape_resource(resource['id'], resource['name'],
                                   'os_net', None, metadata=resource)
 
-    def scrape_subnets(self):
+    def scrape_neutron_subnets(self):
         resources = self.network_api.list_subnets().get('subnets')
         for resource in resources:
             self._scrape_resource(resource['id'], resource['name'],
                                   'os_subnet', None, metadata=resource)
 
-    def scrape_ports(self):
+    def scrape_neutron_ports(self):
         resources = self.network_api.list_ports().get('ports')
         for resource in resources:
             self._scrape_resource(resource['id'], resource['name'],
@@ -367,7 +368,7 @@ class OpenStackInput(BaseInput):
 
     # heat resources
 
-    def scrape_resource_types(self):
+    def scrape_heat_resource_types(self):
         resource_types = self.orch_api.resource_types.list(
             search_opts={'all_tenants': 1})
         for resource_type in resource_types:
@@ -375,7 +376,7 @@ class OpenStackInput(BaseInput):
             self._scrape_resource(resource, resource,
                                   'os_resource_type', None, metadata=resource)
 
-    def scrape_stacks(self):
+    def scrape_heat_stacks(self):
         if self.scope == 'global':
             search_opts = {'all_tenants': 1}
         else:

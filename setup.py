@@ -2,38 +2,28 @@
 
 from setuptools import setup, find_packages
 
-version = '0.2'
+VERSION = '0.2'
 
 with open('README.rst') as readme:
-    long_description = ''.join(readme.readlines())
+    LONG_DESCRIPTION = ''.join(readme.readlines())
+
+with open('requirements.txt') as f:
+    REQUIRES = f.readlines()
+
+DESCRIPTION = """Infrastrucutre metadata scraper with support for multiple
+resource providers and tools for relationship analysis and visualization."""
 
 setup(
     name='infra-scraper',
-    version=version,
-    description='Metadata scraper with support for Kubernetes, OpenStack, SaltStack, and Terraform resource providers.',
-    long_description=long_description,
+    version=VERSION,
+    description=DESCRIPTION,
+    long_description=LONG_DESCRIPTION,
     author='Aleš Komárek',
     author_email='ales.komarek@newt.cz',
     license='Apache License, Version 2.0',
     url='https://github.com/cznewt/infra-scraper/',
     packages=find_packages(),
-    install_requires=[
-        'pyyaml',
-        'msgpack-python',
-        'Flask',
-        'Click',
-        'os_client_config',
-        'python-cinderclient',
-        'python-glanceclient',
-        'python-heatclient',
-        'python-keystoneclient',
-        'python-novaclient',
-        'python-neutronclient',
-        'pykube',
-        'tosca-parser',
-        'salt-pepper',
-        'python-terraform',
-        'graphviz'],
+    install_requires=REQUIRES,
     extras_require={
         'tests': [
             'nose',

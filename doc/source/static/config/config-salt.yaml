@@ -1,0 +1,9 @@
+endpoints:
+  salt-global:
+    kind: salt
+    layouts:
+    - hive
+    config:
+      auth_url: 'http://127.0.0.1:8000'
+      username: salt-user
+      password: password

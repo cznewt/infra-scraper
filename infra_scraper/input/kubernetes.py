@@ -16,91 +16,109 @@ class KubernetesInput(BaseInput):
     RESOURCE_MAP = {
         'k8s_config_map': {
             'resource': 'ConfigMap',
+            'client': '',
             'name': 'Config Map',
             'icon': 'fa:file-text-o',
         },
         'k8s_container': {
             'resource': 'Container',
+            'client': '',
             'name': 'Container',
             'icon': 'fa:cube',
         },
         'k8s_cron_job': {
             'resource': 'CronJob',
+            'client': '',
             'name': 'Cron Job',
             'icon': 'fa:cube',
         },
         'k8s_deployment': {
             'resource': 'Deployment',
+            'client': '',
             'name': 'Deployment',
             'icon': 'fa:cubes',
         },
         'k8s_endpoint': {
             'resource': 'Endpoint',
+            'client': '',
             'name': 'Endpoint',
             'icon': 'fa:cube',
         },
         'k8s_event': {
             'resource': 'Event',
+            'client': '',
             'name': 'Event',
             'icon': 'fa:cube',
         },
         'k8s_job': {
             'resource': 'Job',
+            'client': '',
             'name': 'Job',
             'icon': 'fa:cube',
         },
         'k8s_namespace': {
             'resource': 'Namespace',
+            'client': '',
             'name': 'Namespace',
             'icon': 'fa:cube',
         },
         'k8s_node': {
             'resource': 'Node',
+            'client': '',
             'name': 'Node',
             'icon': 'fa:server',
         },
         'k8s_persistent_volume': {
             'resource': 'PersistentVolume',
+            'client': '',
             'name': 'Persistent Volume',
             'icon': 'fa:hdd-o',
         },
         'k8s_persistent_volume_claim': {
             'resource': 'PersistentVolumeClaim',
+            'client': '',
             'name': 'Persistent Volume Claim',
             'icon': 'fa:hdd-o',
         },
         'k8s_pod': {
             'resource': 'Pod',
+            'client': '',
             'name': 'Pod',
             'icon': 'fa:cubes',
         },
         'k8s_replica_set': {
             'resource': 'ReplicaSet',
+            'client': '',
             'name': 'Replica Set',
             'icon': 'fa:cubes',
         },
         'k8s_replication_controller': {
             'resource': 'ReplicationController',
+            'client': '',
             'name': 'Replication Controller',
             'icon': 'fa:cubes',
         },
         'k8s_role': {
             'resource': 'Role',
+            'client': '',
             'name': 'Role',
             'icon': 'fa:cube',
         },
         'k8s_secret': {
             'resource': 'Secret',
+            'client': '',
             'name': 'Secret',
             'icon': 'fa:lock',
         },
         'k8s_service': {
             'resource': 'Service',
+            'client': '',
             'name': 'Service',
             'icon': 'fa:podcast',
         },
         'k8s_service_account': {
             'resource': 'ServiceAccount',
+            'client': '',
             'name': 'Service Account',
             'icon': 'fa:user',
         },
@@ -148,8 +166,9 @@ class KubernetesInput(BaseInput):
         self.scrape_horizontal_pod_autoscalers()
         self.scrape_ingresses()
         self.scrape_jobs()
-        self.scrape_namespaces()
-        self.scrape_nodes()
+        if self.scope == 'global':
+            self.scrape_namespaces()
+            self.scrape_nodes()
         self.scrape_persistent_volumes()
         self.scrape_persistent_volume_claims()
         self.scrape_pods()
@@ -267,8 +286,8 @@ class KubernetesInput(BaseInput):
                 self._scrape_resource(resource['metadata']['uid'],
                                       resource['metadata']['name'],
                                       kind, None, metadata=resource)
-        except HTTPError as e:
-            logger.error(e)
+        except HTTPError as exception:
+            logger.error(exception)
 
     def scrape_containers(self):
         for resource_id, resource in self.resources['k8s_pod'].items():

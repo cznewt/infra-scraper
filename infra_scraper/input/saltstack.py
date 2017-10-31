@@ -12,36 +12,43 @@ class SaltStackInput(BaseInput):
     RESOURCE_MAP = {
         'salt_high_state': {
             'resource': 'high_state',
+            'client': '',
             'name': 'High State',
             'icon': 'fa:cube',
         },
         'salt_job': {
             'resource': 'job',
+            'client': '',
             'name': 'Job',
             'icon': 'fa:clock-o',
         },
         'salt_low_state': {
             'resource': 'low_state',
+            'client': '',
             'name': 'Low State',
             'icon': 'fa:cube',
         },
         'salt_minion': {
             'resource': 'minion',
+            'client': '',
             'name': 'Minion',
             'icon': 'fa:server',
         },
         'salt_service': {
             'resource': 'service',
+            'client': '',
             'name': 'Service',
             'icon': 'fa:podcast',
         },
         'salt_state_module': {
             'resource': 'state_module',
+            'client': '',
             'name': 'State Module',
             'icon': 'fa:cubes',
         },
         'salt_user': {
             'resource': 'user',
+            'client': '',
             'name': 'User',
             'icon': 'fa:user',
         },

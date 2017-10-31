@@ -11,7 +11,7 @@ logger = setup_logger(__name__)
 
 config_backend = os.environ.get('INFRA_SCRAPER_CONFIG_BACKEND',
                                 'localfs')
-config_file = os.environ.get('INFRA_SCRAPER_CONFIG_FILE',
+config_file = os.environ.get('INFRA_SCRAPER_CONFIG_PATH',
                              '/etc/infra-scraper/config.yaml')
 
 

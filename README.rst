@@ -9,8 +9,10 @@ providers are:
 
 * Kubernetes cluster
 * OpenStack cloud
-* SaltStack infra
-* Terraform template
+* Amazon web services
+* SaltStack infrastructures
+* Terraform templates
+
 
 Installation
 ============
@@ -22,7 +24,8 @@ Release version of infra-scraper is currently available on `Pypi
 
     pip install infra-scraper
 
-To bootstrap latest version into virtualenv, run following commands:
+To bootstrap latest development version into virtualenv, run following
+commands:
 
 .. code-block:: bash
 
@@ -30,7 +33,6 @@ To bootstrap latest version into virtualenv, run following commands:
     cd infra-scraper
     virtualenv venv
     source venv/bin/activate
-    pip install -r requirements.txt
     python setup.py install
 
 
@@ -39,15 +41,74 @@ Configuration
 
 You provide one configuration file for all providers. The default location is
 ``/etc/infra-scraper/config.yaml`` but it can be overriden by
-``INFRA_SCRAPER_CONFIG_FILE`` environmental variable, for example:
+``INFRA_SCRAPER_CONFIG_PATH`` environmental variable, for example:
 
 .. code-block:: bash
 
-    export INFRA_SCRAPER_CONFIG_FILE='~/scraper.yml'
+    export INFRA_SCRAPER_CONFIG_PATH=~/scraper.yml
+
+
+ETCD hosted configuration
+-------------------------
+
+You can use ETCD as a storage backend for the configuration and scrape results. Following environmental parameters need to be set:
+
+.. code-block:: bash
+
+    export INFRA_SCRAPER_CONFIG_BACKEND=etcd
+    export INFRA_SCRAPER_CONFIG_PATH=/service/scraper/config
+
+
+Storage configuration
+---------------------
+
+You can set you local filesystem path where scraped data will be saved.
+
+.. code-block:: yaml
+
+    storage:
+      backend: localfs
+      path: /tmp/scraper
+    endpoints: {}
+
+You can also set the scraping storage backend to use the ETCD service instead
+of a local filesystem backend.
+
+.. code-block:: yaml
+
+    storage:
+      backend: etcd
+      path: /scraper
+    endpoints: {}
+
+
+Endpoints configuration
+-----------------------
+
+Each endpoint kind expects a little different set of configuration. Following
+samples show the required parameters to setup individual endpoints.
+
+
+Amazon Web Services
+~~~~~~~~~~~~~~~~~~~
+
+AWS scraping uses ``boto3`` high level AWS python SDK for accessing and
+manipulating AWS resources.
+
+
+.. code-block:: yaml
+
+    endpoints:
+      aws-admin:
+        kind: aws
+        config:
+          region: us-west-2
+          aws_access_key_id: <access_key_id>
+          aws_secret_access_key: <secret_access_key>
 
 
 Kubernetes
-----------
+~~~~~~~~~~
 
 Kubernetes requires some information from kubeconfig file. You provide the
 parameters of the cluster and the user to the scraper. These can be found
@@ -58,11 +119,9 @@ under corresponding keys.
     endpoints:
       k8s-admin:
         kind: kubernetes
-        scope: global
         layouts:
         - force
         - hive
-        - matrix
         config:
           cluster:
             server: https://kubernetes-api:443
@@ -74,8 +133,15 @@ under corresponding keys.
             client-key-data: |
               <client-cert-private>
 
+.. note::
+
+    ``config.cluster`` and ``config.user`` can be found in your ``kubeconfig``
+    file. Just copy the config fragment with cluster parameters and fragment
+    with user parameter.
+
+
 OpenStack
----------
+~~~~~~~~~
 
 Configurations for keystone v2 and keystone v3 clouds. Config for single
 tenant scraping.
@@ -122,8 +188,9 @@ Config for scraping resources from entire cloud.
             project_name: admin
             auth_url:  https://keystone-api:5000/v2.0
 
+
 SaltStack
----------
+~~~~~~~~~
 
 Configuration for connecting to Salt API.
 
@@ -141,7 +208,7 @@ Configuration for connecting to Salt API.
           password: password
 
 Terraform
----------
+~~~~~~~~~
 
 Configuration for parsing terraform templates.
 
@@ -351,4 +418,3 @@ SaltStack
       salt_service: 24
       salt_user: 2
     timestamp: 1508932328
-

@@ -1,0 +1,7 @@
+endpoints:
+  tf-aws-app:
+    kind: terraform
+    layouts:
+    - hive
+    config:
+      dir: ~/terraform/two-tier-aws

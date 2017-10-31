@@ -14,46 +14,55 @@ class TerraformInput(BaseInput):
     RESOURCE_MAP = {
         'tf_openstack_compute_instance_v2': {
             'resource': 'openstack_compute_instance_v2',
+            'client': '',
             'name': 'Instance',
             'icon': 'fa:server',
         },
         'tf_openstack_compute_keypair_v2': {
             'resource': 'openstack_compute_keypair_v2',
+            'client': '',
             'name': 'Key Pair',
             'icon': 'fa:key',
         },
         'tf_openstack_compute_secgroup_v2': {
             'resource': 'openstack_compute_secgroup_v2',
+            'client': '',
             'name': 'Security Group',
             'icon': 'fa:cube',
         },
         'tf_openstack_networking_router_interface_v2': {
             'resource': 'openstack_networking_router_interface_v2',
+            'client': '',
             'name': 'Router Interface',
             'icon': 'fa:arrows-alt',
         },
         'tf_openstack_networking_router_v2': {
             'resource': 'openstack_networking_router_v2',
+            'client': '',
             'name': 'Router',
             'icon': 'fa:arrows-alt',
         },
         'tf_openstack_networking_network_v2': {
             'resource': 'openstack_networking_network_v2',
+            'client': '',
             'name': 'Net',
             'icon': 'fa:share-alt',
         },
         'tf_openstack_networking_subnet_v2': {
             'resource': 'openstack_networking_subnet_v2',
+            'client': '',
             'name': 'Subnet',
             'icon': 'fa:share-alt',
         },
         'tf_openstack_networking_floatingip_v2': {
             'resource': 'openstack_networking_floatingip_v2',
+            'client': '',
             'name': 'Floating IP',
             'icon': 'fa:map-signs',
         },
         'tf_openstack_compute_floatingip_associate_v2': {
             'resource': 'openstack_compute_floatingip_associate_v2',
+            'client': '',
             'name': 'Floating IP Association',
             'icon': 'fa:map-signs',
         },

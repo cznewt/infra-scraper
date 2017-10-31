@@ -1,3 +1,4 @@
+
 ==========================
 InfraScraper Documentation
 ==========================
@@ -6,12 +7,8 @@ InfraScraper Documentation
    :maxdepth: 3
    :glob:
 
-   vis/arc.rst
-   vis/bundle.rst
-   vis/force.rst
-   vis/hive.rst
-   vis/matrix.rst
-   vis/treemap.rst
+   text/application-index.rst
+   text/layout-index.rst
 
 
 Indices and tables

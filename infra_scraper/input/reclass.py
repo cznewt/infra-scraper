@@ -11,16 +11,19 @@ class SaltReclassInput(SaltStackInput):
     RESOURCE_MAP = {
         'salt_high_state': {
             'resource': 'high_state',
+            'client': '',
             'name': 'High State',
             'icon': 'fa:cube',
         },
         'salt_job': {
             'resource': 'job',
+            'client': '',
             'name': 'Job',
             'icon': 'fa:clock-o',
         },
         'salt_node': {
             'resource': 'node',
+            'client': '',
             'name': 'Node',
             'icon': 'fa:server',
         },

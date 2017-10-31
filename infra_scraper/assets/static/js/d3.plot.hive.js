@@ -12,7 +12,11 @@ var HivePlot = {
         axisMapping = {},
         radiusMapping = {},
         itemCounters = {},
-        itemStep = {};
+        itemStep = {},
+        getNodeCode = function(node){
+          //TODO: entities can have code
+          return node.name.replace(/[\s\.]/g,"_");
+        };
 
     relationalPlotHelpers.displayResources(Object.keys(data.resources).length);
     relationalPlotHelpers.displayRelations(data.relations.length);
@@ -124,11 +128,15 @@ var HivePlot = {
           });
         },
         nodeOver: function(d) {
+          var $elem = d3.select(this);
           svg.selectAll(".link").classed("active", function(p) {
             return p.source === d || p.target === d;
           });
-          d3.select(this).classed("active", true);
-          //d3.select(this).select("text").classed("active", true);
+          svg.selectAll(".link.active").each(function(link){
+            svg.selectAll(".node.node-"+getNodeCode(link.target)+", .node.node-"+getNodeCode(link.source))
+            .classed("active",true);
+          });
+          $elem.classed("active") || $elem.classed("active",true);
           tooltip.html("Node - " + d.name + "<br/>" + "Kind - " + d.kind)
             .style("left", (d3.event.pageX + 5) + "px")
             .style("top", (d3.event.pageY - 28) + "px");
@@ -199,7 +207,9 @@ var HivePlot = {
 
       var node = svg.selectAll(".node").data(nodes)
         .enter().append("g")
-        .attr("class", "node")
+        .attr("class",function(d){
+          return "node node-"+getNodeCode(d);
+         })
         .attr("transform", function(d) {
           var x = radiusMapping[d.kind](d.y * itemStep[d.kind] - 0.1) * Math.cos(Math.radians(angle(d)));
           var y = radiusMapping[d.kind](d.y * itemStep[d.kind] - 0.1) * Math.sin(Math.radians(angle(d)));

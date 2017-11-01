@@ -29,6 +29,12 @@ class AmazonWebServicesInput(BaseInput):
             'name': 'Elastic IP Association',
             'icon': 'fa:cube',
         },
+        'ec2_image': {
+            'resource': 'AWS::EC2::Image',
+            'client': 'ec2',
+            'name': 'Image',
+            'icon': 'fa:server',
+        },
         'ec2_instance': {
             'resource': 'AWS::EC2::Instance',
             'client': 'ec2',
@@ -46,6 +52,18 @@ class AmazonWebServicesInput(BaseInput):
             'client': 'ec2',
             'name': 'Key Pair',
             'icon': 'fa:key',
+        },
+        'ec2_route_table': {
+            'resource': 'AWS::EC2::RouteTable',
+            'client': 'ec2',
+            'name': 'Route Table',
+            'icon': 'fa:cube',
+        },
+        'ec2_security_group': {
+            'resource': 'AWS::EC2::SecurityGroup',
+            'client': 'ec2',
+            'name': 'Security Group',
+            'icon': 'fa:cubes',
         },
         'ec2_subnet': {
             'resource': 'AWS::EC2::Subnet',
@@ -75,6 +93,7 @@ class AmazonWebServicesInput(BaseInput):
         self.s3_client = boto3.resource('s3')
 
     def scrape_all_resources(self):
+        self.scrape_ec2_images()
 #        self.scrape_ec2_elastic_ips()
         self.scrape_ec2_instances()
         self.scrape_ec2_internet_gateways()
@@ -111,10 +130,19 @@ class AmazonWebServicesInput(BaseInput):
             resource = item.meta.__dict__
             resource.pop('resource_model')
             resource.pop('client')
-            print resource
             self._scrape_resource(resource['data']['InternetGatewayId'],
                                   resource['data']['InternetGatewayId'],
                                   'ec2_internet_gateway', None, metadata=resource['data'])
+
+    def scrape_ec2_images(self):
+        for item in self.ec2_client.images.all():
+            resource = item.meta.__dict__
+            resource.pop('resource_model')
+            resource.pop('client')
+            print resource
+            self._scrape_resource(resource['data']['ImageId'],
+                                  resource['data']['Name'],
+                                  'ec2_image', None, metadata=resource['data'])
 
     def scrape_ec2_instances(self):
         for item in self.ec2_client.instances.all():

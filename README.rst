@@ -7,11 +7,20 @@ Get your live infrastructure topology data from your favorite resource
 providers for further processing, visualialitions, etc. Currently supported
 providers are:
 
-* Kubernetes cluster
-* OpenStack cloud
+* Kubernetes clusters
+* OpenStack clouds
 * Amazon web services
 * SaltStack infrastructures
 * Terraform templates
+
+
+Road map
+========
+
+* Transformation functions (slicing, dicing, trasience)
+* Create Juju, GCE and Azure scrapers
+* Connect all the domains
+* Metadata as a service
 
 
 Installation
@@ -227,9 +236,10 @@ Configuration for parsing terraform templates.
 Supported Visualization Layouts
 ===============================
 
-Presented data requires different layouts. Every time you need to emphasise
-different qualities of displayed resources. You can choose from several
-different layouts to display collected data.
+Presented data requires different diagram visualizations. Diagrams are
+symbolic representation of information according to some visualization
+technique. Every time you need to emphasise different qualities of displayed
+resources. You can choose from several layouts to display collected data.
 
 
 Force-Directed Graph

@@ -8,6 +8,7 @@ InfraScraper Documentation
    :glob:
 
    text/application-index.rst
+   text/input-index.rst
    text/layout-index.rst
 
 

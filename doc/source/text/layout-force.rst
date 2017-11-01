@@ -21,6 +21,17 @@ following criteria: uniform edge length, uniform vertex distribution and
 showing symmetry. This last criterion is among the most important ones and is
 hard to achieve with any other type of algorithm.
 
+
+Sample Visualizations
+=====================
+
+.. figure:: ../static/img/force-directed-plot.png
+    :width: 600px
+    :figclass: align-center
+
+    Force-directed plot of all OpenStack resources (cca 3000 nodes)
+
+
 More Information
 ================
 

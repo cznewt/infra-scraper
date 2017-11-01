@@ -23,6 +23,17 @@ structure of the graph as effectively as a two-dimensional layout", but that
 their layout makes it easy to display multivariate data associated with the
 vertices of the graph.
 
+
+Sample Visualizations
+=====================
+
+.. figure:: ../static/img/arc-diagram.png
+    :width: 100%
+    :figclass: align-center
+
+    Arc diagram of OpenStack project's resources (cca 100 nodes)
+
+
 More Information
 ================
 

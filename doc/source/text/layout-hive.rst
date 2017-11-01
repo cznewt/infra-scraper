@@ -12,6 +12,16 @@ The purpose of the hive plot is to establish a new baseline for visualization
 of large networks — a method that is both general and tunable and useful as a
 starting point in visually exploring network structure.
 
+Sample Visualizations
+=====================
+
+.. figure:: ../static/img/hive-plot.png
+    :width: 100%
+    :figclass: align-center
+
+    Hive plot of all OpenStack resources (cca 3000 nodes)
+
+
 More Information
 ================
 

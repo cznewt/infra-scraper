@@ -18,6 +18,13 @@ graph, a different matrix representation whose elements indicate whether
 vertex–edge pairs are incident or not, and degree matrix which contains
 information about the degree of each vertex.
 
+.. figure:: ../static/img/adjacency-matrix.png
+    :width: 100%
+    :figclass: align-center
+
+    Adjacency matrix of OpenStack project's resources (cca 100 nodes)
+
+
 More Information
 ================
 

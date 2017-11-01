@@ -11,6 +11,16 @@ are graphs more accessible, but the creator can have more control over the
 amount of information, as well as the information level being presented.
 
 
+Sample Visualizations
+=====================
+
+.. figure:: ../static/img/hiearchical-edge-bundling.png
+    :width: 100%
+    :figclass: align-center
+
+    Hierarchical edge bundling of SaltStack services (cca 100 nodes)
+
+
 More Information
 ================
 

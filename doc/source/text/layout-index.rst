@@ -18,4 +18,5 @@ dimensional surface. The word `graph` is sometimes used as a synonym for
    layout-force.rst
    layout-hive.rst
    layout-matrix.rst
-   layout-treemap.rst
+
+..   layout-treemap.rst

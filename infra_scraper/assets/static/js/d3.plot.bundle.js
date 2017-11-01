@@ -24,6 +24,7 @@ var RelationalPlot = function(RelationalPlot){
                 }
                 return color;
             },
+            color_arc = d3.scaleOrdinal(d3.schemeCategory10),
             cross = function(a, b) {
                 return a[0] * b[1] - a[1] * b[0];
             },
@@ -59,12 +60,10 @@ var RelationalPlot = function(RelationalPlot){
               .append("g")
                 .attr("transform", "translate(" + radius + "," + radius + ")");
 
-            graph.link = graph.svg.append("g").selectAll(".link");
-            graph.node = graph.svg.append("g").selectAll(".node");
-
             if(!alreadyRunning){
                 graph.requestData(dataUrl, graph.render);
                 $(window).on('resize', function(ev){
+                    graph.resetPosition();
                     graph.init(true);
                     graph.render();
                 });
@@ -85,30 +84,22 @@ var RelationalPlot = function(RelationalPlot){
 
                 var root = relationalPlotHelpers.nodeHierarchy(graph._data)
                     .sum(function(d) { return d.size; });
-                console.log(root);
                 var nodes = graph.cluster(root);
                 var links = nodes.links();
-                console.log(nodes);
+                var rootNode = root.children[0];
                 var groupData = graph.svg.selectAll("g.group")
-                    .data(root.leaves().filter(function(d) {
-                        //TODO: decide which one is group itself
-                        return true || d.host && d.service == d.host && d.children;
-                    }))
+                    .data(rootNode.children)
                     .enter().append("group")
                     .attr("class", "group")
 
                 var groupArc = d3.arc()
-                    .innerRadius((diameter/2) - 185)
-                    .outerRadius((diameter/2) - 160)
+                    .innerRadius((diameter/2))
+                    .outerRadius((diameter/2) - 30)
                     .startAngle(function(d) {
-                        // TODO: in this we have to have childrens in data
-                        //return (graph.findStartAngle(d.__data__.children) - 0.25) * Math.PI / 180;
-                        return (graph.findStartAngle([d.__data__]) - 0.25) * Math.PI / 180;
+                        return (graph.findStartAngle(d.__data__.children) - 3) * Math.PI / 180;
                     })
                     .endAngle(function(d) {
-                        // TODO: in this we have to have childrens in data
-                        //return (graph.findEndAngle(d.__data__.children) + 0.25) * Math.PI / 180
-                        return (graph.findEndAngle([d.__data__]) + 0.25) * Math.PI / 180
+                        return (graph.findEndAngle(d.__data__.children) + 3) * Math.PI / 180
                     });
 
 
@@ -116,107 +107,96 @@ var RelationalPlot = function(RelationalPlot){
                     .data(groupData.nodes())
                     .enter().append("svg:path")
                     .attr("id",function(d){
-                        return d.name;
-                        //return "node-"+d.__data__.host.replace(/\./g,"_");
+                        return d.__data__.data.key.replace(/\./g,"_");
                     })
                     .attr("data-node-host",function(d){
-                        return d.name;
-                        //return d.__data__.host;
+                        return d.__data__.data.key;
                     })
                     .attr("d", groupArc)
                     .attr("class", "groupArc")
                     .style("fill", function(d,i) {
-                        return true;//return color_arc(i);
+                        return color_arc(i);
                     });
-                var arc = graph.svg.select("path.groupArc");
-                    var nodeHostId = arc.attr("id"),
-                    nodeHost = arc.attr("data-node-host");
 
-                d3.select("g").append("text")
-                .style("font-size",12)
-                .style("fill","#F8F8F8")
-                .attr("dy", 17)
-                .append("textPath")
-                .attr("xlink:href", function(d){
-                    return "#"+nodeHostId;
-                })
-                .attr("startOffset", 7)
-                .attr("width", arc.node().getTotalLength()/2.4)
-                .text(nodeHost)
-                .each(function wrap( d ) {
-                    var self = d3.select(this),
-                        textLength = self.node().getComputedTextLength(),
-                        text = self.text(),
-                        width = self.attr('width');
-                    if(width > 50){
-                        while ( ( textLength > width )&& text.length > 0) {
-                            if(width > 100){
-                                text = text.slice(0, -1);
-                                self.text(text + '...');
-                            }else{
-                                text = text.slice(0, -5);
-                                self.text(text);
+                var groupArc2 = d3.arc()
+                    .innerRadius((diameter/2) - 30)
+                    .outerRadius((diameter/2) - 150)
+                    .startAngle(function(d) {
+                        return (graph.findStartAngle(d.__data__.children) - 3) * Math.PI / 180;
+                    })
+                    .endAngle(function(d) {
+                        return (graph.findEndAngle(d.__data__.children) + 3) * Math.PI / 180
+                    });
+
+
+                graph.svg.selectAll("g.arc")
+                    .data(groupData.nodes())
+                    .enter().append("svg:path")
+                    .attr("d", groupArc2)
+                    .attr("class", "groupArc")
+                    .style("fill", function(d,i) {
+                        return "gray";
+                    });
+
+                graph.svg.selectAll("path.groupArc").nodes().forEach(function(group){
+                    var arc = d3.select(group),
+                        nodeHostId = arc.attr("id");
+                        nodeHost = arc.attr("data-node-host");
+
+                    d3.select("g").append("text")
+                    .style("font-size",12)
+                    .style("fill","#F8F8F8")
+                    .attr("dy", 17)
+                    .append("textPath")
+                    .attr("xlink:href", function(d){
+                        return "#"+nodeHostId;
+                    })
+                    .attr("startOffset", 7)
+                    .attr("width", arc.node().getTotalLength()/2.4)
+                    .text(nodeHost)
+                    .each(function wrap( d ) {
+                        var self = d3.select(this),
+                            textLength = self.node().getComputedTextLength(),
+                            text = self.text(),
+                            width = self.attr('width');
+                        if(width > 50){
+                            while ( ( textLength > width )&& text.length > 0) {
+                                if(width > 100){
+                                    text = text.slice(0, -1);
+                                    self.text(text + '...');
+                                }else{
+                                    text = text.slice(0, -5);
+                                    self.text(text);
+                                }
+                                textLength = self.node().getComputedTextLength();
                             }
-                            textLength = self.node().getComputedTextLength();
+                        }else{
+                            self.text("");
                         }
-                    }else{
-                        self.text("");
-                    }
+                    });
                 });
-                if(false){
-                graph.svg.selectAll("g.node")
-                    .data(root.leaves().filter(function(n) {
-                        return !n.children;
-                    }))
-                    .enter().append("svg:g")
-                    .attr("class", "node")
-                    .attr("data-host-id", function(d){
-                        return d.host;
-                    })
-                    .attr("id", function(d) {
-                        return graphHelpers.nodeServiceId(d);
-                    })
-                    .attr("transform", function(d) {
-                        return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
-                    })
-                    .append("svg:a")
 
-                    .append("svg:text")
-                    .attr("dx", function(d) {
-                        return d.x < 180 ? 0 : 0;
-                    })
-                    .attr("dy", ".2em")
-                    .attr("text-anchor", function(d) {
-                        return d.x < 180 ? "start" : "end";
-                    })
-                    .style("text-anchor", function(d) {
-                        return d.x < 180 ? "end" : "start";
-                    })
-                    .attr("transform", function(d) {
-                        return d.x < 180 ? "rotate(180)" : "rotate(0)";
-                    })
-                    .text(function(d) {
-                        return d.service;
-                    })
-                }
-
-
-
-                graph.link = graph.link
+                graph.link = graph.svg.append("g").selectAll(".link")
                   .data(relationalPlotHelpers.nodeRelations(root.leaves()))
                   .enter().append("path")
                     .each(function(d) { d.source = d[0], d.target = d[d.length - 1]; })
                     .attr("class", "link")
                     .attr("d", graph.line);
 
-                graph.node = graph.node
+                graph.node = graph.svg.append("g").selectAll(".node")
                   .data(root.leaves())
                   .enter().append("text")
                     .attr("class", "node")
+                    .attr("fill", "white")
                     .attr("dy", "0.31em")
-                    .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + (d.y + 8) + ",0)" + (d.x < 180 ? "" : "rotate(180)"); })
+                    .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + (d.y - 20) + ",0)" + (d.x < 180 ? "" : "rotate(180)"); })
                     .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-                    .text(function(d) { return d.data.key; });
+                    .text(function(d) {
+                        if(d.data.key.length > 20){
+                            return d.data.key.substring(0, 20)+"…";
+                        }
+                        return d.data.key;
+                    });
             }
         };
 
@@ -248,6 +228,12 @@ var RelationalPlot = function(RelationalPlot){
                     max = d.x;
             });
             return max;
+        };
+        this.resetPosition = function(){
+            contentWidth = $(graphSelector).innerWidth(),
+            diameter = contentWidth,
+            radius = diameter / 2,
+            innerRadius = radius - 120;
         };
 
     };

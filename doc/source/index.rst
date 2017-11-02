@@ -7,7 +7,7 @@ InfraScraper Documentation
    :maxdepth: 3
    :glob:
 
-   text/application-index.rst
+   text/app-index.rst
    text/input-index.rst
    text/layout-index.rst
 

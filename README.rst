@@ -14,13 +14,13 @@ providers are:
 * Terraform templates
 
 
-Road map
+Road Map
 ========
 
-* Transformation functions (slicing, dicing, trasience)
-* Create Juju, GCE and Azure scrapers
-* Connect all the domains
-* Metadata as a service
+* Relational data transformations (slicing, dicing, transience)
+* Create JUJU, GCE and Azure scraping definitions
+* Enable corellation of resources and joined topologies
+* Open the way for the "Metadata as a service"
 
 
 Installation

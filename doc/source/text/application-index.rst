@@ -8,5 +8,6 @@ Application Overview
 
    application-install.rst
    application-config.rst
+   application-usage.rst
 
 ..   application-architecture.rst

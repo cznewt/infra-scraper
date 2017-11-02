@@ -1,14 +1,21 @@
 
-============================
-Force-Directed Edge Bundling
-============================
+==========================
+Hierarchical Edge Bundling
+==========================
 
-Danny Holten presents an awesome and aesthetically pleasing way of simplifying
-graphs and making tree graphs more accessible.  What makes his project so
-useful, however, is how he outlines the particular thought process that goes
-into making a visualization. Holten concludes that by using bundles, not only
-are graphs more accessible, but the creator can have more control over the
-amount of information, as well as the information level being presented.
+A compound graph is a frequently encountered type of data set. Relations are
+given between items, and a hierarchy is defined on the items as well.
+Hierarchical Edge Bundling is a new method for visualizing such compound
+graphs. Our approach is based on visually bundling the adjacency edges, i.e.,
+non-hierarchical edges, together. We realize this as follows. We assume that
+the hierarchy is shown via a standard tree visualization method. Next, we bend
+each adjacency edge, modeled as a B-spline curve, toward the polyline defined
+by the path via the inclusion edges from one node to another. This
+hierarchical bundling reduces visual clutter and also visualizes implicit
+adjacency edges between parent nodes that are the result of explicit adjacency
+edges between their respective child nodes. Furthermore, hierarchical edge
+bundling is a generic method which can be used in conjunction with existing
+tree visualization techniques.
 
 
 Sample Visualizations
@@ -18,10 +25,11 @@ Sample Visualizations
     :width: 100%
     :figclass: align-center
 
-    Hierarchical edge bundling of SaltStack services (cca 100 nodes)
+    Hierarchical edge bundling of SaltStack services and their relations (cca 100 nodes)
 
 
 More Information
 ================
 
+* http://www.win.tue.nl/vis1/home/dholten/papers/bundles_infovis.pdf
 * https://www.win.tue.nl/vis1/home/dholten/papers/forcebundles_eurovis.pdf

@@ -8,4 +8,3 @@ manipulating AWS resources.
 
 .. literalinclude:: ../static/config/config-amazon.yaml
    :language: yaml
-   :linenos:

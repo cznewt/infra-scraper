@@ -12,8 +12,8 @@ You provide one configuration file for all providers. The default location is
     export INFRA_SCRAPER_CONFIG_PATH=~/scraper.yml
 
 
-ETCD hosted configuration
-=========================
+Configuration in ETCD
+=====================
 
 You can use ETCD as a storage backend for the configuration and scrape results. Following environmental parameters need to be set:
 
@@ -23,7 +23,7 @@ You can use ETCD as a storage backend for the configuration and scrape results. 
     export INFRA_SCRAPER_CONFIG_PATH=/service/scraper/config
 
 
-Storage configuration
+Storage Configuration
 =====================
 
 You can set you local filesystem path where scraped data will be saved.
@@ -46,10 +46,9 @@ of a local filesystem backend.
     endpoints: {}
 
 
-Endpoints configuration
+Endpoints Configuration
 =======================
 
 Each endpoint kind expects a little different set of configuration. Look at
 individual chapters for samples of required parameters to setup individual
 endpoints.
-

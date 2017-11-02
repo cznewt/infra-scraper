@@ -4,7 +4,7 @@ Installation
 ============
 
 
-Pip installation
+PIP Installation
 ================
 
 Release version of infra-scraper is currently available on `Pypi
@@ -15,7 +15,7 @@ Release version of infra-scraper is currently available on `Pypi
     pip install infra-scraper
 
 
-Instalation from source
+Instalation from Source
 =======================
 
 To bootstrap latest development version into virtualenv, run following

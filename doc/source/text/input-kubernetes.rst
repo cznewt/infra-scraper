@@ -1,6 +1,6 @@
 
 ===================
-Kubernetes clusters
+Kubernetes Clusters
 ===================
 
 Kubernetes requires some information from ``kubeconfig`` file. You provide the
@@ -9,4 +9,3 @@ under corresponding keys in the kubernetes configuration file.
 
 .. literalinclude:: ../static/config/config-kubernetes.yaml
    :language: yaml
-   :linenos:

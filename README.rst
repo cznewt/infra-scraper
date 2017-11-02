@@ -144,9 +144,9 @@ under corresponding keys.
 
 .. note::
 
-    ``config.cluster`` and ``config.user`` can be found in your ``kubeconfig``
-    file. Just copy the config fragment with cluster parameters and fragment
-    with user parameter.
+    Options ``config.cluster`` and ``config.user`` can be found in your
+    ``kubeconfig`` file. Just copy the config fragment with cluster parameters
+    and fragment with user parameter.
 
 
 OpenStack
@@ -231,6 +231,44 @@ Configuration for parsing terraform templates.
         - hive
         config:
           dir: ~/terraform/two-tier-aws
+
+Usage
+=====
+
+The application comes with several entry commands:
+
+
+Scraping commands
+-----------------
+
+**scraper_get <endpoint-name>**
+
+  Scrape single endpoint once.
+
+**scraper_get_forever <endpoint-name>**
+
+  Scrape single endpoint continuously.
+
+**scraper_get_all**
+
+  Scrape all defined endpoints once.
+
+**scraper_get_all_forever**
+
+  Scrape all defined endpoints continuously.
+
+
+UI and utility commands
+-----------------------
+
+**scraper_status**
+
+  Display the service status, endpoints, scrapes, etc.
+
+**scraper_web**
+
+  Start the UI with visualization samples and API that provides the scraped
+  data.
 
 
 Supported Visualization Layouts

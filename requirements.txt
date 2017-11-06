@@ -15,3 +15,5 @@ tosca-parser
 salt-pepper
 python-terraform
 graphviz
+juju
+git+https://github.com/maas/python-libmaas.git

@@ -2,16 +2,13 @@
 
 from setuptools import setup, find_packages
 
-VERSION = '0.3'
+VERSION = '0.4'
 
 with open('README.rst') as readme:
     LONG_DESCRIPTION = ''.join(readme.readlines())
 
-with open('requirements.txt') as f:
-    REQUIRES = f.readlines()
-
 DESCRIPTION = """Infrastrucutre metadata scraper with support for multiple
-resource providers and tools for relationship analysis and visualization."""
+resource providers and tools for relational analysis and visualization."""
 
 setup(
     name='infra-scraper',
@@ -23,7 +20,26 @@ setup(
     license='Apache License, Version 2.0',
     url='https://github.com/cznewt/infra-scraper/',
     packages=find_packages(),
-    install_requires=REQUIRES,
+    install_requires=[
+        'pyyaml',
+        'msgpack-python',
+        'Flask',
+        'Click',
+        'os_client_config',
+        'python-cinderclient',
+        'python-glanceclient',
+        'python-heatclient',
+        'python-keystoneclient',
+        'python-novaclient',
+        'python-neutronclient',
+        'pykube',
+        'boto3',
+        'tosca-parser',
+        'salt-pepper',
+        'python-terraform',
+        'graphviz',
+        'juju'
+    ],
     extras_require={
         'tests': [
             'nose',

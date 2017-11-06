@@ -39,7 +39,7 @@ def scrape_all_forever(interval):
 @click.command()
 def status():
     scraper = InfraScraper()
-    print yaml.safe_dump(scraper.status())
+    print(yaml.safe_dump(scraper.status()))
 
 
 @click.command()

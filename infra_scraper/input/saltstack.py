@@ -2,7 +2,7 @@
 
 from pepper.libpepper import Pepper
 from infra_scraper.input.base import BaseInput
-from infra_scraper.utils import load_yaml_json_file, setup_logger
+from infra_scraper.utils import setup_logger
 
 logger = setup_logger('input.salt')
 

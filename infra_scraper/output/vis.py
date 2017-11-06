@@ -83,7 +83,6 @@ class VisOutput(BaseOutput):
         data['axes'] = axes
         return data
 
-
     def transform_data(self, data):
         data['date'] = datetime.fromtimestamp(data['timestamp']).strftime('%Y-%m-%dT%H:%M:%S')
         if data['kind'] == 'openstack':

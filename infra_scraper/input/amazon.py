@@ -139,7 +139,7 @@ class AmazonWebServicesInput(BaseInput):
             resource = item.meta.__dict__
             resource.pop('resource_model')
             resource.pop('client')
-            print resource
+            print(yaml.dump(resource))
             self._scrape_resource(resource['data']['ImageId'],
                                   resource['data']['Name'],
                                   'ec2_image', None, metadata=resource['data'])
@@ -150,7 +150,7 @@ class AmazonWebServicesInput(BaseInput):
             resource.pop('resource_model')
             resource.pop('client')
             try:
-                name =  resource['data']['NetworkInterfaces'][0]['Association']['PublicDnsName']
+                name = resource['data']['NetworkInterfaces'][0]['Association']['PublicDnsName']
             except Exception:
                 name = resource['data']['InstanceId']
             self._scrape_resource(resource['data']['InstanceId'],

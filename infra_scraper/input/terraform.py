@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import StringIO
+import io
 import python_terraform
 from pydot import graph_from_dot_data
 from infra_scraper.input.base import BaseInput
@@ -111,7 +111,7 @@ class TerraformInput(BaseInput):
         return_code, raw_data, stderr = self.client.show(
             no_color=python_terraform.IsFlagged)
         raw_data = raw_data.split('Outputs:')[0]
-        data_buffer = StringIO.StringIO(raw_data)
+        data_buffer = io.StringIO(raw_data)
         for line in data_buffer.readlines():
             if line.strip() == '':
                 pass

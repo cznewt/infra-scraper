@@ -150,7 +150,7 @@ class KubernetesInput(BaseInput):
                 'user': self.config['user']
             }]
         }
-        os.write(config_file, yaml.safe_dump(config_content))
+        os.write(config_file, yaml.safe_dump(config_content).encode())
         os.close(config_file)
         self.config_wrapper = pykube.KubeConfig.from_file(filename)
         os.remove(filename)

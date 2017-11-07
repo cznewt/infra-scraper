@@ -44,7 +44,6 @@ class FileStorage(BaseStorage):
 
     def load_data(self, name):
         data = None
-#        if self.last_timestamp is None:
         self.last_timestamp = self._get_last_timestamp(name)
         filename = '{}/{}.yaml'.format(self._get_storage_dir(name),
                                        self.last_timestamp)
@@ -58,25 +57,23 @@ class FileStorage(BaseStorage):
 
     def save_output_data(self, name, kind, data):
         self._storage_dir_exist(name)
-        filename = '{}/{}-{}.msgpack'.format(self._get_storage_dir(name),
-                                             data['timestamp'],
-                                             kind)
+        filename = '{}/{}-{}.yml'.format(self._get_storage_dir(name),
+                                         data['timestamp'],
+                                         kind)
         with open(filename, 'w') as outfile:
-            binary_data = msgpack.packb(data)
-            file_byte_array = bytearray(binary_data)
-            outfile.write(file_byte_array)
+            yaml.safe_dump(data, outfile, default_flow_style=False)
         outfile.close()
 
     def load_output_data(self, name, kind):
         last_timestamp = self._get_last_timestamp(name)
         data = None
-        filename = '{}/{}-{}.msgpack'.format(self._get_storage_dir(name),
-                                             last_timestamp, kind)
+        filename = '{}/{}-{}.yml'.format(self._get_storage_dir(name),
+                                         last_timestamp, kind)
         with open(filename, 'r') as stream:
-            file_byte_array = stream.read()
             try:
-                data = msgpack.unpackb(file_byte_array, use_list=False)
+                data = yaml.load(stream.read())
             except Exception as exception:
                 logger.error(exception)
+                data = None
         stream.close()
         return data

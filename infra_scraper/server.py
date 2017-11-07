@@ -15,9 +15,9 @@ app = Flask(__name__, static_folder='./assets/static')
 def index():
     scraper = InfraScraper()
     config = scraper.status()
-    endpoints = config['endpoints'].copy()
-    config['endpoints'] = OrderedDict(
-        reversed(sorted(endpoints.items(), key=lambda x: x[1])))
+#    endpoints = config['endpoints'].copy()
+#    config['endpoints'] = OrderedDict(
+#        reversed(sorted(endpoints.items(), key=lambda x: x[1])))
     return render_template('index.html',
                            config=config)
 

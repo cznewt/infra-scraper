@@ -68,13 +68,15 @@ class InfraScraper(object):
     def status(self):
         config = self.get_global_config()
         for endpoint_name, endpoint in config['endpoints'].items():
+            endpoint.pop('config')
             endpoint['status'] = self.get_endpoint_status(endpoint_name)
         return config
 
     def get_endpoint_status(self, name):
         try:
             data = self.get_cached_data(name, 'count')
-        except Exception:
+        except Exception as e:
+            logger.error('Cannot get last status for {}, with error {}.'.format(name, e))
             data = None
         return data
 
@@ -120,7 +122,8 @@ class InfraScraper(object):
         logger.info('Scraping of {} completed.'.format(name))
 
     def get_cached_data(self, name, kind):
-        data = self.storage.load_output_data(name, kind)
+        storage = self._get_module('storage', 'file')
+        data = storage.load_output_data(name, kind)
         return data
 
     def get_data(self, name, kind, format='raw'):

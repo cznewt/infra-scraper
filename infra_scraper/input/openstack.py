@@ -133,7 +133,7 @@ class OpenStackInput(BaseInput):
         config_content = {
             'clouds': {self.name: self.config}
         }
-        os.write(config_file, yaml.safe_dump(config_content))
+        os.write(config_file, yaml.safe_dump(config_content).encode())
         os.close(config_file)
         self.cloud = os_client_config.config \
             .OpenStackConfig(config_files=[filename]) \
@@ -151,8 +151,9 @@ class OpenStackInput(BaseInput):
         return self.cloud.get_legacy_client(service_key, constructor)
 
     def scrape_all_resources(self):
-        # self.scrape_keystone_users()
-        # self.scrape_keystone_projects()
+        if self.scope == 'global':
+            self.scrape_keystone_projects()
+#            self.scrape_keystone_users()
         self.scrape_cinder_volumes()
         self.scrape_glance_images()
         if self.scope == 'global':
@@ -167,7 +168,7 @@ class OpenStackInput(BaseInput):
         self.scrape_neutron_floating_ips()
         self.scrape_neutron_routers()
         self.scrape_neutron_ports()
-        self.scrape_heat_stacks()
+        # self.scrape_heat_stacks()
         # self.scrape_heat_resource_types()
 
     def _create_relations(self):
@@ -185,7 +186,7 @@ class OpenStackInput(BaseInput):
                         resource_id,
                         resource['metadata']['project'])
 
-        for resource_id, resource in self.resources.get('os_stack').items():
+        for resource_id, resource in self.resources.get('os_stack', {}).items():
             for ext_res in resource['metadata']['resources']:
                 if ext_res['resource_type'] in self._get_resource_mapping():
                     self._scrape_relation(
@@ -226,7 +227,7 @@ class OpenStackInput(BaseInput):
                         resource_id,
                         resource['metadata']['binding:host_id'])
 
-        for resource_id, resource in self.resources.get('os_server').items():
+        for resource_id, resource in self.resources.get('os_server', {}).items():
             if self.scope == 'global':
                 self._scrape_relation(
                     'os_server-os_hypervisor',
@@ -245,7 +246,7 @@ class OpenStackInput(BaseInput):
                         resource_id,
                         resource['metadata']['image']['id'])
 
-        for resource_id, resource in self.resources['os_subnet'].items():
+        for resource_id, resource in self.resources.get('os_subnet', {}).items():
             self._scrape_relation(
                 'os_subnet-os_net',
                 resource_id,

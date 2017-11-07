@@ -37,13 +37,14 @@ setup(
         'tosca-parser',
         'salt-pepper',
         'python-terraform',
+        'pydot',
         'graphviz',
         'juju'
     ],
     extras_require={
         'tests': [
-            'nose',
-            'pycodestyle >= 2.1.0'],
+            'pytest',
+            'flake8'],
         'docs': [
             'sphinx >= 1.4',
             'sphinx_rtd_theme']

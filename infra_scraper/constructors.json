@@ -6,7 +6,6 @@
     "input-salt": "infra_scraper.input.saltstack.SaltStackInput",
     "input-terraform": "infra_scraper.input.terraform.TerraformInput",
     "storage-file": "infra_scraper.storage.file.FileStorage",
-    "storage-etcd": "infra_scraper.storage.etcd.EtcdStorage",
     "output-raw": "infra_scraper.output.raw.RawOutput",
     "output-enc": "infra_scraper.output.enc.EncOutput",
     "output-vis": "infra_scraper.output.vis.VisOutput",

@@ -14,6 +14,7 @@ boto3
 tosca-parser
 salt-pepper
 python-terraform
+pydot
 graphviz
 juju
 git+https://github.com/maas/python-libmaas.git

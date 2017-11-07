@@ -139,9 +139,12 @@ class AmazonWebServicesInput(BaseInput):
             resource = item.meta.__dict__
             resource.pop('resource_model')
             resource.pop('client')
-            print(yaml.dump(resource))
+            if 'Name' in resource['data']:
+                image_name = resource['data']['Name']
+            else:
+                image_name = resource['data']['ImageId']
             self._scrape_resource(resource['data']['ImageId'],
-                                  resource['data']['Name'],
+                                  image_name,
                                   'ec2_image', None, metadata=resource['data'])
 
     def scrape_ec2_instances(self):

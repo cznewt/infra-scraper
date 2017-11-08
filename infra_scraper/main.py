@@ -90,10 +90,12 @@ class InfraScraper(object):
     def scrape_all_data(self):
         config = self.get_global_config()
         for endpoint_name, endpoint in config['endpoints'].items():
+            if config.get('debug', False):
+                return self.scrape_data(endpoint_name)
             try:
                 self.scrape_data(endpoint_name)
             except Exception as e:
-                logger.error('Scraping endpoing {} failed with error: {}'.format(endpoint_name, e))
+                logger.error('Scraping endpoint {} failed with error: {}'.format(endpoint_name, e))
 
     def scrape_data_forever(self, name, interval):
         config = self.get_global_config()

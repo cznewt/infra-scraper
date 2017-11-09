@@ -71,23 +71,33 @@ You can use ETCD as a storage backend for the configuration and scrape results. 
 Storage configuration
 ---------------------
 
+The preffered scraping storage backend is neo4j service accessed by bolt
+interface.
+
+.. code-block:: yaml
+
+    storage:
+      backend: neo4j
+      database_url: 'bolt://neo4j:password@neo4j.host:7687'
+    endpoints: {}
+
+
 You can set you local filesystem path where scraped data will be saved.
 
 .. code-block:: yaml
 
     storage:
       backend: localfs
-      path: /tmp/scraper
+      storage_dir: /tmp/scraper
     endpoints: {}
 
-You can also set the scraping storage backend to use the ETCD service instead
-of a local filesystem backend.
+You can also set the scraping storage backend to use the ETCD service.
 
 .. code-block:: yaml
 
     storage:
       backend: etcd
-      path: /scraper
+      storage_path: /scraper/data
     endpoints: {}
 
 

@@ -2,7 +2,7 @@
 import logging
 from .base import BaseOutput
 from datetime import datetime
-from infra_scraper.constants import get_icon
+from infra_scraper.utils import get_node_icon
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class VisOutput(BaseOutput):
                 for resource_id, resource_item in resource_data.items():
                     resource_item.pop('metadata')
                     resources[resource_id] = resource_item
-                icon = get_icon(data['resource_types'][resource_name]['icon'])
+                icon = get_node_icon(data['resource_types'][resource_name]['icon'])
                 axes[resource_name] = {
                     'x': i,
                     'angle': 360 / kinds * i,
@@ -60,7 +60,7 @@ class VisOutput(BaseOutput):
             for resource_id, resource_item in resource_data.items():
                 resource_item.pop('metadata')
                 resources[resource_id] = resource_item
-            icon = get_icon(data['resource_types'][resource_name]['icon'])
+            icon = get_node_icon(data['resource_types'][resource_name]['icon'])
             axes[resource_name] = {
                 'x': i,
                 'angle': 360 / kinds * i,

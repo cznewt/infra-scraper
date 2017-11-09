@@ -13,117 +13,6 @@ logger = setup_logger('input.kubernetes')
 
 class KubernetesInput(BaseInput):
 
-    RESOURCE_MAP = {
-        'k8s_config_map': {
-            'resource': 'ConfigMap',
-            'client': '',
-            'name': 'Config Map',
-            'icon': 'fa:file-text-o',
-        },
-        'k8s_container': {
-            'resource': 'Container',
-            'client': '',
-            'name': 'Container',
-            'icon': 'fa:cube',
-        },
-        'k8s_cron_job': {
-            'resource': 'CronJob',
-            'client': '',
-            'name': 'Cron Job',
-            'icon': 'fa:cube',
-        },
-        'k8s_deployment': {
-            'resource': 'Deployment',
-            'client': '',
-            'name': 'Deployment',
-            'icon': 'fa:cubes',
-        },
-        'k8s_endpoint': {
-            'resource': 'Endpoint',
-            'client': '',
-            'name': 'Endpoint',
-            'icon': 'fa:cube',
-        },
-        'k8s_event': {
-            'resource': 'Event',
-            'client': '',
-            'name': 'Event',
-            'icon': 'fa:cube',
-        },
-        'k8s_job': {
-            'resource': 'Job',
-            'client': '',
-            'name': 'Job',
-            'icon': 'fa:cube',
-        },
-        'k8s_namespace': {
-            'resource': 'Namespace',
-            'client': '',
-            'name': 'Namespace',
-            'icon': 'fa:cube',
-        },
-        'k8s_node': {
-            'resource': 'Node',
-            'client': '',
-            'name': 'Node',
-            'icon': 'fa:server',
-        },
-        'k8s_persistent_volume': {
-            'resource': 'PersistentVolume',
-            'client': '',
-            'name': 'Persistent Volume',
-            'icon': 'fa:hdd-o',
-        },
-        'k8s_persistent_volume_claim': {
-            'resource': 'PersistentVolumeClaim',
-            'client': '',
-            'name': 'Persistent Volume Claim',
-            'icon': 'fa:hdd-o',
-        },
-        'k8s_pod': {
-            'resource': 'Pod',
-            'client': '',
-            'name': 'Pod',
-            'icon': 'fa:cubes',
-        },
-        'k8s_replica_set': {
-            'resource': 'ReplicaSet',
-            'client': '',
-            'name': 'Replica Set',
-            'icon': 'fa:cubes',
-        },
-        'k8s_replication_controller': {
-            'resource': 'ReplicationController',
-            'client': '',
-            'name': 'Replication Controller',
-            'icon': 'fa:cubes',
-        },
-        'k8s_role': {
-            'resource': 'Role',
-            'client': '',
-            'name': 'Role',
-            'icon': 'fa:cube',
-        },
-        'k8s_secret': {
-            'resource': 'Secret',
-            'client': '',
-            'name': 'Secret',
-            'icon': 'fa:lock',
-        },
-        'k8s_service': {
-            'resource': 'Service',
-            'client': '',
-            'name': 'Service',
-            'icon': 'fa:podcast',
-        },
-        'k8s_service_account': {
-            'resource': 'ServiceAccount',
-            'client': '',
-            'name': 'Service Account',
-            'icon': 'fa:user',
-        },
-    }
-
     def __init__(self, **kwargs):
         self.kind = 'kubernetes'
         self.scope = kwargs.get('scope', 'local')
@@ -219,14 +108,14 @@ class KubernetesInput(BaseInput):
             for resource_id, resource in resource_dict.items():
                 if 'namespace' in resource.get('metadata', {}).get('metadata', {}):
                     self._scrape_relation(
-                        '{}-k8s_namespace'.format(resource_type),
+                        'in_k8s_namespace',
                         resource_id,
                         namespace_2_uid[resource['metadata']['metadata']['namespace']])
 
         # Define relationships between service accounts and secrets
         for resource_id, resource in self.resources.get('k8s_service_account', {}).items():
             for secret in resource['metadata']['secrets']:
-                self._scrape_relation('k8s_service_account-k8s_secret',
+                self._scrape_relation('use_k8s_secret',
                                       resource_id,
                                       secret_2_uid[secret['name']])
         """
@@ -240,15 +129,15 @@ class KubernetesInput(BaseInput):
         for resource_id, resource in self.resources.get('k8s_replica_set', {}).items():
             deployment_id = resource['metadata']['metadata']['ownerReferences'][0]['uid']
             self._scrape_relation(
-                'k8s_deployment-k8s_replica_set',
-                deployment_id,
-                resource_id)
+                'in_k8s_deployment',
+                resource_id,
+                deployment_id)
 
         for resource_id, resource in self.resources.get('k8s_pod', {}).items():
             # Define relationships between pods and nodes
             if resource['metadata']['spec']['nodeName'] is not None:
                 node = resource['metadata']['spec']['nodeName']
-                self._scrape_relation('k8s_pod-k8s_node',
+                self._scrape_relation('on_k8s_node',
                                       resource_id,
                                       node_2_uid[node])
 
@@ -258,7 +147,7 @@ class KubernetesInput(BaseInput):
                 if resource['metadata']['metadata']['ownerReferences'][0]['kind'] == 'ReplicaSet':
                     rep_set_id = resource['metadata']['metadata']['ownerReferences'][0]['uid']
                     self._scrape_relation(
-                        'k8s_replica_set-k8s_pod',
+                        'use_k8s_replication',
                         rep_set_id,
                         resource_id)
 
@@ -266,16 +155,16 @@ class KubernetesInput(BaseInput):
             if resource['metadata']['metadata']['labels'].get('run', False):
                 selector = resource['metadata']['metadata']['labels']['run']
                 self._scrape_relation(
-                    'k8s_pod-k8s_service',
-                    resource_id,
-                    service_run_2_uid[selector])
+                    'in_k8s_pod',
+                    service_run_2_uid[selector],
+                    resource_id)
             if resource['metadata']['metadata']['labels'].get('app', False):
                 try:
                     selector = resource['metadata']['metadata']['labels']['app']
                     self._scrape_relation(
-                        'k8s_pod-k8s_service',
-                        resource_id,
-                        service_app_2_uid[selector])
+                        'in_k8s_pod',
+                        service_app_2_uid[selector],
+                        resource_id)
                 except Exception:
                     pass
 
@@ -298,9 +187,9 @@ class KubernetesInput(BaseInput):
                                       container['name'],
                                       'k8s_container', None,
                                       metadata=container)
-                self._scrape_relation('k8s_pod-k8s_container',
-                                      resource_id,
-                                      container_id)
+                self._scrape_relation('in_k8s_pod',
+                                      container_id,
+                                      resource_id)
 
     def scrape_config_maps(self):
         response = pykube.ConfigMap.objects(self.api)

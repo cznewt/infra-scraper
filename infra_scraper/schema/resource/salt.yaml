@@ -1,0 +1,85 @@
+relation:
+  contains_salt_high_state:
+    relation:
+      default: high_state
+  on_salt_minion:
+    relation:
+      default: minion
+  by_salt_user:
+    relation:
+      default: user
+  requires_salt_service:
+    relation:
+      default: require
+resource:
+  salt_high_state:
+    client: ''
+    icon: fa:cube
+    name: High State
+    resource: high_state
+    model:
+      minion:
+        type: relationship_to
+        model: on_salt_minion
+        target: salt_minion
+  salt_job:
+    client: ''
+    icon: fa:clock-o
+    name: Job
+    resource: job
+    model:
+      user:
+        type: relationship_to
+        model: by_salt_user
+        target: salt_user
+      minion:
+        type: relationship_to
+        model: on_salt_minion
+        target: salt_minion
+      high_state:
+        type: relationship_to
+        model: contains_salt_high_state
+        target: salt_high_state
+  salt_low_state:
+    client: ''
+    icon: fa:cube
+    name: Low State
+    resource: low_state
+  salt_minion:
+    client: ''
+    icon: fa:server
+    name: Minion
+    resource: minion
+    model:
+      high_state:
+        type: relationship_to
+        model: contains_salt_high_state
+        target: salt_high_state
+  salt_service:
+    client: ''
+    icon: fa:podcast
+    name: Service
+    resource: service
+    model:
+      high_state:
+        type: relationship_to
+        model: contains_salt_high_state
+        target: salt_high_state
+      minion:
+        type: relationship_to
+        model: on_salt_minion
+        target: salt_minion
+      require:
+        type: relationship_to
+        model: requires_salt_service
+        target: salt_service
+  salt_state_module:
+    client: ''
+    icon: fa:cubes
+    name: State Module
+    resource: state_module
+  salt_user:
+    client: ''
+    icon: fa:user
+    name: User
+    resource: user

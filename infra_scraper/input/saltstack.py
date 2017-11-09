@@ -9,51 +9,6 @@ logger = setup_logger('input.salt')
 
 class SaltStackInput(BaseInput):
 
-    RESOURCE_MAP = {
-        'salt_high_state': {
-            'resource': 'high_state',
-            'client': '',
-            'name': 'High State',
-            'icon': 'fa:cube',
-        },
-        'salt_job': {
-            'resource': 'job',
-            'client': '',
-            'name': 'Job',
-            'icon': 'fa:clock-o',
-        },
-        'salt_low_state': {
-            'resource': 'low_state',
-            'client': '',
-            'name': 'Low State',
-            'icon': 'fa:cube',
-        },
-        'salt_minion': {
-            'resource': 'minion',
-            'client': '',
-            'name': 'Minion',
-            'icon': 'fa:server',
-        },
-        'salt_service': {
-            'resource': 'service',
-            'client': '',
-            'name': 'Service',
-            'icon': 'fa:podcast',
-        },
-        'salt_state_module': {
-            'resource': 'state_module',
-            'client': '',
-            'name': 'State Module',
-            'icon': 'fa:cubes',
-        },
-        'salt_user': {
-            'resource': 'user',
-            'client': '',
-            'name': 'User',
-            'icon': 'fa:user',
-        },
-    }
-
     def __init__(self, **kwargs):
         self.kind = 'salt'
         super(SaltStackInput, self).__init__(**kwargs)
@@ -87,30 +42,30 @@ class SaltStackInput(BaseInput):
         for resource_id, resource in self.resources.get('salt_high_state', {}).items():
             # Define relationships between high states and nodes.
             self._scrape_relation(
-                'salt_minion-salt_high_state',
-                resource['metadata']['minion'],
-                resource_id)
+                'on_salt_minion',
+                resource_id,
+                resource['metadata']['minion'])
             split_service = resource['metadata']['__sls__'].split('.')
             self._scrape_relation(
-                'salt_service-salt_high_state',
+                'contains_salt_high_state',
                 '{}|{}.{}'.format(resource['metadata']['minion'],
                                   split_service[0], split_service[1]),
                 resource_id)
 
         for resource_id, resource in self.resources.get('salt_service', {}).items():
             self._scrape_relation(
-                'salt_service-salt_minion',
+                'on_salt_minion',
                 resource_id,
                 resource['metadata']['host'])
 
         for resource_id, resource in self.resources.get('salt_job', {}).items():
             self._scrape_relation(
-                'salt_user-salt_job',
-                resource['metadata']['User'],
-                resource_id)
+                'by_salt_user',
+                resource_id,
+                resource['metadata']['User'])
             for minion_id, result in resource['metadata'].get('Result', {}).items():
                 self._scrape_relation(
-                    'salt_job-salt_minion',
+                    'on_salt_minion',
                     resource_id,
                     minion_id)
                 if type(result) is list:
@@ -120,7 +75,7 @@ class SaltStackInput(BaseInput):
                         if '__id__' in state:
                             result_id = '{}|{}'.format(minion_id, state['__id__'])
                             self._scrape_relation(
-                                'salt_job-salt_high_state',
+                                'contains_salt_high_state',
                                 resource_id,
                                 result_id)
 

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import yaml
 import boto3
 from infra_scraper.input.base import BaseInput
 from infra_scraper.utils import setup_logger
@@ -10,81 +9,6 @@ logger = setup_logger('input.aws')
 
 class AmazonWebServicesInput(BaseInput):
 
-    RESOURCE_MAP = {
-        's3_bucket': {
-            'resource': 'AWS::S3::Bucket',
-            'client': 's3',
-            'name': 'Bucket',
-            'icon': 'fa:hdd-o',
-        },
-        'ec2_elastic_ip': {
-            'resource': 'AWS::EC2::EIP',
-            'client': 'ec2',
-            'name': 'Elastic IP',
-            'icon': 'fa:cube',
-        },
-        'ec2_elastic_ip_association': {
-            'resource': 'AWS::EC2::EIPAssociation',
-            'client': 'ec2',
-            'name': 'Elastic IP Association',
-            'icon': 'fa:cube',
-        },
-        'ec2_image': {
-            'resource': 'AWS::EC2::Image',
-            'client': 'ec2',
-            'name': 'Image',
-            'icon': 'fa:server',
-        },
-        'ec2_instance': {
-            'resource': 'AWS::EC2::Instance',
-            'client': 'ec2',
-            'name': 'Instance',
-            'icon': 'fa:server',
-        },
-        'ec2_internet_gateway': {
-            'resource': 'AWS::EC2::InternetGateway',
-            'client': 'ec2',
-            'name': 'Internet Gateway',
-            'icon': 'fa:cube',
-        },
-        'ec2_key_pair': {
-            'resource': 'AWS::EC2::KeyPair',
-            'client': 'ec2',
-            'name': 'Key Pair',
-            'icon': 'fa:key',
-        },
-        'ec2_route_table': {
-            'resource': 'AWS::EC2::RouteTable',
-            'client': 'ec2',
-            'name': 'Route Table',
-            'icon': 'fa:cube',
-        },
-        'ec2_security_group': {
-            'resource': 'AWS::EC2::SecurityGroup',
-            'client': 'ec2',
-            'name': 'Security Group',
-            'icon': 'fa:cubes',
-        },
-        'ec2_subnet': {
-            'resource': 'AWS::EC2::Subnet',
-            'client': 'ec2',
-            'name': 'Subnet',
-            'icon': 'fa:cube',
-        },
-        'ec2_vpc': {
-            'resource': 'AWS::EC2::VPC',
-            'client': 'ec2',
-            'name': 'VPC',
-            'icon': 'fa:cubes',
-        },
-        'ec2_vpc_gateway_attachment': {
-            'resource': 'AWS::EC2::VPCGatewayAttachment',
-            'client': 'ec2',
-            'name': 'VPC Gateway Attachment',
-            'icon': 'fa:cube',
-        },
-    }
-
     def __init__(self, **kwargs):
         self.kind = 'aws'
         self.scope = kwargs.get('scope', 'local')
@@ -93,7 +17,7 @@ class AmazonWebServicesInput(BaseInput):
         self.s3_client = boto3.resource('s3')
 
     def scrape_all_resources(self):
-        self.scrape_ec2_images()
+#        self.scrape_ec2_images()
 #        self.scrape_ec2_elastic_ips()
         self.scrape_ec2_instances()
         self.scrape_ec2_internet_gateways()
@@ -107,21 +31,21 @@ class AmazonWebServicesInput(BaseInput):
             if 'VpcId' in resource['metadata']:
                 if resource['metadata']['VpcId'] in self.resources.get('ec2_vpc', {}):
                     self._scrape_relation(
-                        'ec2_instance-ec2_vpc',
+                        'in_ec2_vpc',
                         resource_id,
                         resource['metadata']['VpcId'])
 
             if 'KeyName' in resource['metadata']:
                 if resource['metadata']['KeyName'] in self.resources.get('ec2_key_pair', {}):
                     self._scrape_relation(
-                        'ec2_instance-ec2_key_pair',
+                        'using_ec2_key_pair',
                         resource_id,
                         resource['metadata']['KeyName'])
 
             if 'SubnetId' in resource['metadata']:
                 if resource['metadata']['SubnetId'] in self.resources.get('ec2_subnet', {}):
                     self._scrape_relation(
-                        'ec2_instance-ec2_subnet',
+                        'in_ec2_subnet',
                         resource_id,
                         resource['metadata']['SubnetId'])
 
@@ -156,6 +80,7 @@ class AmazonWebServicesInput(BaseInput):
                 name = resource['data']['NetworkInterfaces'][0]['Association']['PublicDnsName']
             except Exception:
                 name = resource['data']['InstanceId']
+            print(resource['data'])
             self._scrape_resource(resource['data']['InstanceId'],
                                   name,
                                   'ec2_instance', None, metadata=resource['data'])

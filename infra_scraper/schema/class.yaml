@@ -1,0 +1,16 @@
+input:
+  aws: infra_scraper.input.amazon.AmazonWebServicesInput
+  kubernetes: infra_scraper.input.kubernetes.KubernetesInput
+  openstack: infra_scraper.input.openstack.OpenStackInput
+  reclass: infra_scraper.input.reclass.SaltReclassInput
+  salt: infra_scraper.input.saltstack.SaltStackInput
+  terraform: infra_scraper.input.terraform.TerraformInput
+storage:
+  file: infra_scraper.storage.file.FileStorage
+  neo4j: infra_scraper.storage.neo4j.Neo4jStorage
+output:
+  count: infra_scraper.output.count.CountOutput
+  enc: infra_scraper.output.enc.EncOutput
+  raw: infra_scraper.output.raw.RawOutput
+  vis: infra_scraper.output.vis.VisOutput
+  vis-hier: infra_scraper.output.vis.VisHierOutput

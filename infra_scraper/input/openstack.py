@@ -14,117 +14,6 @@ logger = setup_logger('input.openstack')
 
 class OpenStackInput(BaseInput):
 
-    RESOURCE_MAP = {
-        'os_aggregate': {
-            'resource': 'OS::Nova::Aggregate',
-            'client': 'nova',
-            'name': 'Aggregate',
-            'icon': 'fa:cube',
-        },
-        'os_flavor': {
-            'resource': 'OS::Nova::Flavor',
-            'client': 'nova',
-            'name': 'Flavor',
-            'icon': 'fa:cube',
-        },
-        'os_floating_ip': {
-            'resource': 'OS::Neutron::FloatingIP',
-            'client': 'neutron',
-            'name': 'Floating IP',
-            'icon': 'fa:cube',
-        },
-        'os_floating_ip_association': {
-            'resource': 'OS::Neutron::FloatingIPAssociation',
-            'client': 'neutron',
-            'name': 'Floating IP Association',
-            'icon': 'fa:cube',
-        },
-        'os_group': {
-            'resource': 'OS::Keystone::Group',
-            'client': 'keystone',
-            'name': 'Group',
-            'icon': 'fa:cube',
-        },
-        'os_hypervisor': {
-            'resource': 'OS::Nova::Hypervisor',
-            'client': 'nova',
-            'name': 'Hypervisor',
-            'icon': 'fa:server',
-        },
-        'os_image': {
-            'resource': 'Glance::Image',
-            'client': 'glance',
-            'name': 'Image',
-            'icon': 'fa:cube',
-        },
-        'os_key_pair': {
-            'resource': 'OS::Nova::KeyPair',
-            'client': 'nova',
-            'name': 'Key Pair',
-            'icon': 'fa:key',
-        },
-        'os_net': {
-            'resource': 'OS::Neutron::Net',
-            'client': 'neutron',
-            'name': 'Net',
-            'icon': 'fa:share-alt',
-        },
-        'os_port': {
-            'resource': 'OS::Neutron::Port',
-            'client': 'neutron',
-            'name': 'Port',
-            'icon': 'fa:cube',
-        },
-        'os_project': {
-            'resource': 'OS::Keystone::Tenant',
-            'client': 'keystone',
-            'name': 'Project',
-            'icon': 'fa:cube',
-        },
-        'os_resource_type': {
-            'resource': 'OS::Heat::ResourceType',
-            'client': 'heat',
-            'name': 'Resource Type',
-            'icon': 'fa:cube',
-        },
-        'os_router': {
-            'resource': 'OS::Neutron::Router',
-            'client': 'neutron',
-            'name': 'Router',
-            'icon': 'fa:arrows-alt',
-        },
-        'os_server': {
-            'resource': 'OS::Nova::Server',
-            'client': 'nova',
-            'name': 'Server',
-            'icon': 'fa:server',
-        },
-        'os_stack': {
-            'resource': 'OS::Heat::Stack',
-            'client': 'heat',
-            'name': 'Stack',
-            'icon': 'fa:cubes',
-        },
-        'os_subnet': {
-            'resource': 'OS::Neutron::Subnet',
-            'client': 'neutron',
-            'name': 'Subnet',
-            'icon': 'fa:share-alt',
-        },
-        'os_user': {
-            'resource': 'OS::Keystone::User',
-            'client': 'keystone',
-            'name': 'User',
-            'icon': 'fa:cube',
-        },
-        'os_volume': {
-            'resource': 'OS::Cinder::Volume',
-            'client': 'cinder',
-            'name': 'Volume',
-            'icon': 'fa:cube',
-        },
-    }
-
     def __init__(self, **kwargs):
         self.kind = 'openstack'
         self.scope = kwargs.get('scope', 'local')
@@ -151,8 +40,8 @@ class OpenStackInput(BaseInput):
         return self.cloud.get_legacy_client(service_key, constructor)
 
     def scrape_all_resources(self):
-        if self.scope == 'global':
-            self.scrape_keystone_projects()
+#        if self.scope == 'global':
+#            self.scrape_keystone_projects()
 #            self.scrape_keystone_users()
         self.scrape_cinder_volumes()
         self.scrape_glance_images()
@@ -162,7 +51,7 @@ class OpenStackInput(BaseInput):
         self.scrape_nova_keypairs()
         self.scrape_nova_flavors()
         self.scrape_nova_servers()
-        # self.scrape_nova_security_groups()
+#        self.scrape_nova_security_groups()
         self.scrape_neutron_networks()
         self.scrape_neutron_subnets()
         self.scrape_neutron_floating_ips()
@@ -177,12 +66,12 @@ class OpenStackInput(BaseInput):
             for resource_id, resource in resource_dict.items():
                 if 'tenant_id' in resource['metadata']:
                     self._scrape_relation(
-                        '{}-os_project'.format(resource_type),
+                        'in_os_project',
                         resource_id,
                         resource['metadata']['tenant_id'])
                 elif 'project' in resource['metadata']:
                     self._scrape_relation(
-                        '{}-os_project'.format(resource_type),
+                        'in_os_project',
                         resource_id,
                         resource['metadata']['project'])
 
@@ -199,56 +88,56 @@ class OpenStackInput(BaseInput):
         for resource_id, resource in self.resources.get('os_aggregate', {}).items():
             for host in resource['metadata']['hosts']:
                 self._scrape_relation(
-                    'os_hypervisor-os_aggregate',
+                    'in_os_aggregate',
                     host,
                     resource_id)
 
         for resource_id, resource in self.resources.get('os_floating_ip', {}).items():
             if resource['metadata'].get('port_id', None) is not None:
                 self._scrape_relation(
-                    'os_floating_ip-os_port',
+                    'use_os_port',
                     resource_id,
                     resource['metadata']['port_id'])
 
         for resource_id, resource in self.resources.get('os_port', {}).items():
             self._scrape_relation(
-                'os_port-os_net',
+                'in_os_net',
                 resource_id,
                 resource['metadata']['network_id'])
             if resource['metadata']['device_id'] is not None:
                 self._scrape_relation(
-                    'os_port-os_server',
-                    resource_id,
-                    resource['metadata']['device_id'])
+                    'use_os_port',
+                    resource['metadata']['device_id'],
+                    resource_id)
             if self.scope == 'global':
-                if resource['metadata'].get('device_id', None) is not None:
+                if resource['metadata'].get('binding:host_id', False):
                     self._scrape_relation(
-                        'os_port-os_hypervisor',
+                        'on_os_hypervisor',
                         resource_id,
                         resource['metadata']['binding:host_id'])
 
         for resource_id, resource in self.resources.get('os_server', {}).items():
             if self.scope == 'global':
                 self._scrape_relation(
-                    'os_server-os_hypervisor',
+                    'on_os_hypervisor',
                     resource_id,
                     resource['metadata']['OS-EXT-SRV-ATTR:host'])
 
             self._scrape_relation(
-                'os_server-os_flavor',
+                'use_os_flavor',
                 resource_id,
                 resource['metadata']['flavor']['id'])
 
             if resource['metadata']['image'] != '':
                 if resource['metadata']['image'].get('id', None) is not None:
                     self._scrape_relation(
-                        'os_server-os_image',
+                        'use_os_image',
                         resource_id,
                         resource['metadata']['image']['id'])
 
         for resource_id, resource in self.resources.get('os_subnet', {}).items():
             self._scrape_relation(
-                'os_subnet-os_net',
+                'in_os_net',
                 resource_id,
                 resource['metadata']['network_id'])
 

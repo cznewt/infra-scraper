@@ -8,69 +8,23 @@ from infra_scraper.utils import setup_logger
 
 logger = setup_logger('input.terraform')
 
+relation_mapping = {
+    'tf_openstack_compute_instance_v2-tf_openstack_compute_keypair_v2': 'using_tf_key_pair',
+    'tf_openstack_networking_subnet_v2-tf_openstack_networking_network_v2': 'in_tf_net',
+    'tf_openstack_compute_floatingip_associate_v2-tf_openstack_networking_floatingip_v2': 'links_tf_floating_ip',
+    'tf_openstack_networking_floatingip_v2-tf_openstack_networking_router_interface_v2': 'links_tf_floating_ip',
+    'tf_openstack_networking_router_interface_v2-tf_openstack_networking_subnet_v2': 'in_tf_subnet',
+    'tf_openstack_networking_router_interface_v2-tf_openstack_networking_router_v2': 'links_tf_router',
+    'tf_openstack_compute_instance_v2-tf_openstack_networking_network_v2': 'in_tf_net',
+    'tf_openstack_compute_floatingip_associate_v2-tf_openstack_compute_instance_v2': 'links_tf_floating_instance',
+    'tf_openstack_compute_instance_v2-tf_openstack_compute_secgroup_v2': 'has_tf_security_group',
+}
 
 class TerraformInput(BaseInput):
 
-    RESOURCE_MAP = {
-        'tf_openstack_compute_instance_v2': {
-            'resource': 'openstack_compute_instance_v2',
-            'client': '',
-            'name': 'Instance',
-            'icon': 'fa:server',
-        },
-        'tf_openstack_compute_keypair_v2': {
-            'resource': 'openstack_compute_keypair_v2',
-            'client': '',
-            'name': 'Key Pair',
-            'icon': 'fa:key',
-        },
-        'tf_openstack_compute_secgroup_v2': {
-            'resource': 'openstack_compute_secgroup_v2',
-            'client': '',
-            'name': 'Security Group',
-            'icon': 'fa:cube',
-        },
-        'tf_openstack_networking_router_interface_v2': {
-            'resource': 'openstack_networking_router_interface_v2',
-            'client': '',
-            'name': 'Router Interface',
-            'icon': 'fa:arrows-alt',
-        },
-        'tf_openstack_networking_router_v2': {
-            'resource': 'openstack_networking_router_v2',
-            'client': '',
-            'name': 'Router',
-            'icon': 'fa:arrows-alt',
-        },
-        'tf_openstack_networking_network_v2': {
-            'resource': 'openstack_networking_network_v2',
-            'client': '',
-            'name': 'Net',
-            'icon': 'fa:share-alt',
-        },
-        'tf_openstack_networking_subnet_v2': {
-            'resource': 'openstack_networking_subnet_v2',
-            'client': '',
-            'name': 'Subnet',
-            'icon': 'fa:share-alt',
-        },
-        'tf_openstack_networking_floatingip_v2': {
-            'resource': 'openstack_networking_floatingip_v2',
-            'client': '',
-            'name': 'Floating IP',
-            'icon': 'fa:map-signs',
-        },
-        'tf_openstack_compute_floatingip_associate_v2': {
-            'resource': 'openstack_compute_floatingip_associate_v2',
-            'client': '',
-            'name': 'Floating IP Association',
-            'icon': 'fa:map-signs',
-        },
-    }
-
     def __init__(self, **kwargs):
-        super(TerraformInput, self).__init__(**kwargs)
         self.kind = 'terraform'
+        super(TerraformInput, self).__init__(**kwargs)
         self.client = python_terraform.Terraform(
             working_dir=self.config['dir'])
 
@@ -89,7 +43,7 @@ class TerraformInput(BaseInput):
             target = self.clean_name(edge[1]).split('.')
             if 'tf_{}'.format(source[0]) in self.resources and 'tf_{}'.format(target[0]) in self.resources:
                 self._scrape_relation(
-                    'tf_{}-tf_{}'.format(source[0], target[0]),
+                    relation_mapping['tf_{}-tf_{}'.format(source[0], target[0])],
                     '{}.{}'.format(source[0], source[1]),
                     '{}.{}'.format(target[0], target[1]))
 
@@ -100,7 +54,7 @@ class TerraformInput(BaseInput):
         nodes = {}
         for node in graph.obj_dict['subgraphs']['"root"'][0]['nodes']:
             clean_node = 'tf_{}'.format(self.clean_name(node).split('.')[0])
-            if clean_node in self.RESOURCE_MAP:
+            if clean_node in self._schema['resource']:
                 nodes[self.clean_name(node)] = {
                     'id': self.clean_name(node),
                     'name': self.clean_name(node).split('.')[1],

@@ -1,8 +1,8 @@
 
 import time
-import logging
+from infra_scraper.utils import setup_logger, get_graph_schema
 
-logger = logging.getLogger(__name__)
+logger = setup_logger('input.base')
 
 
 class BaseInput(object):
@@ -15,6 +15,7 @@ class BaseInput(object):
         self.relations = {}
         self.timestamp = int(time.time())
         self._reverse_map = None
+        self._schema = get_graph_schema(self.kind)
 
     def _create_relations(self):
         raise NotImplementedError
@@ -27,20 +28,26 @@ class BaseInput(object):
             'timestamp': self.timestamp,
             'resource_types': self._get_resource_types(),
             'resources': self.resources,
+            'relation_types': self._get_relation_types(),
             'relations': self.relations,
         }
 
     def _get_resource_types(self):
-        resource_map = {}
+        res_map = {}
         for resource_name, resource in self.resources.items():
-            if resource_name in self.resources:
-                resource_map[resource_name] = self.RESOURCE_MAP[resource_name]
-        return resource_map
+            res_map[resource_name] = self._schema['resource'][resource_name]
+        return res_map
+
+    def _get_relation_types(self):
+        rel_map = {}
+        for relation_name, relation in self.relations.items():
+            rel_map[relation_name] = self._schema['relation'][relation_name]
+        return rel_map
 
     def _get_resource_mapping(self):
         if self._reverse_map is None:
             self._reverse_map = {}
-            for resource_name, resource in self.RESOURCE_MAP.items():
+            for resource_name, resource in self._schema['resource'].items():
                 self._reverse_map[resource['resource']] = resource_name
         return self._reverse_map
 
@@ -48,7 +55,7 @@ class BaseInput(object):
         if kind not in self.resources:
             self.resources[kind] = {}
         self.resources[kind][uid] = {
-            'id': uid,
+            'uid': uid,
             'kind': kind,
             'name': name,
             'metadata': metadata,

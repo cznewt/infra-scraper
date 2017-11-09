@@ -50,7 +50,11 @@ def _get_module(module_key):
 
 class InfraScraper(object):
     def __init__(self):
-        self.storage = self._get_module('storage', 'file')
+        self.config = self.get_global_config()
+        storage_class = self.config.get('storage', {'backend': 'localfs'})
+        self.storage = self._get_module('storage',
+                                        storage_class['backend'],
+                                        storage_class)
 
     def _get_module(self, module_file, module_key, module_init={}):
         module_class = _get_module("{}-{}".format(
@@ -61,13 +65,13 @@ class InfraScraper(object):
         return load_yaml_json_file(config_file)
 
     def get_config(self, name):
-        config = self.get_global_config()['endpoints'][name]
+        config = self.config['endpoints'][name]
         config['name'] = name
         return config
 
     def status(self):
-        config = self.get_global_config()
-        for endpoint_name, endpoint in config['endpoints'].items():
+        config = self.config
+        for endpoint_name, endpoint in self.config['endpoints'].items():
             endpoint.pop('config')
             endpoint['status'] = self.get_endpoint_status(endpoint_name)
         return config

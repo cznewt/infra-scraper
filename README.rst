@@ -3,24 +3,229 @@
 Infrastucture Metadata Scraper
 ==============================
 
-Get your live infrastructure topology data from your favorite resource
-providers for further processing, visualialitions, etc. Currently supported
-providers are:
+The aim of this project is to acquire live infrastructure topology data from
+any resource provider for further relational analysis and visualisations.
+
+
+Metadata Collection
+===================
+
+The pull approach for scraping endpoint APIs is supported for the moment, but
+the processing push from target services will be supported.
+
+Currently supported resource metadata providers are:
 
 * Kubernetes clusters
 * OpenStack clouds
 * Amazon web services
 * SaltStack infrastructures
 * Terraform templates
+* Jenkins pipelines
+
+The following resource providers are to be intergrated in near future.
+
+* GCE and Azure clouds
+* Cloudify TOSCA blueprints
+* MAAS servers
+* JUJU templates
+
+From these resource providers we are able to capture all available resources
+for given
+
+Relational Analysis
+===================
+
+The output of scraping is directed graph that can be subject for further
+analysis. We can perform several transformation functions on the graphs.
+
+Slice and dice
+--------------
+
+To slice and dice is to break a body of information down into smaller parts or
+to examine it from different viewpoints that we can understand it better.
+
+In cooking, you can slice a vegetable or other food or you can dice it (which
+means to break it down into small cubes). One approach to dicing is to first
+slice and then cut the slices up into dices.
+
+In data analysis, the term generally implies a systematic reduction of
+a body of data into smaller parts or views that will yield more information.
+The term is also used to mean the presentation of information in a variety of
+different and useful ways. In our case we find useful subgraphs of the infrastructures.
+
+.. note::
+
+   For example in OpenStack infrastructure we can show the aggregate zone -
+   hypervisor - instance relations and show the quantitative properties of
+   hypervisors and instances. The properties can be used RAM or CPU, runtime -
+   the age of resources or any other property of value.
 
 
-Road Map
-========
+Data Corellations
+-----------------
 
-* Relational data transformations (slicing, dicing, transience)
-* Create JUJU, GCE and Azure scraping definitions
-* Enable corellation of resources and joined topologies
-* Open the way for the "Metadata as a service"
+With the relational information we are now able to corellate resources and
+joined topologies from varius information sources. This gives you the real
+power, while having the underlying relational structure, you can gather
+unstructured metrics, events, alarms and put them into proper context in you
+managed resources.
+
+
+Metrics Corellations
+~~~~~~~~~~~~~~~~~~~~
+
+The metrics collected from you infrastrucute can be assigned to various
+vertices and edges in your network. This can give you more insight to the
+utilisation of depicted infrastructures.
+
+You can have the following query to the prometheus server that gives you the
+rate of error response codes goint through a HAproxy for example.
+
+.. code-block:: yaml
+
+    sum(irate(haproxy_http_response_5xx{
+        proxy=~"glance.*",
+        sv="FRONTEND"
+    }[5m]))
+
+Or you can have the query with the same result to the InfluxDB server:
+
+.. code-block:: yaml
+
+    SELECT sum("count")
+        FROM "openstack_glance_http_response_times"
+        WHERE "hostname" =~ /$server/
+            AND "http_status" = '5xx'
+            AND $timeFilter
+        GROUP BY time($interval)
+    fill(0)
+
+Having these metrics you can assign numerical properties of your relational
+nodes with these values and use them in correct context.
+
+
+Events Corellations
+~~~~~~~~~~~~~~~~~~~
+
+As you can query the time-series databases, you are able to query also the
+ElasticSearch for events.
+
+.. code-block:: yaml
+
+    "searchSourceJSON": {
+        "index": "log-*",
+        "query": {
+            "query_string": {
+                "query": "*",
+                "analyze_wildcard": true
+            }
+        },
+        "filter": []
+    }
+
+The events are transformed to numerical representation and create again
+numerical properies of both nodes and vertices.
+
+
+Alarms Corellations
+~~~~~~~~~~~~~~~~~~~
+
+You can corellate the output of the alarm evaluators to dynamically set the
+status of resources. You can use the functional status of checks from
+Prometheus Alarmmanager, Nagios or Sensu.
+
+
+Visualization Layouts
+=====================
+
+Different data require different diagram visualization. Diagrams are symbolic
+representation of information according to some visualization technique. Every
+time you need to emphasise different qualities of displayed resources you can
+choose from several layouts to display the data.
+
+Network Graph Layouts
+---------------------
+
+For most of the cases we will be dealing with network data that do not have
+any single root or beginning.
+
+Force-Directed Graph
+~~~~~~~~~~~~~~~~~~~~
+
+`Force-directed graph` drawing algorithms are used for drawing graphs in an
+aesthetically pleasing way. Their purpose is to position the nodes of a graph
+in two-dimensional or three-dimensional space so that all the edges are of
+more or less equal length and there are as few crossing edges as possible, by
+assigning forces among the set of edges and the set of nodes, based on their
+relative positions, and then using these forces either to simulate the motion
+of the edges and nodes or to minimize their energy.
+
+.. figure:: ./doc/source/static/img/force-directed-plot.png
+    :width: 600px
+    :figclass: align-center
+
+    Force-directed plot of all OpenStack resources (cca 3000 resources)
+
+
+Hive Plot
+~~~~~~~~~
+
+The `hive plot` is a visualization method for drawing networks. Nodes
+are mapped to and positioned on radially distributed linear axes — this
+mapping is based on network structural properties. Edges are drawn as curved
+links. Simple and interpretable.
+
+.. figure:: ./doc/source/static/img/hive-plot.png
+    :width: 600px
+    :figclass: align-center
+
+    Hive plot of all OpenStack resources (cca 3000 resources)
+
+
+Arc Diagram
+~~~~~~~~~~~
+
+An `arc diagram` is a style of graph drawing, in which the vertices of a graph
+are placed along a line in the Euclidean plane, with edges being drawn as
+semicircles in one of the two halfplanes bounded by the line, or as smooth
+curves formed by sequences of semicircles. In some cases, line segments of the
+line itself are also allowed as edges, as long as they connect only vertices
+that are consecutive along the line.
+
+.. figure:: ./doc/source/static/img/arc-diagram.png
+    :width: 600px
+    :figclass: align-center
+
+    Arc diagram of OpenStack project's resources (cca 100 resources)
+
+
+Adjacency Matrix
+~~~~~~~~~~~~~~~~
+
+An adjacency matrix is a square matrix used to represent a finite graph. The
+elements of the matrix indicate whether pairs of vertices are adjacent or not
+in the graph.
+
+.. figure:: ./doc/source/static/img/adjacency-matrix.png
+    :width: 600px
+    :figclass: align-center
+
+    Adjacency matrix of OpenStack project's resources (cca 100 resources)
+
+
+Hierarchical Edge Bundling
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Danny Holten presents an awesome and aesthetically pleasing way of simplifying
+graphs and making tree graphs more accessible.  What makes his project so
+useful, however, is how he outlines the particular thought process that goes
+into making a visualization.
+
+.. figure:: ./doc/source/static/img/hiearchical-edge-bundling.png
+    :width: 600px
+    :figclass: align-center
+
+    Hierarchical edge bundling of SaltStack services (cca 100 resources)
 
 
 Installation
@@ -280,97 +485,8 @@ UI and utility commands
   Start the UI with visualization samples and API that provides the scraped
   data.
 
-
-Supported Visualization Layouts
-===============================
-
-Presented data requires different diagram visualizations. Diagrams are
-symbolic representation of information according to some visualization
-technique. Every time you need to emphasise different qualities of displayed
-resources. You can choose from several layouts to display collected data.
-
-
-Force-Directed Graph
---------------------
-
-`Force-directed graph` drawing algorithms are used for drawing graphs in an
-aesthetically pleasing way. Their purpose is to position the nodes of a graph
-in two-dimensional or three-dimensional space so that all the edges are of
-more or less equal length and there are as few crossing edges as possible, by
-assigning forces among the set of edges and the set of nodes, based on their
-relative positions, and then using these forces either to simulate the motion
-of the edges and nodes or to minimize their energy.
-
-.. figure:: ./doc/source/static/img/force-directed-plot.png
-    :width: 600px
-    :figclass: align-center
-
-    Force-directed plot of all OpenStack resources (cca 3000 resources)
-
-
-Hive Plot
----------
-
-The `hive plot` is a visualization method for drawing networks. Nodes
-are mapped to and positioned on radially distributed linear axes — this
-mapping is based on network structural properties. Edges are drawn as curved
-links. Simple and interpretable.
-
-.. figure:: ./doc/source/static/img/hive-plot.png
-    :width: 600px
-    :figclass: align-center
-
-    Hive plot of all OpenStack resources (cca 3000 resources)
-
-
-Arc Diagram
------------
-
-An `arc diagram` is a style of graph drawing, in which the vertices of a graph
-are placed along a line in the Euclidean plane, with edges being drawn as
-semicircles in one of the two halfplanes bounded by the line, or as smooth
-curves formed by sequences of semicircles. In some cases, line segments of the
-line itself are also allowed as edges, as long as they connect only vertices
-that are consecutive along the line.
-
-.. figure:: ./doc/source/static/img/arc-diagram.png
-    :width: 600px
-    :figclass: align-center
-
-    Arc diagram of OpenStack project's resources (cca 100 resources)
-
-
-Adjacency Matrix
-----------------
-
-An adjacency matrix is a square matrix used to represent a finite graph. The
-elements of the matrix indicate whether pairs of vertices are adjacent or not
-in the graph.
-
-.. figure:: ./doc/source/static/img/adjacency-matrix.png
-    :width: 600px
-    :figclass: align-center
-
-    Adjacency matrix of OpenStack project's resources (cca 100 resources)
-
-
-Hierarchical Edge Bundling
---------------------------
-
-Danny Holten presents an awesome and aesthetically pleasing way of simplifying
-graphs and making tree graphs more accessible.  What makes his project so
-useful, however, is how he outlines the particular thought process that goes
-into making a visualization.
-
-.. figure:: ./doc/source/static/img/hiearchical-edge-bundling.png
-    :width: 600px
-    :figclass: align-center
-
-    Hierarchical edge bundling of SaltStack services (cca 100 resources)
-
-
-Supported Platform Metadata
-===========================
+Example Platform Metadata
+=========================
 
 Following outputs show available resources and relations from given domain.
 

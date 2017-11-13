@@ -40,8 +40,8 @@ class OpenStackInput(BaseInput):
         return self.cloud.get_legacy_client(service_key, constructor)
 
     def scrape_all_resources(self):
-#        if self.scope == 'global':
-#            self.scrape_keystone_projects()
+        if self.scope == 'global':
+            self.scrape_keystone_projects()
 #            self.scrape_keystone_users()
         self.scrape_cinder_volumes()
         self.scrape_glance_images()
@@ -57,7 +57,7 @@ class OpenStackInput(BaseInput):
         self.scrape_neutron_floating_ips()
         self.scrape_neutron_routers()
         self.scrape_neutron_ports()
-        # self.scrape_heat_stacks()
+        self.scrape_heat_stacks()
         # self.scrape_heat_resource_types()
 
     def _create_relations(self):
@@ -134,6 +134,12 @@ class OpenStackInput(BaseInput):
                         'use_os_image',
                         resource_id,
                         resource['metadata']['image']['id'])
+
+            if resource['metadata']['keypair_name'] != '':
+                self._scrape_relation(
+                    'use_os_key_pair',
+                    resource_id,
+                    resource['metadata']['keypair_name'])
 
         for resource_id, resource in self.resources.get('os_subnet', {}).items():
             self._scrape_relation(

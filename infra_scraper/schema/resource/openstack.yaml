@@ -15,6 +15,9 @@ relation:
   use_os_flavor:
     relation:
       os_server: flavor
+  use_os_key_pair:
+    relation:
+      default: key_pair
   on_os_hypervisor:
     relation:
       os_server: hypervisor
@@ -83,6 +86,10 @@ resource:
     name: Net
     icon: fa:share-alt
     model:
+      project:
+        type: relationship_to
+        model: in_os_project
+        target: os_project
       subnets:
         type: relationship_from
         model: in_os_net
@@ -93,6 +100,10 @@ resource:
     name: Port
     icon: fa:cube
     model:
+      project:
+        type: relationship_to
+        model: in_os_project
+        target: os_project
       hypervisor:
         type: relationship_to
         model: on_os_hypervisor
@@ -117,6 +128,10 @@ resource:
     name: Router
     icon: fa:arrows-alt
     model:
+      project:
+        type: relationship_to
+        model: in_os_project
+        target: os_project
       port:
         type: relationship_to
         model: use_os_port
@@ -127,6 +142,10 @@ resource:
     name: Server
     icon: fa:server
     model:
+      project:
+        type: relationship_to
+        model: in_os_project
+        target: os_project
       network:
         type: relationship_to
         model: use_os_port
@@ -135,6 +154,10 @@ resource:
         type: relationship_to
         model: on_os_hypervisor
         target: os_hypervisor
+      key_pair:
+        type: relationship_to
+        model: use_os_key_pair
+        target: os_key_pair
       image:
         type: relationship_to
         model: use_os_image
@@ -148,12 +171,21 @@ resource:
     client: heat
     name: Stack
     icon: fa:cubes
+    model:
+      project:
+        type: relationship_to
+        model: in_os_project
+        target: os_project
   os_subnet:
     resource: OS::Neutron::Subnet
     client: neutron
     name: Subnet
     icon: fa:share-alt
     model:
+      project:
+        type: relationship_to
+        model: in_os_project
+        target: os_project
       network:
         type: relationship_to
         model: in_os_net
@@ -168,3 +200,8 @@ resource:
     client: cinder
     name: Volume
     icon: fa:cube
+    model:
+      project:
+        type: relationship_to
+        model: in_os_project
+        target: os_project

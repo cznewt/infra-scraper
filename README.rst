@@ -38,8 +38,17 @@ Relational Analysis
 The output of scraping is directed graph that can be subject for further
 analysis. We can perform several transformation functions on the graphs.
 
-Slice and dice
+
+Graph Analysis
 --------------
+
+You can alter the scraped strusctured in several ways. Either you want to get
+the subset of the resources (vertices and edges) or you want to combine
+multiple graphs and link the same nodes in each.
+
+
+Subgraphs - Slicing and Dicing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To slice and dice is to break a body of information down into smaller parts or
 to examine it from different viewpoints that we can understand it better.
@@ -48,17 +57,27 @@ In cooking, you can slice a vegetable or other food or you can dice it (which
 means to break it down into small cubes). One approach to dicing is to first
 slice and then cut the slices up into dices.
 
-In data analysis, the term generally implies a systematic reduction of
-a body of data into smaller parts or views that will yield more information.
-The term is also used to mean the presentation of information in a variety of
-different and useful ways. In our case we find useful subgraphs of the infrastructures.
+In data analysis, the term generally implies a systematic reduction of a body
+of data into smaller parts or views that will yield more information. The term
+is also used to mean the presentation of information in a variety of different
+and useful ways. In our case we find useful subgraphs of the infrastructures.
 
-.. note::
+For example in OpenStack infrastructure we can show the ``aggregate zone`` -
+``hypervisor`` - ``instance`` relations and show the quantitative properties
+of hypervisors and instances. The properties can be used RAM or CPU, runtime -
+the age of resources or any other property of value.
 
-   For example in OpenStack infrastructure we can show the aggregate zone -
-   hypervisor - instance relations and show the quantitative properties of
-   hypervisors and instances. The properties can be used RAM or CPU, runtime -
-   the age of resources or any other property of value.
+Another example would be filtering of resources by tenant or stack
+attributions. This reduces the number of nodes to the reasonable amount.
+
+
+Inter-graphs
+~~~~~~~~~~~~
+
+On other hand you want to combine several graphs to create one overlaying
+graph. This is very useful to combine in other ways undelated resources. For
+example we can say that ``OpenStack Server`` or ``AWS Instance`` and ``Salt
+Minion`` are really the same resources.
 
 
 Data Corellations
@@ -143,11 +162,13 @@ representation of information according to some visualization technique. Every
 time you need to emphasise different qualities of displayed resources you can
 choose from several layouts to display the data.
 
+
 Network Graph Layouts
 ---------------------
 
 For most of the cases we will be dealing with network data that do not have
 any single root or beginning.
+
 
 Force-Directed Graph
 ~~~~~~~~~~~~~~~~~~~~
@@ -228,6 +249,13 @@ into making a visualization.
     Hierarchical edge bundling of SaltStack services (cca 100 resources)
 
 
+Tree Graph Layouts
+------------------
+
+Directed graph traversal can give os acyclic structures suitable for showing
+parent-child relations in your subraphs.
+
+
 Installation
 ============
 
@@ -265,7 +293,8 @@ You provide one configuration file for all providers. The default location is
 ETCD hosted configuration
 -------------------------
 
-You can use ETCD as a storage backend for the configuration and scrape results. Following environmental parameters need to be set:
+You can use ETCD as a storage backend for the configuration and scrape
+results. Following environmental parameters need to be set:
 
 .. code-block:: bash
 

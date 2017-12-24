@@ -8,6 +8,11 @@ from infra_scraper.server import run
 logger = logging.getLogger(__name__)
 
 
+@click.group()
+def cli():
+    pass
+
+
 @click.command()
 @click.argument('name')
 def scrape(name):
@@ -47,3 +52,14 @@ def status():
 @click.argument('--port', default=8076)
 def runserver(__host, __port):
     run(host=__host, port=__port)
+
+
+cli.add_command(status)
+cli.add_command(scrape)
+cli.add_command(runserver)
+cli.add_command(scrape_all)
+cli.add_command(scrape_forever)
+cli.add_command(scrape_all_forever)
+
+if __name__ == '__main__':
+    cli()
